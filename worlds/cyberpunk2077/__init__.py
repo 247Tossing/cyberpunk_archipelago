@@ -1,0 +1,284 @@
+"""
+Cyberpunk 2077 Archipelago World Implementation
+
+This file defines the main World class for Cyberpunk 2077, which manages the
+randomization logic for this game in the Archipelago multiworld system.
+
+The World class handles:
+- Generating regions (game areas) and locations (item checks)
+- Creating the item pool that gets distributed across all players
+- Setting access rules that determine item/location requirements
+- Providing player-specific configuration options
+"""
+
+from typing import Dict, List, Set, Any
+from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
+from worlds.AutoWorld import World, WebWorld
+from worlds.LauncherComponents import Component, components, Type, launch
+from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups
+from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups
+from .options import Cyberpunk2077Options
+from .regions import create_regions
+from .rules import set_rules
+
+
+def launch_client(*args: str):
+    """
+    Launch the Cyberpunk 2077 client.
+
+    Called when the user clicks the client button in the Archipelago launcher.
+    Starts the client in a separate process to handle communication between
+    the Archipelago server and the game.
+    """
+    from .client import launch as client_launch
+    launch(client_launch, name="Cyberpunk 2077 Client", args=args)
+
+
+# Register the client in the Archipelago Launcher
+# This makes the "Cyberpunk 2077 Client" button appear in the launcher GUI
+components.append(Component("Cyberpunk 2077 Client", func=launch_client, component_type=Type.CLIENT))
+
+
+class Cyberpunk2077Web(WebWorld):
+    """
+    Web interface configuration for Cyberpunk 2077.
+
+    Defines the visual theme and documentation links shown on the
+    Archipelago web interface for this game.
+    """
+    theme = "stone"  # Visual theme for the web interface (options: dirt, grass, ice, jungle, ocean, partyTime, stone)
+
+    # TODO: Create setup guide markdown file in docs/setup_en.md when ready
+    # tutorials = [Tutorial(
+    #     "Multiworld Setup Guide",
+    #     "A guide to setting up the Archipelago Cyberpunk 2077 client on your computer.",
+    #     "English",
+    #     "setup_en.md",
+    #     "setup/en",
+    #     ["YourNameHere"]
+    # )]
+
+
+class Cyberpunk2077World(World):
+    """
+    Main World class for Cyberpunk 2077.
+
+    This class defines how the game integrates with Archipelago's randomization system.
+    It handles world generation, item creation, and access logic for a single player slot.
+
+    Each player in a multiworld gets their own instance of this class, which manages
+    their specific randomization settings and generated world state.
+    """
+
+    # ===== REQUIRED CLASS ATTRIBUTES =====
+    # These class-level attributes define core properties of this world
+
+    game: str = "Cyberpunk 2077"  # Game name - must match across all files
+    web = Cyberpunk2077Web()  # Web interface configuration
+
+    # Player options - configured via YAML file
+    options_dataclass = Cyberpunk2077Options
+    options: Cyberpunk2077Options  # Populated with player's chosen settings during generation
+
+    # Base ID for items/locations
+    # Archipelago assigns each game a unique ID range to avoid conflicts between games
+    # All item/location IDs for this game start from this number
+    base_id = 77_2077_000
+
+    # Minimum client version required to play this world
+    # Format: (major, minor, patch) tuple
+    # The client checks this during connection to ensure compatibility
+    required_client_version = (0, 1, 0)
+
+    # ===== ITEM AND LOCATION MAPPINGS =====
+    # These dictionaries map human-readable names to numeric IDs for network communication
+
+    # Maps item names to their unique IDs
+    # Example: {"Mantis Blades": 77_2077_001, "Kerenzikov": 77_2077_002, ...}
+    item_name_to_id = item_name_to_id
+
+    # Maps location names to their unique IDs
+    # Example: {"Watson - Completed Gig": 1000, "Westbrook - Main Quest": 1001, ...}
+    location_name_to_id = location_name_to_id
+
+    # Optional: Group items/locations by category for easier YAML configuration
+    # Example: {"Cyberware": ["Mantis Blades", "Kerenzikov"], "Weapons": [...]}
+    item_name_groups = item_name_groups
+    location_name_groups = location_name_groups
+
+
+    # ===== INSTANCE ATTRIBUTES =====
+    # Instance variables for this specific player's world
+    # These store player-specific state during world generation
+
+
+    def __init__(self, multiworld: MultiWorld, player: int):
+        """
+        Initialize a new Cyberpunk 2077 world for a player.
+
+        Called once per player when setting up a multiworld game.
+        Use this to initialize any custom state needed for generation.
+
+        Args:
+            multiworld: The MultiWorld instance managing all players
+            player: This player's slot number (1-indexed)
+        """
+        super().__init__(multiworld, player)
+        # Initialize any custom attributes here if needed
+        # Example: self.custom_player_state = {}
+
+
+    def generate_early(self) -> None:
+        """
+        Early generation phase - runs before item/location creation.
+
+        This is the first generation step for each player. Use it to:
+        - Process player options from their YAML file
+        - Make random decisions that affect world generation
+        - Initialize data structures needed for later steps
+
+        The random number generator (self.random) is seeded per-player,
+        so random choices here are deterministic and reproducible.
+        """
+        # Example: Handle player options
+        # if self.options.include_cyberware:
+        #     self.enabled_item_categories.add("cyberware")
+
+        # Example: Make deterministic random choices
+        # self.starting_district = self.random.choice(["Watson", "Westbrook", "Heywood"])
+
+        pass
+
+
+    def create_regions(self) -> None:
+        """
+        Create all regions (game areas) and locations (item checks).
+
+        Regions represent different areas of the game (Watson, Westbrook, etc.)
+        Locations are specific spots where items can be found (quest completions, collectibles)
+
+        Regions are connected via Entrances, which can have access rules
+        (e.g., need a specific item to travel between regions)
+
+        The actual implementation is in regions.py for better organization.
+        """
+        create_regions(self)
+
+
+    def create_items(self) -> None:
+        """
+        Create all items that will be placed in the multiworld.
+
+        This method populates the item pool with all items that will be
+        randomly distributed across all players' games. The number of items
+        created should match the number of locations available.
+
+        Item classifications:
+        - progression: Required to complete the game (key items, critical unlocks)
+        - useful: Helpful but not required (stat boosts, quality-of-life items)
+        - filler: Used to fill extra locations (consumables, money)
+        - trap: Negative effects (optional, can hinder the player)
+        """
+
+        # Count how many items we need to create
+        # Must match the number of locations (excluding event locations)
+        # Event locations have address=None and are auto-completed
+        total_locations = len([loc for loc in self.multiworld.get_locations(self.player)
+                              if loc.address is not None])
+
+        # Create the item pool
+        item_pool: List[Item] = []
+
+        # Add all defined items from item_table
+        for item_name, item_data in item_table.items():
+            # TODO: Add logic to determine how many of each item to include
+            # For now, add each item once
+            item_pool.append(self.create_item(item_name))
+
+        # Fill remaining slots with filler items if needed
+        # This ensures we have exactly enough items for all locations
+        filler_count = total_locations - len(item_pool)
+        for _ in range(filler_count):
+            # TODO: Replace with your preferred filler item
+            item_pool.append(self.create_item("Filler Item"))
+
+        # Add all items to the multiworld pool
+        # These will be randomly distributed across all players' games
+        self.multiworld.itempool += item_pool
+
+
+    def create_item(self, name: str) -> Item:
+        """
+        Factory method to create an item instance.
+
+        Takes an item name and returns a configured Item object ready
+        to be added to the item pool.
+
+        Args:
+            name: The item name (must exist in item_table)
+
+        Returns:
+            A new Cyberpunk2077Item instance with the correct properties
+        """
+        item_data = item_table[name]
+        return Cyberpunk2077Item(
+            name,
+            item_data.classification,
+            item_data.code,
+            self.player
+        )
+
+
+    def set_rules(self) -> None:
+        """
+        Define access rules for regions and locations.
+
+        Rules determine what items are needed to:
+        - Travel between regions (region access rules)
+        - Complete specific locations (location access rules)
+        - Beat the game (victory condition)
+
+        Rules are lambda functions that check the player's current item collection.
+        Example: lambda state: state.has("Mantis Blades", player)
+
+        The actual implementation is in rules.py for better organization.
+        """
+        set_rules(self)
+
+
+    def get_filler_item_name(self) -> str:
+        """
+        Return the name of a filler item to use when filling extra locations.
+
+        Filler items are non-progression items (consumables, money, etc.) used
+        to fill any remaining empty locations after all important items are placed.
+
+        Returns:
+            Name of a filler item from item_table
+        """
+        # TODO: Replace with actual filler items from your game
+        # Example: return self.random.choice(["Eddies", "Crafting Material", "Health Pack"])
+        return "Filler Item"
+
+
+    def fill_slot_data(self) -> Dict[str, Any]:
+        """
+        Create data to send to the client when connecting.
+
+        This data is sent to the client when a player connects to the multiworld.
+        Use it to communicate world-specific settings, seed information, or
+        custom configuration that the client needs to know.
+
+        Returns:
+            Dictionary of data to send to the client
+        """
+        # Return any data the client needs to know about this player's world
+        # This data is accessible in client.py via self.slot_data
+        slot_data: Dict[str, Any] = {
+            "world_version": 1,  # Version of your world implementation
+            # TODO: Add any custom data your client needs
+            # Example:
+            # "starting_district": self.starting_district,
+            # "cyberware_enabled": self.options.include_cyberware.value,
+        }
+        return slot_data
