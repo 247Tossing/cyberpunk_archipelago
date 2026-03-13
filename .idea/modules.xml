@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../CyberPunkArchipelago_Client/Archipelago/.idea/Archipelago.iml" filepath="$PROJECT_DIR$/../CyberPunkArchipelago_Client/Archipelago/.idea/Archipelago.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Cyberpunk_Archipelago_Mod.iml" filepath="$PROJECT_DIR$/.idea/Cyberpunk_Archipelago_Mod.iml" />
     </modules>
   </component>
