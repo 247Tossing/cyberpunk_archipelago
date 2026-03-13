@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/13/2026 7:02:38 AM">
+  <Files>
+    <file>E:\CyperPunk2077\Cyberpunk 2077\.redscript</file>
+    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive">
+      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc">
+        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod">
+          <file>E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod\CyberpunkArchipelagoMod.archive</file>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin">
+      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64">
+        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins">
+          <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks">
+            <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods">
+              <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge">
+                <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\Cyberpunk_Archipelago_Bridge.log</file>
+                <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\db.sqlite3</file>
+                <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\init.lua</file>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6">
+      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts">
+        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago">
+          <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client">
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APClient.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APGameState.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\TCPClient.reds</file>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Files>
+</InstalLog>

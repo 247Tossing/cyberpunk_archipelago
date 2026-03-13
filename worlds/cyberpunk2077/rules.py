@@ -29,6 +29,135 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     Args:
         world: The Cyberpunk2077World instance
     """
+    player = world.player
+
+    set_rule(
+        world.multiworld.get_location("q001_02_dex", player),
+        lambda state: state.has_any({"Dex's Limo Keys"}, player)
+    )
+
+    set_rule(
+        world.multiworld.get_location("q004_braindance", player),
+        lambda state: state.has("Lizzie's Bar invitation", player)
+    )
+
+    set_rule(
+        world.multiworld.get_location("", player),
+        lambda state: state.has("Konpeki Plaza Room Key", player)
+    )
+
+    #=================
+    # Phantom Liberty
+    #=================
+
+    if world.options.include_phantom_liberty_dlc is True:
+
+
+    #=============
+    # CyberPsychos
+    #=============
+
+    # Cyberpsycho Sighting: Six Feet Under
+    set_rule(
+        world.multiworld.get_location("ma_wat_nid_22", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Bloody Ritual
+    set_rule(
+        world.multiworld.get_location("ma_wat_nid_15", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Where the Bodies Hit the Floor
+    set_rule(
+        world.multiworld.get_location("ma_wat_nid_03", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Demons of War
+    set_rule(
+        world.multiworld.get_location("ma_wat_kab_02", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Lt. Mower
+    set_rule(
+        world.multiworld.get_location("ma_wat_kab_08", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Ticket to the Major Leagues
+    set_rule(
+        world.multiworld.get_location("ma_wat_lch_06", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: The Wasteland
+    set_rule(
+        world.multiworld.get_location("ma_bls_ina_se1_07", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: House on a Hill
+    set_rule(
+        world.multiworld.get_location("ma_bls_ina_se1_08", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Second Chances
+    set_rule(
+        world.multiworld.get_location("ma_bls_ina_se1_22", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: On Deaf Ears
+    set_rule(
+        world.multiworld.get_location("ma_cct_dtn_03", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Phantom of Night City
+    set_rule(
+        world.multiworld.get_location("ma_cct_dtn_07", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Seaside Cafe
+    set_rule(
+        world.multiworld.get_location("ma_hey_spr_04", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Letter of the Law
+    set_rule(
+        world.multiworld.get_location("ma_hey_spr_06", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Smoke on the Water
+    set_rule(
+        world.multiworld.get_location("ma_pac_cvi_08", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Lex Talionis
+    set_rule(
+        world.multiworld.get_location("ma_pac_cvi_15", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Under the Bridge
+    set_rule(
+        world.multiworld.get_location("ma_std_arr_06", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
+
+    # Cyberpsycho Sighting: Discount Doc
+    set_rule(
+        world.multiworld.get_location("ma_std_rcr_11", player),
+        lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
+    )
 
     # ===== REGION ACCESS RULES =====
     # These control when players can travel to different regions
@@ -45,6 +174,8 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     #     world.multiworld.get_entrance("Watson to City Center", world.player),
     #     lambda state: state.has("Security Access Card", world.player)
     # )
+
+
 
 
     # ===== LOCATION ACCESS RULES =====

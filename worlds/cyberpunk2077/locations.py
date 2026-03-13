@@ -61,7 +61,7 @@ location_table: Dict[str, LocationData] = {
     # Main Quest Locations
     # =================================
 
-# TODO: Make sure that the rules only use one of these checks during generation
+# TODO: Make sure that the rules only use one of the path checks during generation
     "q000_street_kid": LocationData(
         display_name="Prologue - StreetKid Intro",
         code=1000,
@@ -83,6 +83,12 @@ location_table: Dict[str, LocationData] = {
     "q001_01_victor": LocationData(
         display_name="Prologue - The Ripper Doc",
         code=1003,
+        region="Watson"
+    ),
+
+    "q001_02_dex": LocationData(
+        display_name="Prologue - The Ride",
+        code=1004,
         region="Watson"
     ),
 
@@ -243,86 +249,6 @@ location_display_names: Dict[str, str] = {
 #     - Watson  # Exclude all Watson locations from having progression items
 #   priority_locations:
 #     - Main Quests  # Place important items at main quest locations first
-
-# TODO: Add your location groups here
-# Note: These use internal location IDs (the keys from location_table)
-location_name_groups: Dict[str, List[str]] = {
-    # Group by district
-    "Watson": [
-        "q000_street_kid",
-        "q000_corpo",
-        "q000_nomad",
-        "q001_01_victor",
-        "ma_wat_nid_22",
-        "ma_wat_nid_15",
-        "ma_wat_nid_03",
-        "ma_wat_kab_02",
-        "ma_wat_kab_08",
-        "ma_wat_lch_06",
-        # Add more Watson locations here
-    ],
-
-    "Badlands": [
-        "ma_bls_ina_se1_07",
-        "ma_bls_ina_se1_08",
-        "ma_bls_ina_se1_22",
-        # Add more Badlands locations here
-    ],
-
-    "City Center": [
-        "ma_cct_dtn_03",
-        "ma_cct_dtn_07",
-        # Add more City Center locations here
-    ],
-
-    "Heywood": [
-        "ma_hey_spr_04",
-        "ma_hey_spr_06",
-        # Add more Heywood locations here
-    ],
-
-    "Pacifica": [
-        "ma_pac_cvi_08",
-        "ma_pac_cvi_15",
-        # Add more Pacifica locations here
-    ],
-
-    "Santo Domingo": [
-        "ma_std_arr_06",
-        "ma_std_rcr_11",
-        # Add more Santo Domingo locations here
-    ],
-
-    # Group by type
-    "Main Quests": [
-        "q000_street_kid",
-        "q000_corpo",
-        "q000_nomad",
-        "q001_01_victor",
-        # Add more main quest locations here
-    ],
-
-    "Cyberpsycho Sightings": [
-        "ma_wat_nid_22",
-        "ma_wat_nid_15",
-        "ma_wat_nid_03",
-        "ma_wat_kab_02",
-        "ma_wat_kab_08",
-        "ma_wat_lch_06",
-        "ma_bls_ina_se1_07",
-        "ma_bls_ina_se1_08",
-        "ma_bls_ina_se1_22",
-        "ma_cct_dtn_03",
-        "ma_cct_dtn_07",
-        "ma_hey_spr_04",
-        "ma_hey_spr_06",
-        "ma_pac_cvi_08",
-        "ma_pac_cvi_15",
-        "ma_std_arr_06",
-        "ma_std_rcr_11",
-        # Add more cyberpsycho locations here
-    ],
-}
 
 
 # ===== LOCATION LOOKUP DICTIONARIES =====

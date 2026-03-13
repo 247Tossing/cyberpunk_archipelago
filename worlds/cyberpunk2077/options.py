@@ -24,77 +24,25 @@ from Options import (
 
 class IncludeCyberware(DefaultOnToggle):
     """Include cyberware items in the randomizer."""
-    display_name = "Include Cyberware"
-
+    display_name = "Add Cyberware Checks"
 
 class IncludeWeapons(DefaultOnToggle):
     """Include weapon items in the randomizer."""
-    display_name = "Include Weapons"
+    display_name = "Add Unique World Weapon Checks"
 
+class StartingPath(Choice): # TODO: Still needs to be implemented on the RedScript side
+    display_name = "Starting path"
+    option_street_kid = 0
+    option_corpo_rat = 1
+    option_nomad = 2
 
-class StartingDistrict(Choice):
-    """
-    Choose which district V starts in.
-
-    This is a Choice option, which works like a dropdown menu.
-    Each option_* field defines an available choice.
-    The value is the integer index (0, 1, 2, etc.)
-    """
-    display_name = "Starting District"
-
-    # Define the available choices
-    option_watson = 0
-    option_westbrook = 1
-    option_city_center = 2
-    option_heywood = 3
-    option_pacifica = 4
-
-    # Set the default choice
-    default = 0  # Watson
-
-
-class GigCount(Range):
-    """
-    Number of gigs to include in the randomizer.
-
-    This is a Range option, which works like a slider with min/max values.
-    Players can specify a number within the range to scale difficulty or game length.
-    """
-    display_name = "Gig Count"
-
-    # Define the range boundaries
-    range_start = 10   # Minimum value
-    range_end = 100    # Maximum value
-    default = 50       # Default value
-
-    # Optional: Add tooltips for specific values
-    # special_range_names = {
-    #     10: "Short",
-    #     50: "Normal",
-    #     100: "Long"
-    # }
-
-
-class DifficultyLevel(Choice):
-    """Overall difficulty setting for the randomizer."""
-    display_name = "Difficulty"
-
-    option_easy = 0
-    option_normal = 1
-    option_hard = 2
-    option_very_hard = 3
-
-    default = 1  # Normal
-
+class IncludePhantomLibertyDLC(Toggle):
+    display_name = "Include Phantom Liberty DLC"
+    default = 0
 
 class EnableDeathLink(Toggle):
-    """
-    Enable Death Link: When you die, everyone dies. When others die, you die.
-
-    Death Link is a special Archipelago feature that syncs deaths across all
-    players who have it enabled. It's opt-in and adds extra challenge/fun.
-    """
     display_name = "Death Link"
+    default = 0
 
 
 # TODO: Add more options as needed for your implementation
@@ -124,14 +72,11 @@ class Cyberpunk2077Options(PerGameCommonOptions):
         Example: if self.options.include_cyberware: add_cyberware_items()
     """
 
-    # Add each option as a field
+    include_phantom_liberty_dlc: IncludePhantomLibertyDLC
+    starting_path: StartingPath
     include_cyberware: IncludeCyberware
     include_weapons: IncludeWeapons
-    starting_district: StartingDistrict
-    gig_count: GigCount
-    difficulty_level: DifficultyLevel
     death_link: EnableDeathLink
-
 
 # ===== USAGE EXAMPLES =====
 #

@@ -77,58 +77,43 @@ item_table: Dict[str, ItemData] = {
     # These items are required to beat the game
     # They might unlock new areas, allow access to quests, or enable critical gameplay
 
+    # IDs starting with 4 are required for progression
+    # IDs starting with 5 are useful items
+    # IDs starting with 6 are filler items
+
     "Dex's Limo Keys": ItemData(
         name="ap_qk_dex_keys",
-        code=77_2077_001,  # base_id + 1
+        code=4000,  # base_id + 1
         classification=ItemClassification.progression
     ),
 
-    "Kerenzikov": ItemData(
-        name="Kerenzikov",
-        code=77_2077_002,
+    "Konpeki Plaza Room Key": ItemData(
+        name="ap_qk_konpeki_keys",
+        code=4001,
         classification=ItemClassification.progression
     ),
 
-    "Security Access Card": ItemData(
-        name="Security Access Card",
-        code=77_2077_003,
+    "Lizzie's Bar invitation": ItemData(
+        name="ap_qk_lizzie_invitation",
+        code=4002,
         classification=ItemClassification.progression
     ),
 
+    "Brick's Brick for his Brick Warehouse": ItemData(
+        name="ap_qk_maelstrom_key",
+        code=4003,
+        classification=ItemClassification.progression
+    ),
 
-    # ===== EXAMPLE USEFUL ITEMS =====
+    # ===== USEFUL ITEMS =====
     # These items are helpful but not required
 
-    "Rare Quickhack": ItemData(
-        name="Rare Quickhack",
-        code=77_2077_004,
-        classification=ItemClassification.useful
-    ),
-
-    "Tech Rifle": ItemData(
-        name="Tech Rifle",
-        code=77_2077_005,
-        classification=ItemClassification.useful
-    ),
-
-
-    # ===== EXAMPLE FILLER ITEMS =====
+    # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
 
-    "Filler Item": ItemData(
-        name="Filler Item",
-        code=77_2077_006,
-        classification=ItemClassification.filler
-    ),
-
-    "Eddies Stack": ItemData(
-        name="Eddies Stack",
-        code=77_2077_007,
-        classification=ItemClassification.filler
-    ),
 
 
-    # ===== EXAMPLE TRAP ITEMS (Optional) =====
+    # ===== TRAP ITEMS =====
     # These items have negative effects
     # Remove if you don't want traps in your world
 
@@ -174,35 +159,6 @@ item_id_to_name: Dict[int, str] = {
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }
-
-
-# ===== ITEM NAME GROUPS =====
-# Groups allow players to reference multiple items at once in their YAML
-#
-# Example YAML usage:
-#   local_items:
-#     - Cyberware  # Keeps all cyberware local to this player
-#   start_inventory:
-#     - Weapons: 2  # Start with 2 random weapons
-
-# TODO: Add your item groups here
-item_name_groups: Dict[str, List[str]] = {
-    "Cyberware": [
-        "Mantis Blades",
-        "Kerenzikov",
-        # Add more cyberware items here
-    ],
-    "Weapons": [
-        "Tech Rifle",
-        # Add more weapon items here
-    ],
-    "Filler": [
-        "Filler Item",
-        "Eddies Stack",
-        # Add more filler items here
-    ],
-}
-
 
 # ===== HELPER FUNCTIONS =====
 
