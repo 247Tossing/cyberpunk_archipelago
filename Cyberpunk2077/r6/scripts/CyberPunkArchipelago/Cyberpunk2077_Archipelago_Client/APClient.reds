@@ -6,7 +6,6 @@ public class APGameSystem extends ScriptableSystem {
 
     public func OnAttach() -> Void {
         LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago Plugin Initialized");
-
     }
     
     public func HandleDeathLink() -> Void {

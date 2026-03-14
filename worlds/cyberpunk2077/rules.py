@@ -20,15 +20,6 @@ if TYPE_CHECKING:
 
 
 def set_rules(world: "Cyberpunk2077World") -> None:
-    """
-    Set all access rules for this world.
-
-    This function runs after regions and locations are created.
-    It defines which items are needed to access different areas and locations.
-
-    Args:
-        world: The Cyberpunk2077World instance
-    """
     player = world.player
 
     set_rule(
@@ -50,8 +41,17 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # Phantom Liberty
     #=================
 
+
+    # TODO: add phantom libery DLC quests
     if world.options.include_phantom_liberty_dlc is True:
 
+        set_rule(
+            world.multiworld.get_location("INSERT PHANTOM LIBERTY", player),
+            lambda state: (
+                state.has("Phantom Liberty Key", player) and
+                state.has("Phantom Liberty Key Fragment", player)
+            )
+        )
 
     #=============
     # CyberPsychos

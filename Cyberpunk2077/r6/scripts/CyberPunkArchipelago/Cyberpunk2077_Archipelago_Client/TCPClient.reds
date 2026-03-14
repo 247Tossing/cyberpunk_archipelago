@@ -1,7 +1,7 @@
 module Archipelago
 import RedSocket.*
 
-public class TCPClient extends ScriptableService {
+public class TCPClient extends ScriptableService { 
     private let socketService: ref<APRedSocketTCPService>;
 
     public func SendDeathLink() -> Void {
