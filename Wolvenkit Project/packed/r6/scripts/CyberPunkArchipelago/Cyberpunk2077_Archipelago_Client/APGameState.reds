@@ -2,7 +2,10 @@ module Archipelago
 
 public class APGameState extends ScriptableService {
     public let diedFromDeathLink: Bool;
+    public let skillPointsAsItems: Bool;
+    public let enableDeathLink: Bool;
     let items: array<String>;
+    let totalSkillPoints: Int32;
 
     public func OnAttach() -> Void {
         LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago GameState Initialized");

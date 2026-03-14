@@ -276,9 +276,9 @@ class Cyberpunk2077World(World):
         # This data is accessible in client.py via self.slot_data
         slot_data: Dict[str, Any] = {
             "world_version": 1,  # Version of your world implementation
-            # TODO: Add any custom data your client needs
-            # Example:
-            # "starting_district": self.starting_district,
-            # "cyberware_enabled": self.options.include_cyberware.value,
+            # Configuration options sent to RedScript client via SYNC_CONFIG
+            "death_link": bool(self.options.death_link.value),
+            # TODO: Add skill_points_as_items option when implemented
+            # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
         }
         return slot_data

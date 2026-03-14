@@ -434,6 +434,31 @@ class CyberpunkContext(CommonContext):
                     return "SYNC_ITEMS:ITEMS:"
 
 
+            elif cmd == "SYNC_CONFIG":
+                # SYNC_CONFIG
+                # Returns: CONFIG:<key>:<value>,<key>:<value>... or CONFIG: (empty if none)
+                # Returns configuration values that RedScript can directly use
+
+                if not self.archipelago_connected:
+                    return "SYNC_CONFIG:FAIL:Not connected to Archipelago server"
+
+                # Build comma-separated list of config key:value pairs
+                if self.slot_data:
+                    # Convert slot_data to key:value pairs
+                    config_pairs = []
+                    for key, value in self.slot_data.items():
+                        # Convert boolean values to lowercase strings (true/false)
+                        if isinstance(value, bool):
+                            value_str = "true" if value else "false"
+                        else:
+                            value_str = str(value)
+                        config_pairs.append(f"{key}:{value_str}")
+
+                    config_list = ','.join(config_pairs)
+                    return f"SYNC_CONFIG:CONFIG:{config_list}"
+                else:
+                    return "SYNC_CONFIG:CONFIG:"
+
             # ===== OK_READY =====
             elif cmd == "OK_READY":
                 # OK_READY
@@ -802,7 +827,32 @@ COMMANDS FROM REDSCRIPT TO PYTHON SERVER
    - Grant each item to the player in the game
 
 
-4. OK_READY
+4. SYNC_CONFIG
+   Get world configuration options (Death Link, Skill Points, etc.)
+   **Called after SYNC_ITEMS during initial sync**
+
+   Example (with config):
+   → SYNC_CONFIG
+   ← SYNC_CONFIG:CONFIG:death_link:true,world_version:1,skill_points_as_items:false
+
+   Example (no config):
+   → SYNC_CONFIG
+   ← SYNC_CONFIG:CONFIG:
+
+   Error:
+   ← SYNC_CONFIG:FAIL:Not connected to Archipelago server
+
+   RedScript should:
+   - Parse response by splitting on ':'
+   - First part is command echo (SYNC_CONFIG)
+   - Second part is status (CONFIG or FAIL)
+   - Third part (if CONFIG) is comma-separated key:value pairs
+   - Apply each configuration option
+   - Store configuration in APGameState for runtime use
+   - Example keys: death_link (true/false), skill_points_as_items (true/false), world_version (int)
+
+
+5. OK_READY
    Confirm sync is complete, game is ready to play
 
    Example:
@@ -810,7 +860,7 @@ COMMANDS FROM REDSCRIPT TO PYTHON SERVER
    ← OK_READY:OK
 
 
-5. CHECK:<location_name>
+6. CHECK:<location_name>
    Report that a location/check was completed
 
    Example:
@@ -945,6 +995,9 @@ TYPICAL SESSION FLOW
    RedScript → SYNC_ITEMS
    Python    ← SYNC_ITEMS:ITEMS:Mantis Blades,Kerenzikov,Security Access Card
    RedScript → (Adds items to inventory by name)
+   RedScript → SYNC_CONFIG
+   Python    ← SYNC_CONFIG:CONFIG:death_link:true,world_version:1
+   RedScript → (Applies configuration to APGameState)
    RedScript → OK_READY
    Python    ← OK_READY:OK
 

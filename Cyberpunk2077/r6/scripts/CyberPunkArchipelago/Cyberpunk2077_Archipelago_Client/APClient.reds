@@ -7,7 +7,8 @@ public class APGameSystem extends ScriptableSystem {
     public func OnAttach() -> Void {
         LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago Plugin Initialized");
     }
-    
+
+    //Deathlink    
     public func HandleDeathLink() -> Void {
         let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject() as PlayerPuppet;
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
@@ -21,6 +22,7 @@ public class APGameSystem extends ScriptableSystem {
         }
     }
 
+    // For when the player receives a quest item from the Archipelago server.
     public func AddQuestKey(questKey: String) -> Void {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         if IsDefined(questSystem) {
@@ -33,14 +35,18 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func AddSkillPoint(skillPoint: String) -> Void {
-        
+        let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
+         
     }
 
     public func DoTrap(trapName: String) {
         
     }
+
+    
 }
 
+// Making sure that the player is respawned before allowing another Deathlink call.
 @wrapMethod(PlayerPuppet)
 protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpawn>) -> Bool {
     let result = wrappedMethod(evt);
@@ -51,10 +57,16 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     return result;
 }
 
+// For sending DeathLinks
 @wrapMethod(MenuScenario_Idle)
 protected cb func OnShowDeathMenu() -> Bool {
-    let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+    //if deathlink is disabled, just return
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+    if IsDefined(APGameState) && !APGameState.enableDeathLink {
+        return wrappedMethod();
+    }
+
+    let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
     if IsDefined(APGameState) && APGameState.diedFromDeathLink {
         LogChannel(n"DEBUG", "Player died due to Deathlink");
         return wrappedMethod();
@@ -65,21 +77,21 @@ protected cb func OnShowDeathMenu() -> Bool {
     return wrappedMethod();
 }
 
+//For sending quest completion updates to the Archipelago server.
 @wrapMethod(JournalNotificationQueue)
 protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
-    // 1. Let the vanilla UI logic run first so the player still sees their banner
     let result = wrappedMethod(hash, className, notifyOption, changeType);
     
-    // 2. Fetch the Journal Manager
+    // Fetch the Journal Manager
     let player: ref<PlayerPuppet> = this.GetPlayerControlledObject() as PlayerPuppet;
     if !IsDefined(player) { return result; }
     
     let journalMgr: ref<JournalManager> = GameInstance.GetJournalManager(player.GetGame());
     
-    // 3. Get the specific journal entry that just triggered the UI update
+    // Get the specific journal entry that just triggered the UI update
     let entry: wref<JournalEntry> = journalMgr.GetEntry(hash);
     
-    // 4. THE FILTER: Cast it specifically to a JournalQuest. 
+    // Cast it specifically to a JournalQuest. 
     // This is crucial because it filters out minor updates like finding a shard, 
     // getting a text message, or completing a sub-objective (JournalQuestObjective).
     let questEntry: wref<JournalQuest> = entry as JournalQuest;
@@ -90,11 +102,11 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
         
         if Equals(state, gameJournalEntryState.Succeeded) {
             
-            // 6. Extract the string ID! (e.g., "q301_crash")
+            // Extract the string ID
             let questStringId: String = questEntry.GetId();
-            LogChannel(n"DEBUG", "UI POPUP INTERCEPTED! Quest Completed: " + questStringId);
+            //LogChannel(n"DEBUG", "UI POPUP INTERCEPTED! Quest Completed: " + questStringId);
             
-            // 7. Fire to the Python Server
+            // send to the archipelago server
             let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
             if IsDefined(tcpService) {
                 tcpService.SendCheck(questStringId);

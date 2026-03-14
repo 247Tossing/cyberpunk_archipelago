@@ -1,7 +1,7 @@
 module Archipelago
 import RedSocket.*
 
-public class TCPClient extends ScriptableService {
+public class TCPClient extends ScriptableService { 
     private let socketService: ref<APRedSocketTCPService>;
 
     public func SendDeathLink() -> Void {
@@ -161,6 +161,9 @@ public class APRedSocketTCPService extends IScriptable {
         if StrContains(command, "ITEM_RECEIVED:") {
             this.HandleItemReceivedCommand(command);
         }
+        if StrContains(command, "SYNC_CONFIG:") {
+            this.HandleSyncConfigCommand(command);
+        }
     }
 /*
 Below is handler methods for processing incoming commands from the server.
@@ -307,6 +310,46 @@ Below is the full handshake process
             }
         } else {
             LogChannel(n"ERROR", "TCPClient: Malformed SYNC_ITEMS response from server.");
+        }
+    }
+
+    private func SendSyncConfigRequest() -> Void {
+        LogChannel(n"DEBUG", "TCPClient: Sending SYNC_CONFIG request");
+        let payload: String = "SYNC_CONFIG";
+        this.SendMessage(payload);
+    }
+
+    private func HandleSyncConfigCommand(command: String) -> Void {
+        LogChannel(n"DEBUG", "TCPClient: Received SYNC_CONFIG command: " + command);
+        let parts: array<String> = StrSplit(command, ":");
+        if ArraySize(parts) >= 2 {
+            let commandType: String = parts[0];
+            let configData: String = parts[1];
+            
+            if StrCmp(commandType, "SYNC_CONFIG") == 0 {
+                LogChannel(n"DEBUG", "TCPClient: Processing SYNC_CONFIG data.");
+                // Here you would parse the configData and apply any necessary configuration changes to your client
+                // For example, you might set whether skill points are treated as items based on the config
+                let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+                if StrContains(configData, "skill_points_as_items:true") {
+                    APGameState.skillPointsAsItems = true;
+                    LogChannel(n"DEBUG", "TCPClient: Configured to treat skill points as items.");
+                } else {
+                    APGameState.skillPointsAsItems = false;
+                    LogChannel(n"DEBUG", "TCPClient: Configured to NOT treat skill points as items.");
+                }
+                if StrContains(configData, "death_link:true") {
+                    APGameState.enableDeathLink = true;
+                    LogChannel(n"DEBUG", "TCPClient: Configured to enable DeathLink.");
+                } else {
+                    APGameState.enableDeathLink = false;
+                    LogChannel(n"DEBUG", "TCPClient: Configured to disable DeathLink.");
+                }
+            } else {
+                LogChannel(n"WARN", "TCPClient: Received unknown config type in SYNC_CONFIG command.");
+            }
+        } else {
+            LogChannel(n"ERROR", "TCPClient: Malformed SYNC_CONFIG command from server.");
         }
     }
 
