@@ -35,7 +35,7 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func AddSkillPoint(skillPoint: String) -> Void {
-        let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
+        //let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
          
     }
 

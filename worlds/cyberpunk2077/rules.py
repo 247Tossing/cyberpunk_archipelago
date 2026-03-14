@@ -22,19 +22,13 @@ if TYPE_CHECKING:
 def set_rules(world: "Cyberpunk2077World") -> None:
     player = world.player
 
+    #============================================
+    # Prologue Rules
+    #============================================
+
     set_rule(
         world.multiworld.get_location("q001_02_dex", player),
         lambda state: state.has_any({"Dex's Limo Keys"}, player)
-    )
-
-    set_rule(
-        world.multiworld.get_location("q004_braindance", player),
-        lambda state: state.has("Lizzie's Bar invitation", player)
-    )
-
-    set_rule(
-        world.multiworld.get_location("", player),
-        lambda state: state.has("Konpeki Plaza Room Key", player)
     )
 
     #=================
@@ -43,15 +37,15 @@ def set_rules(world: "Cyberpunk2077World") -> None:
 
 
     # TODO: add phantom libery DLC quests
-    if world.options.include_phantom_liberty_dlc is True:
-
-        set_rule(
-            world.multiworld.get_location("INSERT PHANTOM LIBERTY", player),
-            lambda state: (
-                state.has("Phantom Liberty Key", player) and
-                state.has("Phantom Liberty Key Fragment", player)
-            )
-        )
+    #if world.options.include_phantom_liberty_dlc is True:
+    #
+    #    set_rule(
+    #        world.multiworld.get_location("INSERT PHANTOM LIBERTY", player),
+    #        lambda state: (
+    #            state.has("Phantom Liberty Key", player) and
+    #            state.has("Phantom Liberty Key Fragment", player)
+    #        )
+    #    )
 
     #=============
     # CyberPsychos

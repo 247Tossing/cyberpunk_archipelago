@@ -13,12 +13,11 @@ public class APGameState extends ScriptableService {
 
     public func FeedItemsList(itemList: array<String>) -> Void {
         this.items = itemList;
+        LogChannel(n"DEBUG", s"APGameState: Received \(ArraySize(itemList)) items from initial sync");
         for item in itemList {
             LogChannel(n"DEBUG", "Item: " + item);
-        }
-        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-        if IsDefined(tcpService) {
-            tcpService.SendReadySignal();
+            // Process each item immediately during sync
+            this.HandleItemReceived(item);
         }
     }
 

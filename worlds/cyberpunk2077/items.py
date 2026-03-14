@@ -81,6 +81,10 @@ item_table: Dict[str, ItemData] = {
     # IDs starting with 5 are useful items
     # IDs starting with 6 are filler items
 
+    #====================================
+    # Prologue Items
+    #====================================
+
     "Dex's Limo Keys": ItemData(
         name="ap_qk_dex_keys",
         code=4000,  # base_id + 1
@@ -93,25 +97,17 @@ item_table: Dict[str, ItemData] = {
         classification=ItemClassification.progression
     ),
 
-    "Lizzie's Bar invitation": ItemData(
-        name="ap_qk_lizzie_invitation",
-        code=4002,
-        classification=ItemClassification.progression
-    ),
-
-    "Brick's Brick for his Brick Warehouse": ItemData(
-        name="ap_qk_maelstrom_key",
-        code=4003,
-        classification=ItemClassification.progression
-    ),
-
     # ===== USEFUL ITEMS =====
     # These items are helpful but not required
 
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
 
-
+    "Eddies": ItemData(
+        name="ap_it_Items.money",  # In-game currency
+        code=6000,
+        classification=ItemClassification.filler
+    ),
 
     # ===== TRAP ITEMS =====
     # These items have negative effects
@@ -159,6 +155,92 @@ item_id_to_name: Dict[int, str] = {
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }
+
+
+# ===== ITEM NAME GROUPS =====
+# Auto-generated groups based on item classification and prefixes
+# Players can use these in YAML to reference multiple items at once
+
+def _build_item_name_groups() -> Dict[str, List[str]]:
+    """
+    Automatically build item name groups from item_table.
+
+    Groups are generated based on:
+    - Item classification (Progression, Useful, Filler, Trap)
+    - Item name prefix (ap_qk_, ap_it_, ap_cw_, ap_sp_, ap_trp_)
+
+    Returns:
+        Dictionary mapping group names to lists of item display names
+    """
+    groups: Dict[str, List[str]] = {}
+
+    # Group by classification
+    progression_items = []
+    useful_items = []
+    filler_items = []
+    trap_items = []
+
+    # Group by prefix/type
+    quest_keys = []
+    in_game_items = []
+    cyberware_items = []
+    skill_points = []
+    traps = []
+
+    for display_name, item_data in item_table.items():
+        if item_data.code is None:
+            continue  # Skip event items
+
+        item_name = item_data.name
+
+        # Group by classification
+        if item_data.classification == ItemClassification.progression:
+            progression_items.append(display_name)
+        elif item_data.classification == ItemClassification.useful:
+            useful_items.append(display_name)
+        elif item_data.classification == ItemClassification.filler:
+            filler_items.append(display_name)
+        elif item_data.classification == ItemClassification.trap:
+            trap_items.append(display_name)
+
+        # Group by prefix
+        if item_name.startswith("ap_qk_"):
+            quest_keys.append(display_name)
+        elif item_name.startswith("ap_it_"):
+            in_game_items.append(display_name)
+        elif item_name.startswith("ap_cw_"):
+            cyberware_items.append(display_name)
+        elif item_name.startswith("ap_sp_"):
+            skill_points.append(display_name)
+        elif item_name.startswith("ap_trp_"):
+            traps.append(display_name)
+
+    # Add groups only if they have items
+    if progression_items:
+        groups["Progression Items"] = progression_items
+    if useful_items:
+        groups["Useful Items"] = useful_items
+    if filler_items:
+        groups["Filler Items"] = filler_items
+    if trap_items:
+        groups["Trap Items"] = trap_items
+
+    if quest_keys:
+        groups["Quest Keys"] = quest_keys
+    if in_game_items:
+        groups["In-Game Items"] = in_game_items
+    if cyberware_items:
+        groups["Cyberware"] = cyberware_items
+    if skill_points:
+        groups["Skill Points"] = skill_points
+    if traps:
+        groups["Traps"] = traps
+
+    return groups
+
+# Generate item name groups automatically
+item_name_groups: Dict[str, List[str]] = _build_item_name_groups()
+
 
 # ===== HELPER FUNCTIONS =====
 

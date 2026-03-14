@@ -30,8 +30,8 @@ def launch_client(*args: str):
     Starts the client in a separate process to handle communication between
     the Archipelago server and the game.
     """
-    from .client import launch as client_launch
-    launch(client_launch, name="Cyberpunk 2077 Client", args=args)
+    from .client import launch as client_main
+    launch(client_main, name="Cyberpunk 2077 Client", args=args)
 
 
 # Register the client in the Archipelago Launcher
@@ -199,12 +199,37 @@ class Cyberpunk2077World(World):
         # This ensures we have exactly enough items for all locations
         filler_count = total_locations - len(item_pool)
         for _ in range(filler_count):
-            # TODO: Replace with your preferred filler item
-            item_pool.append(self.create_item("Filler Item"))
+            item_pool.append(self.create_item(self.get_filler_item_name()))
 
         # Add all items to the multiworld pool
         # These will be randomly distributed across all players' games
         self.multiworld.itempool += item_pool
+
+
+    def get_filler_item_name(self) -> str:
+        """
+        Get a filler item name to use for filling extra item pool slots.
+
+        Dynamically selects from all available filler items in the item_table.
+        If multiple filler items exist, randomly chooses one for variety.
+
+        Returns:
+            The display name of a filler item from item_table
+
+        Raises:
+            Exception: If no filler items are defined in item_table
+        """
+        # Get all filler items from item_table
+        filler_items = [
+            name for name, data in item_table.items()
+            if data.classification == ItemClassification.filler and data.code is not None
+        ]
+
+        if not filler_items:
+            raise Exception("No filler items defined in item_table! Add at least one filler item.")
+
+        # Return random filler item if multiple exist, otherwise return the only one
+        return self.random.choice(filler_items) if len(filler_items) > 1 else filler_items[0]
 
 
     def create_item(self, name: str) -> Item:
@@ -244,21 +269,6 @@ class Cyberpunk2077World(World):
         The actual implementation is in rules.py for better organization.
         """
         set_rules(self)
-
-
-    def get_filler_item_name(self) -> str:
-        """
-        Return the name of a filler item to use when filling extra locations.
-
-        Filler items are non-progression items (consumables, money, etc.) used
-        to fill any remaining empty locations after all important items are placed.
-
-        Returns:
-            Name of a filler item from item_table
-        """
-        # TODO: Replace with actual filler items from your game
-        # Example: return self.random.choice(["Eddies", "Crafting Material", "Health Pack"])
-        return "Filler Item"
 
 
     def fill_slot_data(self) -> Dict[str, Any]:

@@ -35,8 +35,8 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func AddSkillPoint(skillPoint: String) -> Void {
-        let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
-        //let pds: ref<PlayerDevelopmentSystem> = GameInstance.GetScriptableSystemsContainer(this.GetGameInstance()).Get(PlayerDevelopmentSystem) as PlayerDevelopmentSystem; 
+        //let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
+         
     }
 
     public func DoTrap(trapName: String) {

@@ -51,7 +51,12 @@ public class TCPClient extends ScriptableService {
             this.socketService = new APRedSocketTCPService();
             this.socketService.Initialize(ip, port, slotName);
             this.socketService.Connect();
-        } else {
+        }
+        if IsDefined(this.socketService) && !this.socketService.isConnected {
+            this.socketService.Initialize(ip, port, slotName);
+            this.socketService.Connect();
+        }
+        else {
             LogChannel(n"DEBUG", "TCPClient: Socket service already initialized. Ignoring duplicate connection attempt.");
         }
     }
@@ -61,6 +66,22 @@ public class TCPClient extends ScriptableService {
             this.socketService.Disconnect();
             this.socketService = null;
         }
+    }
+
+    public func IsConnected() -> Bool {
+        if IsDefined(this.socketService) {
+            return this.socketService.isConnected;
+        }
+        return false;
+    }
+
+    public func GetConnectionStatusMessage() -> String {
+        if IsDefined(this.socketService) {
+            if this.socketService.isConnected {
+                return "Connected to Python bridge";
+            }
+        }
+        return "Not connected";
     }
 }
 
@@ -296,13 +317,16 @@ Below is the full handshake process
             let command: String = parts[0];
             let itemsHeader: String = parts[1];
             let itemsString: String = parts[2];
-            
+
             if StrCmp(command, "SYNC_ITEMS") == 0 {
                 if StrCmp(itemsHeader, "ITEMS") == 0 {
                     LogChannel(n"DEBUG", "TCPClient: SYNC_ITEMS response contains item list.");
                     let items: array<String> = StrSplit(itemsString, ",");
                     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
                     APGameState.FeedItemsList(items);
+
+                    // After items are synced, request config
+                    this.SendSyncConfigRequest();
                 } else {
                     LogChannel(n"WARN", "TCPClient: SYNC_ITEMS response does not contain item list.");
                 }
@@ -322,15 +346,16 @@ Below is the full handshake process
     private func HandleSyncConfigCommand(command: String) -> Void {
         LogChannel(n"DEBUG", "TCPClient: Received SYNC_CONFIG command: " + command);
         let parts: array<String> = StrSplit(command, ":");
-        if ArraySize(parts) >= 2 {
+        if ArraySize(parts) >= 3 {
             let commandType: String = parts[0];
-            let configData: String = parts[1];
-            
-            if StrCmp(commandType, "SYNC_CONFIG") == 0 {
+            let status: String = parts[1];
+            let configData: String = parts[2];
+
+            if StrCmp(commandType, "SYNC_CONFIG") == 0 && StrCmp(status, "CONFIG") == 0 {
                 LogChannel(n"DEBUG", "TCPClient: Processing SYNC_CONFIG data.");
-                // Here you would parse the configData and apply any necessary configuration changes to your client
-                // For example, you might set whether skill points are treated as items based on the config
+                // Parse config data as comma-separated key:value pairs
                 let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
                 if StrContains(configData, "skill_points_as_items:true") {
                     APGameState.skillPointsAsItems = true;
                     LogChannel(n"DEBUG", "TCPClient: Configured to treat skill points as items.");
@@ -338,6 +363,7 @@ Below is the full handshake process
                     APGameState.skillPointsAsItems = false;
                     LogChannel(n"DEBUG", "TCPClient: Configured to NOT treat skill points as items.");
                 }
+
                 if StrContains(configData, "death_link:true") {
                     APGameState.enableDeathLink = true;
                     LogChannel(n"DEBUG", "TCPClient: Configured to enable DeathLink.");
@@ -345,8 +371,9 @@ Below is the full handshake process
                     APGameState.enableDeathLink = false;
                     LogChannel(n"DEBUG", "TCPClient: Configured to disable DeathLink.");
                 }
+
             } else {
-                LogChannel(n"WARN", "TCPClient: Received unknown config type in SYNC_CONFIG command.");
+                LogChannel(n"WARN", "TCPClient: Received unknown config response in SYNC_CONFIG command.");
             }
         } else {
             LogChannel(n"ERROR", "TCPClient: Malformed SYNC_CONFIG command from server.");
