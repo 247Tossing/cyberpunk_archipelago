@@ -22,19 +22,19 @@ from Options import (
 # Each class defines one configurable option that appears in the player's YAML
 
 
-class IncludeCyberware(DefaultOnToggle):
-    """Include cyberware items in the randomizer."""
-    display_name = "Add Cyberware Checks"
+#class IncludeCyberware(DefaultOnToggle):
+#    """Include cyberware items in the randomizer."""
+#    display_name = "Add Cyberware Checks"
 
-class IncludeWeapons(DefaultOnToggle):
-    """Include weapon items in the randomizer."""
-    display_name = "Add Unique World Weapon Checks"
+#class IncludeWeapons(DefaultOnToggle):
+#    """Include weapon items in the randomizer."""
+#    display_name = "Add Unique World Weapon Checks"
 
-class StartingPath(Choice): # TODO: Still needs to be implemented on the RedScript side
-    display_name = "Starting path"
-    option_street_kid = 0
-    option_corpo_rat = 1
-    option_nomad = 2
+#class StartingPath(Choice): # TODO: Still needs to be implemented on the RedScript side
+#    display_name = "Starting path"
+#    option_street_kid = 0
+#    option_corpo_rat = 1
+#    option_nomad = 2
 
 class IncludePhantomLibertyDLC(Toggle):
     display_name = "Include Phantom Liberty DLC"
@@ -73,9 +73,9 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     """
 
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
-    starting_path: StartingPath
-    include_cyberware: IncludeCyberware
-    include_weapons: IncludeWeapons
+    #starting_path: StartingPath
+    #include_cyberware: IncludeCyberware
+    #include_weapons: IncludeWeapons
     death_link: EnableDeathLink
 
 # ===== USAGE EXAMPLES =====

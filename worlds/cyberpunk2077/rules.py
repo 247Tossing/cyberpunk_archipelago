@@ -22,42 +22,54 @@ if TYPE_CHECKING:
 def set_rules(world: "Cyberpunk2077World") -> None:
     player = world.player
 
-    #============================================
+    # ============================================
     # Prologue Rules
-    #============================================
+    # ============================================
 
     set_rule(
         world.multiworld.get_location("Prologue - The Ride", player),
         lambda state: state.has_any({"Dex's Limo Keys"}, player)
     )
 
-    #=================
-    # Phantom Liberty
-    #=================
+    set_rule(
+        world.multiworld.get_location("Prologue - The Pickup", player),
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
+    )
 
+    set_rule(
+        world.multiworld.get_location("Prologue - The Information", player),
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
+    )
+
+    set_rule(
+        world.multiworld.get_location("Prologue - The Heist", player),
+        lambda state: state.can_reach_location("Prologue - The Pickup", player)
+                      and state.can_reach_location("Prologue - The Information", player)
+                      #and state.has("Konpeki Plaza Room Key", player)
+    )
+
+    set_rule(
+        world.multiworld.get_location("Main - Transmission", player),
+        lambda state: state.can_reach_location("Prologue - The Heist", player)
+    )
+
+    # =================
+    # Phantom Liberty
+    # =================
+
+    # TODO: Add remaining quests
     if world.options.include_phantom_liberty_dlc:
         # Require Myers' Plane Ticket to start Phantom Liberty
         set_rule(
-            world.multiworld.get_location("DLC - Phantom Liberty", player),
+            world.multiworld.get_location("Phantom Liberty - Phantom Liberty", player),
             lambda state: state.has("Myers' Plane Ticket", player)
+                          and state.can_reach_location("Main - Transmission", player)
         )
         # Require completing Phantom Liberty Start to access Dog Eat Dog
         set_rule(
             world.multiworld.get_location("DLC - Dog Eat Dog", player),
             lambda state: state.can_reach_location("DLC - Phantom Liberty", player)
         )
-
-
-    # TODO: add phantom libery DLC quests
-    #if world.options.include_phantom_liberty_dlc is True:
-    #
-    #    set_rule(
-    #        world.multiworld.get_location("INSERT PHANTOM LIBERTY", player),
-    #        lambda state: (
-    #            state.has("Phantom Liberty Key", player) and
-    #            state.has("Phantom Liberty Key Fragment", player)
-    #        )
-    #    )
 
     #=============
     # CyberPsychos
@@ -165,47 +177,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
-    # ===== REGION ACCESS RULES =====
-    # These control when players can travel to different regions
-    # Rules are applied to entrances (connections between regions)
-
-    # Example: Require Mantis Blades to access Westbrook
-    # set_rule(
-    #     world.multiworld.get_entrance("Watson to Westbrook", world.player),
-    #     lambda state: state.has("Mantis Blades", world.player)
-    # )
-
-    # Example: Require Security Access Card to reach City Center
-    # set_rule(
-    #     world.multiworld.get_entrance("Watson to City Center", world.player),
-    #     lambda state: state.has("Security Access Card", world.player)
-    # )
-
-    # ===== LOCATION ACCESS RULES =====
-    # These control when specific locations (checks) become accessible
-    # Rules are applied directly to locations
-
-    # Example: Require Kerenzikov to complete a specific gig
-    # set_rule(
-    #     world.multiworld.get_location("Watson - Complete Gig 2", world.player),
-    #     lambda state: state.has("Kerenzikov", world.player)
-    # )
-
-    # Example: Require multiple items to access a location
-    # set_rule(
-    #     world.multiworld.get_location("City Center - Reach Arasaka Tower", world.player),
-    #     lambda state: (
-    #         state.has("Security Access Card", world.player) and
-    #         state.has("Mantis Blades", world.player)
-    #     )
-    # )
-
-    # ===== VICTORY CONDITION =====
-    # Define what's required to beat the game
-    # The Victory event location is created in create_region() when processing the Menu region
-    # The Victory event item is automatically placed on it
-    # Here we set the access rule for the Victory location and the completion condition
-
     # Set access rule on Victory location - requires completing one of the ending questlines
     set_rule(
         world.multiworld.get_location("Victory", world.player),
@@ -227,9 +198,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # Set completion condition - player wins when they collect the Victory event item
     world.multiworld.completion_condition[world.player] = \
         lambda state: state.has("Victory", world.player)
-
-
-
 
 # ===== HELPER FUNCTIONS =====
 # These are utility functions to make rule creation easier

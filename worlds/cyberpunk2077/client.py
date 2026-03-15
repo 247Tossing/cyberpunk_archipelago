@@ -3,18 +3,6 @@ Cyberpunk 2077 Archipelago Client
 
 This file implements the TCP server that communicates with the Cyberpunk 2077 RedScript mod.
 It acts as a bridge between the Archipelago server and the game.
-
-Architecture:
-- Connects to the Archipelago multiworld server via websocket
-- Runs a TCP server on localhost:51234 for the game to connect to
-- Handles bidirectional communication between game and server
-- Uses Python's asyncio for concurrent network operations
-
-PROTOCOL: Simple Text-Based Commands (No JSON needed!)
-========================================================
-All commands are newline-terminated strings (ending with \n)
-Commands use : as a delimiter for parameters
-RedScript only needs simple string parsing - no JSON library required!
 """
 
 import asyncio
@@ -124,9 +112,6 @@ class CyberpunkContext(CommonContext):
     async def server_auth(self, password_requested: bool = False) -> None:
         """
         Authenticate with the Archipelago server.
-
-        Standard Archipelago flow - no custom blocking logic.
-        The TCP server runs independently and accepts game connections at any time.
         """
         # Standard Archipelago authentication - no game wait
         if password_requested and not self.password:
@@ -148,7 +133,6 @@ class CyberpunkContext(CommonContext):
     def on_package(self, cmd: str, args: Dict[str, Any]) -> None:
         """
         Handle packets received from the Archipelago server
-
         """
         if cmd == "Connected":
             # Successfully connected to Archipelago server
@@ -165,7 +149,7 @@ class CyberpunkContext(CommonContext):
             # Inform user about game connection
             if self.game_connected:
                 # Game already connected - sync immediately
-                logger.info("Syncing items and configuration with game...")
+                #logger.info("Syncing items and configuration with game...")
                 async_start(self.send_to_game("CONNECTED"))
             else:
                 # Game not connected yet - this is normal, just inform user
@@ -184,7 +168,7 @@ class CyberpunkContext(CommonContext):
             start_index = args["index"]
             items: List[NetworkItem] = args["items"]
 
-            print(f"Received {len(items)} items from Archipelago")
+            #print(f"Received {len(items)} items from Archipelago")
 
             # Add items to our received list
             for item in items:
@@ -326,20 +310,30 @@ class CyberpunkContext(CommonContext):
         except Exception as e:
             logger.error(f"✗ Error handling game client: {e}")
         finally:
-            # GAME DISCONNECTED - Cleanup and disconnect from Archipelago
-            logger.info("✗ Game disconnected!")
+            # GAME DISCONNECTED - Cleanup game connection but stay connected to Archipelago
+            logger.info("")
+            logger.info("═════════════════════════════════════════════════════════════")
+            logger.info("  Game disconnected!")
+            logger.info("═════════════════════════════════════════════════════════════")
+
             self.game_connected = False
             self.game_client_writer = None
             self.game_client_reader = None
             writer.close()
             await writer.wait_closed()
 
-            # Disconnect from Archipelago if connected
+            # Keep Archipelago connection alive for auto-reconnect when game restarts
             if self.archipelago_connected:
-                logger.info("Disconnecting from Archipelago server due to game disconnect...")
-                await self.disconnect()
-                self.archipelago_connected = False
-                #logger.info("Game disconnected. You can reconnect by restarting the client.")
+                logger.info("")
+                logger.info("  Archipelago connection maintained.")
+                logger.info("  Waiting for game to reconnect...")
+                logger.info("  (No need to re-enter slot name)")
+                logger.info("")
+            else:
+                logger.info("")
+                logger.info("  Not connected to Archipelago.")
+                logger.info("  Use /connect to connect when ready.")
+                logger.info("")
 
 
     async def process_game_command(self, command: str) -> Optional[str]:
@@ -385,7 +379,6 @@ class CyberpunkContext(CommonContext):
             # ===== CONNECT_REQ =====
             elif cmd == "CONNECT_REQ":
                 # Simple handshake - game is checking if client is ready
-                # No parameters needed, just return OK
                 #logger.info("✓ Game sent CONNECT_REQ handshake")
                 return "CONNECT_REQ:OK"
 
@@ -394,8 +387,6 @@ class CyberpunkContext(CommonContext):
             elif cmd == "SYNC_ITEMS":
                 # SYNC_ITEMS
                 # Returns: ITEMS:<name>,<name>,<name>... or ITEMS: (empty if none)
-                # Returns item names that RedScript can directly use
-
                 if not self.archipelago_connected:
                     return "SYNC_ITEMS:FAIL:Not connected to Archipelago server"
 
@@ -421,8 +412,6 @@ class CyberpunkContext(CommonContext):
             elif cmd == "SYNC_CONFIG":
                 # SYNC_CONFIG
                 # Returns: CONFIG:<key>:<value>,<key>:<value>... or CONFIG: (empty if none)
-                # Returns configuration values that RedScript can directly use
-
                 if not self.archipelago_connected:
                     return "SYNC_CONFIG:FAIL:Not connected to Archipelago server"
 
@@ -445,9 +434,6 @@ class CyberpunkContext(CommonContext):
 
             # ===== OK_READY =====
             elif cmd == "OK_READY":
-                # OK_READY
-                # Game confirms it's synced and ready
-
                 #logger.info(" Game is ready!")
                 return "OK_READY:OK"
 
@@ -455,7 +441,6 @@ class CyberpunkContext(CommonContext):
             # ===== CHECK =====
             elif cmd == "CHECK":
                 # CHECK:<location_name>
-                # Example: CHECK:Watson - Complete Gig 1
 
                 if len(parts) != 2:
                     return "CHECK:FAIL:Invalid CHECK format. Expected: CHECK:<location_name>"
@@ -494,7 +479,7 @@ class CyberpunkContext(CommonContext):
             elif cmd == "CHECK_REQ":
                 # CHECK_REQ:<item_id>
                 # Returns: TRUE or FALSE
-                # Example: CHECK_REQ:77207001
+                # Example: CHECK_REQ:<item_id>
 
                 if len(parts) != 2:
                     return "CHECK_REQ:FAIL:Invalid CHECK_REQ format. Expected: CHECK_REQ:<item_id>"
@@ -529,6 +514,7 @@ class CyberpunkContext(CommonContext):
 
 
             # ===== STATUS =====
+            # Currently Unused
             elif cmd == "STATUS":
                 # STATUS:<district_name>
                 # Example: STATUS:Watson
@@ -539,24 +525,6 @@ class CyberpunkContext(CommonContext):
                 district = parts[1]
                 #logger.info(f"Player location: {district}")
                 return "STATUS:OK"
-
-
-            # ===== VICTORY =====
-            elif cmd == "VICTORY":
-                # VICTORY
-                # Player completed the game
-
-                if not self.archipelago_connected:
-                    return "VICTORY:FAIL:Not connected to Archipelago server"
-
-                # Send completion to server
-                await self.send_msgs([{
-                    "cmd": "StatusUpdate",
-                    "status": ClientStatus.CLIENT_GOAL
-                }])
-
-                #logger.info(" VICTORY! Player completed the game!")
-                return "VICTORY:OK"
 
 
             # ===== DEATHLINK_SEND =====
@@ -640,7 +608,7 @@ class CyberpunkContext(CommonContext):
             # Wait for response (with timeout)
             response_line = await asyncio.wait_for(
                 self.game_client_reader.readline(),
-                timeout=5.0
+                timeout=15.0
             )
 
             response = response_line.decode('utf-8').strip()
@@ -738,8 +706,7 @@ SIMPLE TEXT-BASED TCP PROTOCOL
 ═══════════════════════════════════════════════════════════════════════════════
 
 Connection Setup:
-1. RedScript connects to localhost:(port)
-2. No handshake needed - just start sending commands!
+RedScript connects to localhost:(port)
 
 Message Format:
 - All messages are terminated with CRLF (\r\n) - Windows line ending
@@ -996,51 +963,6 @@ TYPICAL SESSION FLOW
    RedScript → DISCONNECT
    Python    ← DISCONNECT:OK
    RedScript → TCP Disconnect
-
-
-═══════════════════════════════════════════════════════════════════════════════
-REDSCRIPT IMPLEMENTATION NOTES
-═══════════════════════════════════════════════════════════════════════════════
-
-RedScript TCP Client Pseudocode:
-
-1. Connect to server:
-   let socket = TcpSocket.Connect("localhost", 51234);
-
-2. Send command:
-   let command = "CHECK:Watson - Complete Gig 1\n";
-   socket.Send(command);
-
-3. Receive response:
-   let response = socket.ReadLine(); // Reads until \n
-   if (response == "OK") {
-       // Success
-   } else if (StartsWith(response, "FAIL:")) {
-       // Error - extract message after "FAIL:"
-       let error = SubString(response, 5);
-       Log("Error: " + error);
-   }
-
-4. Listen for server pushes (in background thread):
-   while (socket.IsConnected()) {
-       let message = socket.ReadLine();
-       if (StartsWith(message, "ITEM_RECEIVED:")) {
-           // Parse: ITEM_RECEIVED:<name>:<sender>
-           let parts = Split(message, ":");
-           let itemName = parts[1];
-           let sender = parts[2];
-
-           // Give item to player
-           GiveItem(itemName);
-           ShowNotification("Received " + itemName + " from " + sender);
-
-           // Respond
-           socket.Send("ITEM_RECEIVED:OK\n");
-        }
-   }
-
-No JSON parsing needed - just string splitting!
-
 
 ═══════════════════════════════════════════════════════════════════════════════
 ERROR HANDLING

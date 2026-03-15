@@ -5,7 +5,7 @@ public class APGameSystem extends ScriptableSystem {
     let listenerID: Uint32;
 
     public func OnAttach() -> Void {
-        LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago Plugin Initialized");
+        LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago Game System Ready");
     }
 
     //Deathlink    
@@ -26,7 +26,7 @@ public class APGameSystem extends ScriptableSystem {
     public func AddQuestKey(questKey: String) -> Void {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         if IsDefined(questSystem) {
-            LogChannel(n"DEBUG", "Adding Quest Key: " + questKey);
+            //LogChannel(n"DEBUG", "Adding Quest Key: " + questKey);
             questSystem.SetFact(StringToName(questKey), 1);
         }
     }
@@ -43,8 +43,6 @@ public class APGameSystem extends ScriptableSystem {
     public func DoTrap(trapName: String) {
         
     }
-
-    
 }
 
 // Making sure that the player is respawned before allowing another Deathlink call.
@@ -70,7 +68,7 @@ protected cb func OnShowDeathMenu() -> Bool {
 
     let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
     if IsDefined(APGameState) && APGameState.diedFromDeathLink {
-        LogChannel(n"DEBUG", "Player died due to Deathlink");
+        LogChannel(n"DEBUG", "Player died due to Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
         return wrappedMethod();
     }
     if IsDefined(tcpService) {
@@ -83,20 +81,13 @@ protected cb func OnShowDeathMenu() -> Bool {
 @wrapMethod(JournalNotificationQueue)
 protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
     let result = wrappedMethod(hash, className, notifyOption, changeType);
-    
-    // Fetch the Journal Manager
+
     let player: ref<PlayerPuppet> = this.GetPlayerControlledObject() as PlayerPuppet;
     if !IsDefined(player) { return result; }
     
     let journalMgr: ref<JournalManager> = GameInstance.GetJournalManager(player.GetGame());
-    
-    // Get the specific journal entry that just triggered the UI update
-    let entry: wref<JournalEntry> = journalMgr.GetEntry(hash);
-    
-    // Cast it specifically to a JournalQuest. 
-    // This is crucial because it filters out minor updates like finding a shard, 
-    // getting a text message, or completing a sub-objective (JournalQuestObjective).
-    let questEntry: wref<JournalQuest> = entry as JournalQuest;
+    let entry: wref<JournalEntry> = journalMgr.GetEntry(hash); // Get the specific journal entry that just triggered the UI update
+    let questEntry: wref<JournalQuest> = entry as JournalQuest; //Cast it to a quest to get access to what we actually want
     
     if IsDefined(questEntry) {
         // 5. Check if the quest's overall state changed to Completed
@@ -106,7 +97,7 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
             
             // Extract the string ID
             let questStringId: String = questEntry.GetId();
-            //LogChannel(n"DEBUG", "UI POPUP INTERCEPTED! Quest Completed: " + questStringId);
+            LogChannel(n"DEBUG", "Quest Completed: " + questStringId);
             
             // send to the archipelago server
             let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;

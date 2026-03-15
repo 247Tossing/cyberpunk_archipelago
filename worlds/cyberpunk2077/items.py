@@ -91,6 +91,7 @@ item_table: Dict[str, ItemData] = {
         classification=ItemClassification.progression
     ),
 
+    # Has no effect currently
     "Konpeki Plaza Room Key": ItemData(
         name="ap_qk_konpeki_keys",
         code=4001,
@@ -105,6 +106,7 @@ item_table: Dict[str, ItemData] = {
     # Phantom Liberty Items
     #====================================
 
+    # Has no effect currently
     "Myers' Plane Ticket": ItemData(
         name="ap_qk_myers_ticket",
         code=5000,
