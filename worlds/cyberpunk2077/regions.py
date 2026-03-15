@@ -1,12 +1,5 @@
 """
 Cyberpunk 2077 Region Definitions
-
-This file defines the regions (game areas) and their connections for Cyberpunk 2077.
-
-Regions represent different areas of the game (districts of Night City).
-Each region contains locations (item checks) and can be connected to other regions
-via entrances. Entrances can have access rules that determine when players can
-travel between regions.
 """
 
 from typing import Dict, TYPE_CHECKING
@@ -22,13 +15,6 @@ if TYPE_CHECKING:
 def create_regions(world: "Cyberpunk2077World") -> None:
     """
     Create all regions for this world and connect them.
-
-    This function:
-    - Creates Region objects for each area of the game
-    - Populates each region with Location objects
-    - Connects regions via Entrance objects
-    - Registers everything with the MultiWorld
-
     Args:
         world: The Cyberpunk2077World instance for this player
     """
@@ -36,11 +22,24 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     # ===== CREATE MENU REGION =====
     # The Menu region is required by Archipelago
     # It represents the starting point before entering the game
-    # Think of this as the main menu or character select screen
+    # We create it manually because it needs special handling for the Victory event
 
     menu_region = Region("Menu", world.player, world.multiworld)
     world.multiworld.regions.append(menu_region)
 
+    # Create Victory event location manually (NOT from location_table)
+    # Event locations created through location_table may get auto-assigned addresses
+    # Creating manually ensures address stays None and filters properly
+    victory_location = Cyberpunk2077Location(
+        world.player,
+        "Victory",
+        None,  # Event location - no address
+        menu_region
+    )
+    # Place the Victory event item on the Victory event location
+    victory_location.place_locked_item(world.create_event("Victory"))
+    # Add to region so it can be found by get_location() in rules.py
+    menu_region.locations.append(victory_location)
 
     # ===== CREATE GAME REGIONS =====
     # These represent actual areas in Cyberpunk 2077 (Night City districts)
@@ -50,6 +49,12 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     regions: Dict[str, Region] = {
         "Menu": menu_region
     }
+
+    # Include Phantom Liberty DLC regions
+    # if the player has the phantom liberty DLC
+    if world.options.include_phantom_liberty_dlc:
+        phantom_liberty_prologue_questline = create_region(world, "Phantom Liberty Prologue Questline")
+        regions["Phantom Liberty Prologue Questline"] = phantom_liberty_prologue_questline
 
     # Create Watson district region
     watson = create_region(world, "Watson")
@@ -79,6 +84,27 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     badlands = create_region(world, "Badlands")
     regions["Badlands"] = badlands
 
+    # Create Dogtown region (Phantom Liberty DLC only)
+    if world.options.include_phantom_liberty_dlc:
+        dogtown = create_region(world, "Dogtown")
+        regions["Dogtown"] = dogtown
+
+    # Create North Oak region (Westbrook sub-district)
+    north_oak = create_region(world, "North Oak")
+    regions["North Oak"] = north_oak
+
+    # Create Afterlife region (special location - famous bar)
+    afterlife = create_region(world, "Afterlife")
+    regions["Afterlife"] = afterlife
+
+    # Create Cyberspace region (virtual location)
+    cyberspace = create_region(world, "Cyberspace")
+    regions["Cyberspace"] = cyberspace
+
+    # Create Orbital Station region (space station ending location)
+    orbital_station = create_region(world, "Orbital Station")
+    regions["Orbital Station"] = orbital_station
+
     # TODO: Add more regions as needed for your game
 
 
@@ -89,10 +115,6 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     # Connect Menu to the starting region (Watson in this example)
     # This is the initial "New Game" entrance
     connect_regions(world, menu_region, regions["Watson"], "New Game")
-
-    # Connect districts to each other
-    # In a real implementation, these would have access rules
-    # Example: Might need a car, metro pass, or story progression
 
     # Watson connections
     connect_regions(world, regions["Watson"], regions["Westbrook"], "Watson to Westbrook")
@@ -111,8 +133,11 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     # Heywood connections
     connect_regions(world, regions["Heywood"], regions["City Center"], "Heywood to City Center")
 
-    # Pacifica connections
+    # Pacifica & Dogtown connections
     connect_regions(world, regions["Pacifica"], regions["City Center"], "Pacifica to City Center")
+    if world.options.include_phantom_liberty_dlc:
+        connect_regions(world, regions["Pacifica"], regions["Dogtown"], "Pacifica to Dogtown")
+        connect_regions(world, regions["Dogtown"], regions["Pacifica"], "Dogtown to Pacifica")
 
     # Santo Domingo connections
     connect_regions(world, regions["City Center"], regions["Santo Domingo"], "City Center to Santo Domingo")
@@ -123,6 +148,22 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     connect_regions(world, regions["Badlands"], regions["Watson"], "Badlands to Watson")
     connect_regions(world, regions["Santo Domingo"], regions["Badlands"], "Santo Domingo to Badlands")
     connect_regions(world, regions["Badlands"], regions["Santo Domingo"], "Badlands to Santo Domingo")
+
+    # North Oak connections (accessible from City Center, part of Westbrook area)
+    connect_regions(world, regions["City Center"], regions["North Oak"], "City Center to North Oak")
+    connect_regions(world, regions["North Oak"], regions["City Center"], "North Oak to City Center")
+
+    # Afterlife connections (special bar, accessed from City Center)
+    connect_regions(world, regions["City Center"], regions["Afterlife"], "City Center to Afterlife")
+    connect_regions(world, regions["Afterlife"], regions["City Center"], "Afterlife to City Center")
+
+    # Cyberspace connections (virtual space, accessed from Pacifica)
+    connect_regions(world, regions["Pacifica"], regions["Cyberspace"], "Pacifica to Cyberspace")
+    connect_regions(world, regions["Cyberspace"], regions["Pacifica"], "Cyberspace to Pacifica")
+
+    # Orbital Station connections (ending location, accessed via City Center)
+    connect_regions(world, regions["City Center"], regions["Orbital Station"], "City Center to Orbital Station")
+    connect_regions(world, regions["Orbital Station"], regions["City Center"], "Orbital Station to City Center")
 
     # TODO: Add more connections as needed
     # TODO: Add access rules to connections in rules.py
@@ -152,17 +193,36 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
 
     # Add all locations that belong to this region
     for location_name, location_data in location_table.items():
+        # Skip DLC locations if the player didn't enable them
+        if location_data.region == "Dogtown" and not world.options.include_phantom_liberty_dlc:
+            continue
         # Only add locations that belong to this region
         if location_data.region == region_name:
-            # Create the location instance
+            # Handle event locations - they have code=None
+            if location_data.code is None:
+                # Event location - create it and add to region
+                event_location = Cyberpunk2077Location(
+                    world.player,
+                    location_name,
+                    None,
+                    region
+                )
+                # Place the corresponding event item on this event location
+                event_location.place_locked_item(world.create_event(location_name))
+                # Add event location to region so it can be found via get_location()
+                # It will be automatically filtered out when serializing to server
+                region.locations.append(event_location)
+                continue
+
+            # Create regular location instance
             location = Cyberpunk2077Location(
                 world.player,
-                location_name,
+                location_data.display_name,  # Use display name for UI
                 location_data.code,
                 region
             )
 
-            # Add the location to the region
+            # Add the regular location to the region
             region.locations.append(location)
 
     # Add the region to the multiworld
@@ -206,6 +266,27 @@ def connect_regions(
     entrance.connect(target)
 
     return entrance
+
+
+def place_event_on_location(
+    world: "Cyberpunk2077World",
+    location_name: str,
+    event_name: str
+) -> None:
+    """
+    Place an event item on a specific location.
+
+    This creates a logical dependency - when the location is completed,
+    the event item is received, which can then be used as a requirement
+    for accessing other locations.
+
+    Args:
+        world: The Cyberpunk2077World instance
+        location_name: The name of the location to place the event on
+        event_name: The name of the event item to place
+    """
+    location = world.multiworld.get_location(location_name, world.player)
+    location.place_locked_item(world.create_event(event_name))
 
 
 # ===== NOTES ON ACCESS RULES =====

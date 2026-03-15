@@ -27,13 +27,25 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     #============================================
 
     set_rule(
-        world.multiworld.get_location("q001_02_dex", player),
+        world.multiworld.get_location("Prologue - The Ride", player),
         lambda state: state.has_any({"Dex's Limo Keys"}, player)
     )
 
     #=================
     # Phantom Liberty
     #=================
+
+    if world.options.include_phantom_liberty_dlc:
+        # Require Myers' Plane Ticket to start Phantom Liberty
+        set_rule(
+            world.multiworld.get_location("DLC - Phantom Liberty", player),
+            lambda state: state.has("Myers' Plane Ticket", player)
+        )
+        # Require completing Phantom Liberty Start to access Dog Eat Dog
+        set_rule(
+            world.multiworld.get_location("DLC - Dog Eat Dog", player),
+            lambda state: state.can_reach_location("DLC - Phantom Liberty", player)
+        )
 
 
     # TODO: add phantom libery DLC quests
@@ -53,103 +65,103 @@ def set_rules(world: "Cyberpunk2077World") -> None:
 
     # Cyberpsycho Sighting: Six Feet Under
     set_rule(
-        world.multiworld.get_location("ma_wat_nid_22", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Six Feet Under", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Bloody Ritual
     set_rule(
-        world.multiworld.get_location("ma_wat_nid_15", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Bloody Ritual", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Where the Bodies Hit the Floor
     set_rule(
-        world.multiworld.get_location("ma_wat_nid_03", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Where the Bodies Hit the Floor", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Demons of War
     set_rule(
-        world.multiworld.get_location("ma_wat_kab_02", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Demons of War", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Lt. Mower
     set_rule(
-        world.multiworld.get_location("ma_wat_kab_08", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Lt. Mower", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Ticket to the Major Leagues
     set_rule(
-        world.multiworld.get_location("ma_wat_lch_06", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Ticket to the Major Leagues", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: The Wasteland
     set_rule(
-        world.multiworld.get_location("ma_bls_ina_se1_07", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: The Wasteland", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: House on a Hill
     set_rule(
-        world.multiworld.get_location("ma_bls_ina_se1_08", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: House on a Hill", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Second Chances
     set_rule(
-        world.multiworld.get_location("ma_bls_ina_se1_22", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Second Chances", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: On Deaf Ears
     set_rule(
-        world.multiworld.get_location("ma_cct_dtn_03", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: On Deaf Ears", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Phantom of Night City
     set_rule(
-        world.multiworld.get_location("ma_cct_dtn_07", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Phantom of Night City", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Seaside Cafe
     set_rule(
-        world.multiworld.get_location("ma_hey_spr_04", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Seaside Cafe", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Letter of the Law
     set_rule(
-        world.multiworld.get_location("ma_hey_spr_06", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Letter of the Law", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Smoke on the Water
     set_rule(
-        world.multiworld.get_location("ma_pac_cvi_08", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Smoke on the Water", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Lex Talionis
     set_rule(
-        world.multiworld.get_location("ma_pac_cvi_15", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Lex Talionis", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Under the Bridge
     set_rule(
-        world.multiworld.get_location("ma_std_arr_06", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Under the Bridge", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
     # Cyberpsycho Sighting: Discount Doc
     set_rule(
-        world.multiworld.get_location("ma_std_rcr_11", player),
+        world.multiworld.get_location("Cyberpsycho Sighting: Discount Doc", player),
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
@@ -168,9 +180,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     #     world.multiworld.get_entrance("Watson to City Center", world.player),
     #     lambda state: state.has("Security Access Card", world.player)
     # )
-
-
-
 
     # ===== LOCATION ACCESS RULES =====
     # These control when specific locations (checks) become accessible
@@ -191,26 +200,35 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     #     )
     # )
 
-
     # ===== VICTORY CONDITION =====
     # Define what's required to beat the game
-    # This is typically placed at a special "Victory" location
+    # The Victory event location is created in create_region() when processing the Menu region
+    # The Victory event item is automatically placed on it
+    # Here we set the access rule for the Victory location and the completion condition
 
-    # TODO: Create a victory location and set its rule
-    # Example:
-    # set_rule(
-    #     world.multiworld.get_location("Reached Cyberpunk Ending", world.player),
-    #     lambda state: state.has_all([
-    #         "Security Access Card",
-    #         "Mantis Blades",
-    #         "Kerenzikov"
-    #     ], world.player)
-    # )
+    # Set access rule on Victory location - requires completing one of the ending questlines
+    set_rule(
+        world.multiworld.get_location("Victory", world.player),
+        lambda state: (
+            # Arasaka/Hanako Path
+            state.can_reach_location("Epilogue - Where is My Mind?", world.player) or
+            # Nomad/Panam Path
+            state.can_reach_location("Epilogue - All Along the Watchtower", world.player) or
+            # Rogue/Johnny Path
+            state.can_reach_location("Epilogue - Path of Glory", world.player) or
+            # Temperance Path (Johnny takes the body)
+            state.can_reach_location("Epilogue - New Dawn Fades", world.player) or
+            # Phantom Liberty Ending (if DLC enabled)
+            (world.options.include_phantom_liberty_dlc and
+             state.can_reach_location("DLC - Things Done Changed", world.player))
+        )
+    )
 
-    # Then mark it as the completion condition
-    # world.multiworld.completion_condition[world.player] = (
-    #     lambda state: state.has("Victory", world.player)
-    # )
+    # Set completion condition - player wins when they collect the Victory event item
+    world.multiworld.completion_condition[world.player] = \
+        lambda state: state.has("Victory", world.player)
+
+
 
 
 # ===== HELPER FUNCTIONS =====

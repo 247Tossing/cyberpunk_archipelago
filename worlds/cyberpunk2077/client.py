@@ -37,7 +37,7 @@ import Utils
 
 # Import item and location lookup functions
 # Bidirectional lookup helpers for translating between names and IDs
-from worlds.cyberpunk2077.items import get_item_name_by_id, get_item_id_by_name, item_id_to_name, item_name_to_id
+from worlds.cyberpunk2077.items import get_item_name_by_id, get_item_id_by_name, item_id_to_name, item_name_to_id, item_id_to_game_id
 from worlds.cyberpunk2077.locations import get_location_id_by_name, get_location_name_by_id
 
 
@@ -108,6 +108,10 @@ class CyberpunkContext(CommonContext):
         self.archipelago_connected: bool = False
         self.slot_data: Dict[str, Any] = {}
 
+        # Location mapping: internal game IDs → display names
+        # Used to translate location names from the game to Archipelago display names
+        self.location_internal_id_to_display_name: Dict[str, str] = {}
+
         # Item tracking
         # Track items received from the Archipelago server
         self.received_item_ids: List[int] = []
@@ -155,6 +159,9 @@ class CyberpunkContext(CommonContext):
             self.slot_data = args.get("slot_data", {})
             #logger.info(f"Slot data: {self.slot_data}")
 
+            # Load location mapping for translating internal game IDs to display names
+            self.location_internal_id_to_display_name = self.slot_data.get("location_internal_id_to_display_name", {})
+
             # Inform user about game connection
             if self.game_connected:
                 # Game already connected - sync immediately
@@ -163,13 +170,13 @@ class CyberpunkContext(CommonContext):
             else:
                 # Game not connected yet - this is normal, just inform user
                 logger.info("")
-                logger.info("═════════════════════════════════════════════════════════════")
+                logger.info("=============================================================")
                 logger.info("  Please connect Cyberpunk 2077 to the client:")
                 logger.info("    1. Launch Cyberpunk 2077")
                 logger.info("    2. Open CET overlay")
                 logger.info("    3. Navigate to 'Archipelago Client'")
                 logger.info(f"    4. Connect to localhost:{self.game_server_port}")
-                logger.info("═════════════════════════════════════════════════════════════")
+                logger.info("=============================================================")
 
 
         elif cmd == "ReceivedItems":
@@ -208,12 +215,15 @@ class CyberpunkContext(CommonContext):
 
         # Send each new item
         for item_id in new_items:
-            # Get item name using our lookup function
-            item_name = get_item_name_by_id(item_id)
-            if not item_name:
+            # Get internal game ID for RedScript
+            item_game_id = item_id_to_game_id.get(item_id)
+            if not item_game_id:
                 # Fallback for unknown items
-                item_name = self.item_names.get(item_id, f"Unknown Item {item_id}")
                 logger.warning(f"Unknown item ID: {item_id}")
+                item_game_id = f"unknown_item_{item_id}"
+
+            # Get display name for logging
+            item_display_name = get_item_name_by_id(item_id) or item_game_id
 
             # Find who sent it (if available)
             sender = "Unknown"
@@ -222,18 +232,19 @@ class CyberpunkContext(CommonContext):
                     sender = self.player_names.get(network_item.player, f"Player {network_item.player}")
                     break
 
-            # Send to game: ITEM_RECEIVED:<name>:<sender>
-            # RedScript receives the item name and sender, must respond with OK/FAIL
-            response = await self.send_to_game(f"ITEM_RECEIVED:{item_name}:{sender}")
+            # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>
+            # RedScript receives the internal game ID (e.g., "ap_qk_dex_keys") and sender
+            # RedScript must respond with OK/FAIL
+            response = await self.send_to_game(f"ITEM_RECEIVED:{item_game_id}:{sender}")
 
             if response and response.startswith("ITEM_RECEIVED:OK"):
                 # Game acknowledged, mark as sent
                 self.items_sent_to_game.add(item_id)
-                logger.info(f"✓ Sent item to game: {item_name} (from {sender})")
+                #logger.info(f"✓ Sent item to game: {item_display_name} (game ID: {item_game_id}, from {sender})")
             elif response and response.startswith("ITEM_RECEIVED:FAIL"):
-                logger.error(f"✗ Game failed to receive item: {item_name} - {response}")
+                logger.error(f"✗ Game failed to receive item: {item_display_name} (game ID: {item_game_id}) - {response}")
             else:
-                logger.warning(f"✗ Game gave unexpected response for item {item_name}: {response}")
+                logger.warning(f"✗ Game gave unexpected response for item {item_display_name} (game ID: {item_game_id}): {response}")
 
 
     # ===== GAME CLIENT (RedScript TCP Client) COMMUNICATION =====
@@ -252,11 +263,11 @@ class CyberpunkContext(CommonContext):
             # Start serving (accepting connections)
             await self.game_server.start_serving()
 
-            logger.info(f"═══════════════════════════════════════════════")
+            logger.info(f"=============================================================")
             logger.info(f"  Cyberpunk 2077 TCP Server Started")
             logger.info(f"  Listening on: localhost:{self.game_server_port}")
             logger.info(f"  Ready to accept connections...")
-            logger.info(f"═══════════════════════════════════════════════")
+            logger.info(f"=============================================================")
 
         except Exception as e:
             logger.error(f"✗ Failed to start game server: {e}")
@@ -272,9 +283,9 @@ class CyberpunkContext(CommonContext):
         """
         addr = writer.get_extra_info('peername')
         logger.info("")
-        logger.info("═════════════════════════════════════════════════════════════")
-        logger.info(f"  ✓ Cyberpunk 2077 client connected!")
-        logger.info("═════════════════════════════════════════════════════════════")
+        logger.info("=============================================================")
+        logger.info(f"           Cyberpunk 2077 client connected!")
+        logger.info("=============================================================")
 
         self.game_client_reader = reader
         self.game_client_writer = writer
@@ -282,7 +293,7 @@ class CyberpunkContext(CommonContext):
 
         # If already connected to Archipelago, sync now
         if self.archipelago_connected:
-            logger.info("Syncing items and configuration with game...")
+            #logger.info("Syncing items and configuration with game...")
             async_start(self.send_to_game("CONNECTED"))
 
         try:
@@ -328,7 +339,7 @@ class CyberpunkContext(CommonContext):
                 logger.info("Disconnecting from Archipelago server due to game disconnect...")
                 await self.disconnect()
                 self.archipelago_connected = False
-                logger.info("Game disconnected. You can reconnect by restarting the client.")
+                #logger.info("Game disconnected. You can reconnect by restarting the client.")
 
 
     async def process_game_command(self, command: str) -> Optional[str]:
@@ -367,7 +378,7 @@ class CyberpunkContext(CommonContext):
                     print(f"✓ Client version {client_version} is compatible")
                     return f"HELLO:{SERVER_VERSION}:OK"
                 else:
-                    print(f"✗ Client version {client_version} is incompatible (requires >= {MIN_CLIENT_VERSION})")
+                    logger.info(f"✗ Client version {client_version} is incompatible (requires >= {MIN_CLIENT_VERSION})")
                     return f"HELLO:{SERVER_VERSION}:FAIL"
 
 
@@ -391,17 +402,17 @@ class CyberpunkContext(CommonContext):
                 # Build comma-separated list of item names
                 if self.received_item_ids:
                     # Convert IDs to names using our lookup function
-                    item_names = []
+                    item_game_ids = []
                     for item_id in self.received_item_ids:
-                        item_name = get_item_name_by_id(item_id)
+                        item_name = item_id_to_game_id.get(item_id)
                         if item_name:
-                            item_names.append(item_name)
+                            item_game_ids.append(item_name)
                         else:
                             # Fallback for unknown items
                             logger.warning(f"Unknown item ID: {item_id}")
-                            item_names.append(f"Unknown Item {item_id}")
+                            item_game_ids.append(f"Unknown Item {item_id}")
 
-                    item_list = ','.join(item_names)
+                    item_list = ','.join(item_game_ids)
                     return f"SYNC_ITEMS:ITEMS:{item_list}"
                 else:
                     return "SYNC_ITEMS:ITEMS:"
@@ -437,7 +448,7 @@ class CyberpunkContext(CommonContext):
                 # OK_READY
                 # Game confirms it's synced and ready
 
-                logger.info("✓ Game is ready!")
+                #logger.info(" Game is ready!")
                 return "OK_READY:OK"
 
 
@@ -456,19 +467,25 @@ class CyberpunkContext(CommonContext):
                     logger.warning(f"Got CHECK for '{location_name}' but not connected to Archipelago")
                     return "CHECK:OK"
 
-                # Lookup location ID by name
-                location_id = get_location_id_by_name(location_name)
+                # Translate internal game ID to display name if needed
+                # Game sends internal IDs like "q000_street_kid"
+                # We need to convert to display names like "Prologue - The Streetkid"
+                display_name = self.location_internal_id_to_display_name.get(location_name, location_name)
+
+                # Lookup location ID by display name
+                location_id = get_location_id_by_name(display_name)
 
                 if location_id:
                     # Send location check to Archipelago server
+                    # LocationChecks command requires integer location IDs, not names
                     await self.send_msgs([{
                         "cmd": "LocationChecks",
-                        "locations": [location_id]
+                        "locations": [location_id],
                     }])
-                    logger.info(f"✓ Location checked: {location_name} ({location_id})")
+                    #logger.info(f"✓ Location checked: {display_name} ({location_id})")
                 else:
                     # User requested NOT to return fail if it doesn't exist
-                    logger.warning(f"Unknown location name: {location_name}. Skipping check.")
+                    logger.warning(f"Unknown location name: {location_name} (display: {display_name}). Skipping check.")
 
                 return "CHECK:OK"
 
@@ -520,7 +537,7 @@ class CyberpunkContext(CommonContext):
                     return "STATUS:FAIL:Invalid STATUS format. Expected: STATUS:<district_name>"
 
                 district = parts[1]
-                logger.info(f"Player location: {district}")
+                #logger.info(f"Player location: {district}")
                 return "STATUS:OK"
 
 
@@ -538,7 +555,7 @@ class CyberpunkContext(CommonContext):
                     "status": ClientStatus.CLIENT_GOAL
                 }])
 
-                logger.info("🏆 VICTORY! Player completed the game!")
+                #logger.info(" VICTORY! Player completed the game!")
                 return "VICTORY:OK"
 
 
@@ -549,7 +566,7 @@ class CyberpunkContext(CommonContext):
 
                 # TODO: Implement Death Link sending to Archipelago
                 # For now, just acknowledge
-                logger.info("💀 Player died in Cyberpunk (sending Death Link to others)")
+                #logger.info("💀 Player died in Cyberpunk (sending Death Link to others)")
                 return "DEATHLINK_SEND:OK"
 
 
@@ -658,7 +675,7 @@ class CyberpunkContext(CommonContext):
             self.game_client_writer.write(message.encode('utf-8'))
             await self.game_client_writer.drain()
 
-            logger.debug(f"→ Game: {message.strip()}")
+            #logger.debug(f"→ Game: {message.strip()}")
 
         except Exception as e:
             logger.error(f"Error sending to game: {e}")
@@ -717,11 +734,11 @@ if __name__ == "__main__":
 
 """
 ═══════════════════════════════════════════════════════════════════════════════
-SIMPLE TEXT-BASED TCP PROTOCOL (NO JSON REQUIRED!)
+SIMPLE TEXT-BASED TCP PROTOCOL
 ═══════════════════════════════════════════════════════════════════════════════
 
 Connection Setup:
-1. RedScript connects to localhost:51234
+1. RedScript connects to localhost:(port)
 2. No handshake needed - just start sending commands!
 
 Message Format:
@@ -968,7 +985,7 @@ TYPICAL SESSION FLOW
    Python    → ITEM_RECEIVED:Rare Quickhack:Player2
    RedScript ← ITEM_RECEIVED:OK
 
-   RedScript → CHECK_REQ:772077004
+   RedScript → CHECK_REQ:<Key name>
    Python    ← CHECK_REQ:TRUE
 
 4. Game Completion:

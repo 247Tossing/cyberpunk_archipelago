@@ -26,6 +26,7 @@ public class APGameSystem extends ScriptableSystem {
     public func AddQuestKey(questKey: String) -> Void {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         if IsDefined(questSystem) {
+            LogChannel(n"DEBUG", "Adding Quest Key: " + questKey);
             questSystem.SetFact(StringToName(questKey), 1);
         }
     }
@@ -53,6 +54,7 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
     if IsDefined(APGameState) {
         APGameState.HandlePlayerRespawn();
+        APGameState.ResyncData();
     }
     return result;
 }

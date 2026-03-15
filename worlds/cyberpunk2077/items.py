@@ -97,16 +97,42 @@ item_table: Dict[str, ItemData] = {
         classification=ItemClassification.progression
     ),
 
+    #====================================
+    # Main Story Items
+    #====================================
+
+    #====================================
+    # Phantom Liberty Items
+    #====================================
+
+    "Myers' Plane Ticket": ItemData(
+        name="ap_qk_myers_ticket",
+        code=5000,
+        classification=ItemClassification.progression
+    ),
+
     # ===== USEFUL ITEMS =====
     # These items are helpful but not required
 
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
 
-    "Eddies": ItemData(
-        name="ap_it_Items.money",  # In-game currency
+    "500 Eddies": ItemData(
+        name="ap_it_Items.money_500",  # In-game currency
         code=6000,
         classification=ItemClassification.filler
+    ),
+
+    "1000 Eddies" : ItemData(
+        name = "ap_it_Items.money_1000",
+        code = 6001,
+        classification = ItemClassification.filler
+    ),
+
+    "5000 Eddies" : ItemData(
+        name = "ap_it_Items.money_5000",
+        code = 6002,
+        classification = ItemClassification.filler
     ),
 
     # ===== TRAP ITEMS =====
@@ -125,12 +151,15 @@ item_table: Dict[str, ItemData] = {
     # They're placed at event locations and never go into the item pool
     # Used to represent game state or milestones
 
-    # Example: Completing a major quest could give an event item
-    # "Completed Main Quest Act 1": ItemData(
-    #     name="Completed Main Quest Act 1",
-    #     code=None,  # No code = event item
-    #     classification=ItemClassification.progression
-    # ),
+    #====================================
+    # Victory Event
+    #====================================
+
+    "Victory": ItemData(
+        name="Victory",
+        code=None,
+        classification=ItemClassification.progression
+    ),
 }
 
 
@@ -147,11 +176,22 @@ item_name_to_id: Dict[str, int] = {
     if data.code is not None  # Exclude event items
 }
 
-# Dictionary mapping item IDs to their names (reverse lookup)
-# Example: {77_2077_001: "Mantis Blades", 77_2077_002: "Kerenzikov", ...}
-# Allows bidirectional lookup - searching by ID to get the name
+# Dictionary mapping item IDs to their display names (reverse lookup)
+# Example: {4000: "Dex's Limo Keys", 5000: "Myers' Plane Ticket", ...}
+# Allows bidirectional lookup - searching by ID to get the display name
+# Used for Archipelago UI and logging
 item_id_to_name: Dict[int, str] = {
     data.code: name
+    for name, data in item_table.items()
+    if data.code is not None  # Exclude event items
+}
+
+# Dictionary mapping Archipelago IDs to internal game IDs
+# Example: {4000: "ap_qk_dex_keys", 5000: "ap_qk_myers_ticket", ...}
+# Used by the client to translate item IDs to game-recognizable identifiers
+# RedScript needs these internal IDs to give items to the player
+item_id_to_game_id: Dict[int, str] = {
+    data.code: data.name  # Maps to ItemData.name field (internal game ID)
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }

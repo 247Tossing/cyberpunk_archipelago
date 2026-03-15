@@ -41,7 +41,6 @@ class LocationData:
     code: Optional[int]  # None for event locations
     region: str  # Which region this location is in
 
-
 # ===== LOCATION TABLE =====
 # This dictionary maps internal location IDs to their definitions
 # Keys are internal game IDs (what the game client sends)
@@ -64,12 +63,12 @@ location_table: Dict[str, LocationData] = {
     #==================================
     # Prologue Locations
     #==================================
-
     # TODO: Make sure that the rules only use one of the path checks during generation
     "q000_street_kid": LocationData(display_name="Prologue - The Streetkid", code=1000, region="Watson"),
     "q000_corpo": LocationData(display_name="Prologue - The Corpo-Rat", code=1001, region="Watson"),
     "q000_nomad": LocationData(display_name="Prologue - The Nomad", code=1002, region="Watson"),
-    "q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", code=1003, region="Watson"),
+    # Tutorial might get re-added if requested
+    #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", code=1003, region="Watson"),
     "q001_intro": LocationData(display_name="Prologue - The Rescue", code=1004, region="Watson"),
     "q001_01_victor": LocationData(display_name="Prologue - The Ripperdoc", code=1005, region="Watson"),
     "q001_02_dex": LocationData(display_name="Prologue - The Ride", code=1006, region="Watson"),
@@ -97,24 +96,24 @@ location_table: Dict[str, LocationData] = {
     "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", code=1024, region="Santo Domingo"),
     "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", code=1025, region="Westbrook"),
     "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", code=1026, region="Heywood"),
+    "02_sickness": LocationData(display_name="Endgame - Nocturne Op55N1", code=1027, region="Heywood"),
+    "01_climbing_the_ladder": LocationData(display_name="Endgame - Become A Legend", code=1028, region="Watson"),
+    "09_solo": LocationData(display_name="Endgame - (Don't Fear) The Reaper", code=1029, region="City Center"),
 
     # =====================================
     # Endings
     # =====================================
-    "02_sickness": LocationData(display_name="Endgame - Nocturne Op55N1", code=1027, region="Heywood"),
-    "01_climbing_the_ladder": LocationData(display_name="Endgame - Become A Legend", code=1028, region="Afterlife"),
-    "09_solo": LocationData(display_name="Endgame - (Don't Fear) The Reaper", code=1029, region="City Center"),
     "q113_rescuing_hanako": LocationData(display_name="Ending - Last Caress", code=1030, region="North Oak"),
     "q113_corpo": LocationData(display_name="Ending - Totalimmortal", code=1031, region="City Center"),
     "q114_01_nomad_initiation": LocationData(display_name="Ending - We Gotta Live Together", code=1032, region="Badlands"),
     "q114_02_maglev_line_assault": LocationData(display_name="Ending - Forward to Death", code=1033, region="Badlands"),
     "q114_03_attack_on_arasaka_tower": LocationData(display_name="Ending - Belly of the Beast", code=1034,region="City Center"),
-    "q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Afterlife"),
+    "q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Watson"),
     "q115_rogues_last_flight": LocationData(display_name="Ending - Knockin' on Heaven's Door", code=1036,                                    region="City Center"),
-    "q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Cyberspace"),
-    "q201_heir": LocationData(display_name="Epilogue - Where is My Mind?", code=1038, region="Orbital Station"),
+    "q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Watson"),
+    "q201_heir": LocationData(display_name="Epilogue - Where is My Mind?", code=1038, region="Watson"),
     "q202_nomads": LocationData(display_name="Epilogue - All Along the Watchtower", code=1039, region="Badlands"),
-    "q203_legend": LocationData(display_name="Epilogue - Path of Glory", code=1040, region="Afterlife"),
+    "q203_legend": LocationData(display_name="Epilogue - Path of Glory", code=1040, region="Watson"),
     "q204_reborn": LocationData(display_name="Epilogue - New Dawn Fades", code=1041, region="Badlands"),
 
     # =====================================
@@ -133,7 +132,7 @@ location_table: Dict[str, LocationData] = {
     "q304_netrunners": LocationData(display_name="DLC - I've Seen That Face Before", code=1051, region="Dogtown"),
     "q304_deal": LocationData(display_name="DLC - Firestarter", code=1052, region="Dogtown"),
     "q305_prison_convoy": LocationData(display_name="DLC - Black Steel In The Hour of Chaos", code=1053, region="Dogtown"),
-    "q305_bunker": LocationData(display_name="DLC - Somewhat Damaged", code=10, region="Dogtown"),
+    "q305_bunker": LocationData(display_name="DLC - Somewhat Damaged", code=1058, region="Dogtown"),
     "q305_border_crossing": LocationData(display_name="DLC - Leave in Silence", code=1054, region="Dogtown"),
     "q306_devils_bargain": LocationData(display_name="DLC - The Killing Moon", code=1055, region="Dogtown"),
     "q307_before_tomorrow": LocationData(display_name="DLC - Who Wants to Live Forever", code=1056, region="Dogtown"),
@@ -156,118 +155,36 @@ location_table: Dict[str, LocationData] = {
     # =================================
 
     # =================================
-    # Tarot Cards
-    # =================================
-
-    # =================================
-    #
+    # Tarot
     # =================================
 
     # =================================
     # Cyber Psycho Sighting Locations
     # ==================================
-    "ma_wat_nid_22": LocationData(
-        display_name="Cyberpsycho Sighting: Six Feet Under",
-        code=3000,
-        region="Watson"
-    ),
-
-    "ma_wat_nid_15": LocationData(
-        display_name="Cyberpsycho Sighting: Bloody Ritual",
-        code=3001,
-        region="Watson"
-    ),
-
-    "ma_wat_nid_03": LocationData(
-        display_name="Cyberpsycho Sighting: Where the Bodies Hit the Floor",
-        code=3002,
-        region="Watson"
-    ),
-
-    "ma_wat_kab_02": LocationData(
-        display_name="Cyberpsycho Sighting: Demons of War",
-        code=3003,
-        region="Watson"
-    ),
-
-    "ma_wat_kab_08": LocationData(
-        display_name="Cyberpsycho Sighting: Lt. Mower",
-        code=3004,
-        region="Watson"
-    ),
-
-    "ma_wat_lch_06": LocationData(
-        display_name="Cyberpsycho Sighting: Ticket to the Major Leagues",
-        code=3005,
-        region="Watson"
-    ),
-
-    "ma_bls_ina_se1_07": LocationData(
-        display_name="Cyberpsycho Sighting: The Wasteland",
-        code=3006,
-        region="Badlands"
-    ),
-
-    "ma_bls_ina_se1_08": LocationData(
-        display_name="Cyberpsycho Sighting: House on a Hill",
-        code=3007,
-        region="Badlands"
-    ),
-
-    "ma_bls_ina_se1_22": LocationData(
-        display_name="Cyberpsycho Sighting: Second Chances",
-        code=3008,
-        region="Badlands"
-    ),
-
-    "ma_cct_dtn_03": LocationData(
-        display_name="Cyberpsycho Sighting: On Deaf Ears",
-        code=3009,
-        region="City Center"
-    ),
-
-    "ma_cct_dtn_07": LocationData(
-        display_name="Cyberpsycho Sighting: Phantom of Night City",
-        code=3010,
-        region="City Center"
-    ),
-
-    "ma_hey_spr_04": LocationData(
-        display_name="Cyberpsycho Sighting: Seaside Cafe",
-        code=3011,
-        region="Heywood"
-    ),
-
-    "ma_hey_spr_06": LocationData(
-        display_name="Cyberpsycho Sighting: Letter of the Law",
-        code=3012,
-        region="Heywood"
-    ),
-
-    "ma_pac_cvi_08": LocationData(
-        display_name="Cyberpsycho Sighting: Smoke on the Water",
-        code=3013,
-        region="Pacifica"
-    ),
-
-    "ma_pac_cvi_15": LocationData(
-        display_name="Cyberpsycho Sighting: Lex Talionis",
-        code=3014,
-        region="Pacifica"
-    ),
-
-    "ma_std_arr_06": LocationData(
-        display_name="Cyberpsycho Sighting: Under the Bridge",
-        code=3015,
-        region="Santo Domingo"
-    ),
-
-    "ma_std_rcr_11": LocationData(
-        display_name="Cyberpsycho Sighting: Discount Doc",
-        code=3016,
-        region="Santo Domingo"
-    ),
+    "ma_wat_nid_22": LocationData(display_name="Cyberpsycho Sighting: Six Feet Under", code=3000, region="Watson"),
+    "ma_wat_nid_15": LocationData(display_name="Cyberpsycho Sighting: Bloody Ritual", code=3001, region="Watson"),
+    "ma_wat_nid_03": LocationData(display_name="Cyberpsycho Sighting: Where the Bodies Hit the Floor", code=3002, region="Watson"),
+    "ma_wat_kab_02": LocationData(display_name="Cyberpsycho Sighting: Demons of War", code=3003, region="Watson"),
+    "ma_wat_kab_08": LocationData(display_name="Cyberpsycho Sighting: Lt. Mower", code=3004, region="Watson"),
+    "ma_wat_lch_06": LocationData(display_name="Cyberpsycho Sighting: Ticket to the Major Leagues", code=3005, region="Watson"),
+    "ma_bls_ina_se1_07": LocationData(display_name="Cyberpsycho Sighting: The Wasteland",code=3006,region="Badlands"),
+    "ma_bls_ina_se1_08": LocationData(display_name="Cyberpsycho Sighting: House on a Hill",code=3007,region="Badlands"),
+    "ma_bls_ina_se1_22": LocationData(display_name="Cyberpsycho Sighting: Second Chances",code=3008,region="Badlands"),
+    "ma_cct_dtn_03": LocationData(display_name="Cyberpsycho Sighting: On Deaf Ears",code=3009,region="City Center"),
+    "ma_cct_dtn_07": LocationData(display_name="Cyberpsycho Sighting: Phantom of Night City", code=3010, region="City Center"),
+    "ma_hey_spr_04": LocationData(display_name="Cyberpsycho Sighting: Seaside Cafe", code=3011, region="Heywood"),
+    "ma_hey_spr_06": LocationData(display_name="Cyberpsycho Sighting: Letter of the Law", code=3012, region="Heywood"),
+    "ma_pac_cvi_08": LocationData(display_name="Cyberpsycho Sighting: Smoke on the Water", code=3013, region="Pacifica"),
+    "ma_pac_cvi_15": LocationData(display_name="Cyberpsycho Sighting: Lex Talionis",code=3014, region="Pacifica"),
+    "ma_std_arr_06": LocationData(display_name="Cyberpsycho Sighting: Under the Bridge", code=3015, region="Santo Domingo"),
+    "ma_std_rcr_11": LocationData(display_name="Cyberpsycho Sighting: Discount Doc", code=3016, region="Santo Domingo"),
     # =================================
+
+    # =================================
+    # Event Locations
+    # =================================
+    # Event locations have code=None and represent milestones or quest completions
+    # They auto-complete when accessible and are used for internal logic
 
     # ===== EVENT LOCATIONS =====
     # Event locations don't have codes (code=None) and represent milestones
@@ -281,11 +198,9 @@ location_table: Dict[str, LocationData] = {
     #     region="Menu"  # Event locations typically go in the Menu region
     # ),
 
-    # "Reached Cyberpunk Ending": LocationData(
-    #     display_name="Reached Cyberpunk Ending",
-    #     code=None,
-    #     region="Menu"
-    # ),
+    # NOTE: Victory event location is created manually in regions.py, NOT here
+    # Event locations created through location_table may get auto-assigned addresses
+    # which prevents them from being properly filtered as events
 }
 
 
@@ -293,20 +208,20 @@ location_table: Dict[str, LocationData] = {
 # These are automatically generated from location_table
 # Don't modify these manually - they're computed based on location_table
 
-# Dictionary mapping internal location IDs to their Archipelago codes
-# Example: {"q000_street_kid": 1000, "ma_wat_nid_22": 3000, ...}
+# Dictionary mapping display names to their Archipelago codes
+# Example: {"Prologue - The Streetkid": 1000, "Prologue - The Rescue": 1004, ...}
 # Filters out event locations (code=None) to get only real locations
-# This is what the game client should use for lookups
+# This is used by Archipelago for location lookups and UI display
 location_name_to_id: Dict[str, int] = {
-    name: data.code
+    data.display_name: data.code
     for name, data in location_table.items()
     if data.code is not None  # Exclude event locations
 }
 
-# Dictionary mapping internal location IDs to their display names
-# Example: {"q000_street_kid": "Prologue - StreetKid Intro", ...}
-# Use this to show human-readable names in the UI
-location_display_names: Dict[str, str] = {
+# Dictionary mapping internal game IDs to their display names
+# Example: {"q000_street_kid": "Prologue - The Streetkid", ...}
+# Use this to translate internal IDs from the game client to human-readable names
+location_internal_id_to_display_name: Dict[str, str] = {
     name: data.display_name
     for name, data in location_table.items()
 }
@@ -325,11 +240,11 @@ location_display_names: Dict[str, str] = {
 # ===== LOCATION LOOKUP DICTIONARIES =====
 # Don't modify these manually - they're computed based on location_table
 
-# Dictionary mapping Archipelago codes to internal location IDs (reverse lookup)
-# Example: {1000: "q000_street_kid", 3000: "ma_wat_nid_22", ...}
-# Bidirectional lookup - allows searching by code to get the internal ID
+# Dictionary mapping Archipelago codes to display names (reverse lookup)
+# Example: {1000: "Prologue - The Streetkid", 3000: "Cyberpsycho Sighting: Six Feet Under", ...}
+# Bidirectional lookup - allows searching by code to get the display name
 location_id_to_name: Dict[int, str] = {
-    data.code: name
+    data.code: data.display_name
     for name, data in location_table.items()
     if data.code is not None  # Exclude event locations
 }
@@ -505,3 +420,22 @@ def get_regular_locations() -> List[str]:
         for name, data in location_table.items()
         if data.code is not None
     ]
+
+
+def is_phantom_liberty_location(location_name: str) -> bool:
+    """
+    Check if a location is part of the Phantom Liberty DLC.
+
+    Phantom Liberty locations are all in the Dogtown region.
+    This helper function makes it easy to filter DLC content.
+
+    Args:
+        location_name: The location name to check
+
+    Returns:
+        True if the location is in Dogtown (Phantom Liberty DLC), False otherwise
+    """
+    location_data = location_table.get(location_name)
+    if location_data is None:
+        return False
+    return location_data.region == "Dogtown"

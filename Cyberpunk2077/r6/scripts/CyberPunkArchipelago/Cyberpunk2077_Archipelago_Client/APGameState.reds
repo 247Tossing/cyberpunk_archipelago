@@ -21,6 +21,12 @@ public class APGameState extends ScriptableService {
         }
     }
 
+    public func ResyncData() -> Void {
+        for item in this.items {
+            this.HandleItemReceived(item);
+        }
+    }
+
     public func HandleItemReceived(item: String) -> Void {
         LogChannel(n"DEBUG", "Received item: " + item);
         let parts: array<String> = StrSplit(item, "_");

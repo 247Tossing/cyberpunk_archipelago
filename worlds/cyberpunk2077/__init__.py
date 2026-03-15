@@ -16,7 +16,7 @@ from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
 from worlds.AutoWorld import World, WebWorld
 from worlds.LauncherComponents import Component, components, Type, launch
 from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups
-from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups
+from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups, location_internal_id_to_display_name
 from .options import Cyberpunk2077Options
 from .regions import create_regions
 from .rules import set_rules
@@ -191,6 +191,11 @@ class Cyberpunk2077World(World):
 
         # Add all defined items from item_table
         for item_name, item_data in item_table.items():
+            # Skip event items - they have code=None and are placed manually on event locations
+            # Event items should NEVER go in the item pool
+            if item_data.code is None:
+                continue
+
             # TODO: Add logic to determine how many of each item to include
             # For now, add each item once
             item_pool.append(self.create_item(item_name))
@@ -254,6 +259,29 @@ class Cyberpunk2077World(World):
         )
 
 
+    def create_event(self, name: str) -> Item:
+        """
+        Factory method to create an event item.
+
+        Event items are used for internal logic during generation and never
+        appear in the actual game. They represent in-game actions like completing
+        quests or defeating bosses, and are used to create logical dependencies.
+
+        Args:
+            name: The event item name (must exist in item_table with code=None)
+
+        Returns:
+            A new Cyberpunk2077Item instance for the event (with code=None)
+        """
+        item_data = item_table[name]
+        return Cyberpunk2077Item(
+            name,
+            item_data.classification,
+            None,  # Events always have code=None
+            self.player
+        )
+
+
     def set_rules(self) -> None:
         """
         Define access rules for regions and locations.
@@ -290,5 +318,7 @@ class Cyberpunk2077World(World):
             "death_link": bool(self.options.death_link.value),
             # TODO: Add skill_points_as_items option when implemented
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
+            # Mapping of internal game IDs to display names for UI
+            "location_internal_id_to_display_name": location_internal_id_to_display_name,
         }
         return slot_data
