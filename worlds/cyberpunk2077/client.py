@@ -54,13 +54,77 @@ class CyberpunkClientCommandProcessor(ClientCommandProcessor):
         if isinstance(self.ctx, CyberpunkContext):
             if self.ctx.game_connected:
                 self.output("Cyberpunk 2077 game is CONNECTED.")
-                self.output(f"Items received: {len(self.ctx.items_received)}")
+                self.output(f"Items received: {len(self.ctx.received_items)}")
+                self.output(f"Items sent: {self.ctx.items_sent_count}")
                 self.output(f"Locations checked: {len(self.ctx.checked_locations)}")
             else:
                 self.output("Cyberpunk 2077 game is NOT CONNECTED.")
                 self.output(f"Waiting on port {self.ctx.game_server_port}...")
         else:
             self.output("Not connected to a Cyberpunk 2077 session.")
+
+    def _cmd_queue(self) -> None:
+        """
+        Display item queue status
+        Usage: /queue
+        """
+        if isinstance(self.ctx, CyberpunkContext):
+            queue_size = self.ctx.item_send_queue.qsize()
+            total_received = len(self.ctx.received_items)
+            total_sent = self.ctx.items_sent_count
+            worker_running = (self.ctx.queue_worker_task and
+                            not self.ctx.queue_worker_task.done())
+
+            self.output("=" * 60)
+            self.output("Item Queue Status")
+            self.output("=" * 60)
+            self.output(f"Queue size:         {queue_size} item(s) waiting")
+            self.output(f"Items received:     {total_received}")
+            self.output(f"Items sent:         {total_sent}")
+            self.output(f"Items pending:      {total_received - total_sent}")
+            self.output(f"Worker running:     {'Yes' if worker_running else 'No'}")
+            self.output(f"Send delay:         {self.ctx.item_send_delay}s between items")
+            self.output(f"Game connected:     {'Yes' if self.ctx.game_connected else 'No'}")
+            self.output("=" * 60)
+
+            if queue_size > 0:
+                estimated_time = queue_size * self.ctx.item_send_delay
+                self.output(f"Estimated time to clear queue: ~{estimated_time:.1f}s")
+        else:
+            self.output("Not connected to a Cyberpunk 2077 session.")
+
+    def _cmd_itemdelay(self, delay: str = "") -> None:
+        """
+        Set or display the delay between item sends
+        Usage: /itemdelay [seconds]
+        Example: /itemdelay 1.0
+        """
+        if not isinstance(self.ctx, CyberpunkContext):
+            self.output("Not connected to a Cyberpunk 2077 session.")
+            return
+
+        if not delay:
+            # Display current delay
+            self.output(f"Current item send delay: {self.ctx.item_send_delay}s")
+            self.output("Use /itemdelay <seconds> to change (e.g., /itemdelay 1.0)")
+            return
+
+        try:
+            new_delay = float(delay)
+            if new_delay < 0.1:
+                self.output("Error: Delay must be at least 0.1 seconds")
+                return
+            if new_delay > 10.0:
+                self.output("Error: Delay cannot exceed 10 seconds")
+                return
+
+            old_delay = self.ctx.item_send_delay
+            self.ctx.item_send_delay = new_delay
+            self.output(f"Item send delay changed: {old_delay}s → {new_delay}s")
+            self.output("New delay will apply to next item sent.")
+
+        except ValueError:
+            self.output(f"Error: Invalid delay value '{delay}'. Must be a number (e.g., 0.5)")
 
 
 class CyberpunkContext(CommonContext):
@@ -101,12 +165,21 @@ class CyberpunkContext(CommonContext):
         self.location_internal_id_to_display_name: Dict[str, str] = {}
 
         # Item tracking
-        # Track items received from the Archipelago server
-        self.received_item_ids: List[int] = []
+        # Track ALL items received from the Archipelago server (including duplicates)
+        # Each NetworkItem is unique even if they have the same item ID
+        # Example: 3x "500 Eddies" = 3 separate NetworkItem objects
+        self.received_items: List[NetworkItem] = []
 
-        # Track which items we've sent to the game
-        # Prevents duplicate sends
-        self.items_sent_to_game: Set[int] = set()
+        # Track how many items we've successfully sent to the game
+        # Uses index-based counting instead of Set to allow duplicates
+        self.items_sent_count: int = 0
+
+        # Item sending queue and worker
+        # Queue system to send items sequentially with rate limiting
+        # Prevents overwhelming the RedSocket client with rapid-fire item commands
+        self.item_send_queue: asyncio.Queue[NetworkItem] = asyncio.Queue()
+        self.queue_worker_task: Optional[asyncio.Task] = None
+        self.item_send_delay: float = 0.25  # Seconds between items (configurable)
 
 
     async def server_auth(self, password_requested: bool = False) -> None:
@@ -165,15 +238,22 @@ class CyberpunkContext(CommonContext):
 
         elif cmd == "ReceivedItems":
             # Server sent us items
+            # Archipelago sends items incrementally with an index
+            # index = starting position in the full item list
+            # items = new items starting from that index
             start_index = args["index"]
             items: List[NetworkItem] = args["items"]
 
-            #print(f"Received {len(items)} items from Archipelago")
+            # Check if these are new items or a resend (can happen on reconnect)
+            if start_index < len(self.received_items):
+                # We already have these items, skip
+                logger.debug(f"Skipping {len(items)} items (already received, start_index={start_index})")
+                return
 
-            # Add items to our received list
-            for item in items:
-                if item.item not in self.received_item_ids:
-                    self.received_item_ids.append(item.item)
+            # Add all new items to our list
+            # Each NetworkItem is unique, even if they have the same item ID
+            self.received_items.extend(items)
+            logger.info(f"Received {len(items)} item(s) from Archipelago (total: {len(self.received_items)})")
 
             # Send new items to the game if connected
             if self.game_connected:
@@ -186,49 +266,128 @@ class CyberpunkContext(CommonContext):
 
     async def send_new_items_to_game(self) -> None:
         """
-        Send any items we haven't sent to the game yet
+        Add new items to the send queue.
+
+        Finds items that haven't been sent yet (by comparing sent count vs total received)
+        and adds them to the queue. The queue worker will process them sequentially.
+
+        This uses index-based tracking to allow duplicate items (e.g., 3x "500 Eddies"
+        will all be queued and sent, not deduplicated).
         """
         if not self.game_connected:
             return
 
-        # Find items we haven't sent yet
-        new_items = [
-            item_id for item_id in self.received_item_ids
-            if item_id not in self.items_sent_to_game
-        ]
+        # Find items we haven't sent yet (by index)
+        total_received = len(self.received_items)
 
-        # Send each new item
-        for item_id in new_items:
-            # Get internal game ID for RedScript
-            item_game_id = item_id_to_game_id.get(item_id)
-            if not item_game_id:
-                # Fallback for unknown items
-                logger.warning(f"Unknown item ID: {item_id}")
-                item_game_id = f"unknown_item_{item_id}"
+        if self.items_sent_count >= total_received:
+            # All items already sent or queued
+            return
 
-            # Get display name for logging
-            item_display_name = get_item_name_by_id(item_id) or item_game_id
+        # Get items from items_sent_count to end of list
+        # These are NetworkItem objects, not just IDs
+        new_items = self.received_items[self.items_sent_count:]
 
-            # Find who sent it (if available)
-            sender = "Unknown"
-            for network_item in self.items_received:
-                if network_item.item == item_id:
-                    sender = self.player_names.get(network_item.player, f"Player {network_item.player}")
-                    break
+        if not new_items:
+            return
 
-            # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>
-            # RedScript receives the internal game ID (e.g., "ap_qk_dex_keys") and sender
-            # RedScript must respond with OK/FAIL
-            response = await self.send_to_game(f"ITEM_RECEIVED:{item_game_id}:{sender}")
+        # Add each NetworkItem to the queue
+        for network_item in new_items:
+            await self.item_send_queue.put(network_item)
 
-            if response and response.startswith("ITEM_RECEIVED:OK"):
-                # Game acknowledged, mark as sent
-                self.items_sent_to_game.add(item_id)
-                #logger.info(f"✓ Sent item to game: {item_display_name} (game ID: {item_game_id}, from {sender})")
-            elif response and response.startswith("ITEM_RECEIVED:FAIL"):
-                logger.error(f"✗ Game failed to receive item: {item_display_name} (game ID: {item_game_id}) - {response}")
-            else:
-                logger.warning(f"✗ Game gave unexpected response for item {item_display_name} (game ID: {item_game_id}): {response}")
+        logger.info(f"Queued {len(new_items)} item(s) for sending (queue size: {self.item_send_queue.qsize()})")
+
+
+    async def item_queue_worker(self) -> None:
+        """
+        Background worker that processes the item send queue sequentially with rate limiting.
+
+        This worker runs continuously while the game is connected, popping items from the
+        queue one at a time and sending them to the game with a configurable delay between
+        each item. This prevents overwhelming the RedSocket client with rapid-fire commands.
+
+        The worker will:
+        - Pop items from the queue (with timeout to check connection status)
+        - Send ITEM_RECEIVED command to game
+        - Wait for OK/FAIL response
+        - Mark item as sent on success
+        - Apply configurable delay before processing next item
+        - Handle cancellation gracefully when game disconnects
+        """
+        logger.info(f"Item queue worker started (delay: {self.item_send_delay}s between items)")
+
+        try:
+            while self.game_connected:
+                try:
+                    # Pop NetworkItem from queue (not just ID)
+                    # Timeout allows us to check connection status periodically
+                    network_item: NetworkItem = await asyncio.wait_for(
+                        self.item_send_queue.get(),
+                        timeout=1.0
+                    )
+
+                except asyncio.TimeoutError:
+                    # No items in queue, check connection and loop again
+                    continue
+
+                # Get item ID from NetworkItem
+                item_id = network_item.item
+
+                # Get internal game ID for RedScript
+                item_game_id = item_id_to_game_id.get(item_id)
+                if not item_game_id:
+                    # Fallback for unknown items
+                    logger.warning(f"Unknown item ID in queue: {item_id}")
+                    item_game_id = f"unknown_item_{item_id}"
+
+                # Get display name for logging
+                item_display_name = get_item_name_by_id(item_id) or item_game_id
+
+                # Get sender from NetworkItem (not from searching items_received)
+                sender = self.player_names.get(network_item.player, f"Player {network_item.player}")
+
+                # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>
+                # RedScript receives the internal game ID (e.g., "ap_qk_dex_keys") and sender
+                # RedScript must respond with OK/FAIL
+                logger.info(f"Sending item to game: {item_display_name} (from {sender})")
+                response = await self.send_to_game(f"ITEM_RECEIVED:{item_game_id}:{sender}")
+
+                if response and response.startswith("ITEM_RECEIVED:OK"):
+                    # Game acknowledged, increment sent count
+                    self.items_sent_count += 1
+                    logger.info(f"✓ Item sent successfully: {item_display_name} ({self.items_sent_count}/{len(self.received_items)})")
+
+                elif response and response.startswith("ITEM_RECEIVED:FAIL"):
+                    # Game failed to receive item
+                    logger.error(f"✗ Game failed to receive item: {item_display_name} (game ID: {item_game_id}) - {response}")
+                    # Don't increment counter, item not marked as sent
+
+                else:
+                    # Unexpected response or timeout
+                    logger.warning(f"✗ Game gave unexpected response for item {item_display_name} (game ID: {item_game_id}): {response}")
+                    # Don't increment counter
+
+                # Mark queue task as done
+                self.item_send_queue.task_done()
+
+                # Apply rate limiting delay before processing next item
+                # Game processes items asynchronously in the engine
+                # Delay ensures previous item completes before next is sent
+                if self.game_connected and not self.item_send_queue.empty():
+                    await asyncio.sleep(self.item_send_delay)
+
+        except asyncio.CancelledError:
+            # Worker cancelled (game disconnected)
+            logger.info("Item queue worker cancelled (game disconnected)")
+            # Note: Items remaining in queue will be preserved for reconnect
+            raise  # Re-raise to properly handle cancellation
+
+        except Exception as e:
+            logger.error(f"Error in item queue worker: {e}")
+            # Worker will restart when game reconnects
+
+        finally:
+            logger.info("Item queue worker stopped")
 
 
     # ===== GAME CLIENT (RedScript TCP Client) COMMUNICATION =====
@@ -248,7 +407,7 @@ class CyberpunkContext(CommonContext):
             await self.game_server.start_serving()
 
             logger.info(f"=============================================================")
-            logger.info(f"  Cyberpunk 2077 TCP Server Started")
+            logger.info(f"  Cyberpunk 2077 AP Server Started")
             logger.info(f"  Listening on: localhost:{self.game_server_port}")
             logger.info(f"  Ready to accept connections...")
             logger.info(f"=============================================================")
@@ -267,18 +426,27 @@ class CyberpunkContext(CommonContext):
         """
         addr = writer.get_extra_info('peername')
         logger.info("")
-        logger.info("=============================================================")
-        logger.info(f"           Cyberpunk 2077 client connected!")
-        logger.info("=============================================================")
+        logger.info("===========================")
+        logger.info(f"    Game Connected")
+        logger.info("===========================")
 
         self.game_client_reader = reader
         self.game_client_writer = writer
         self.game_connected = True
 
+        # Start the item queue worker
+        # This background task processes items sequentially with rate limiting
+        self.queue_worker_task = asyncio.create_task(
+            self.item_queue_worker(),
+            name="item_queue_worker"
+        )
+
         # If already connected to Archipelago, sync now
         if self.archipelago_connected:
             #logger.info("Syncing items and configuration with game...")
             async_start(self.send_to_game("CONNECTED"))
+            # Queue any items that were received while game was disconnected
+            async_start(self.send_new_items_to_game())
 
         try:
             while True:
@@ -312,9 +480,26 @@ class CyberpunkContext(CommonContext):
         finally:
             # GAME DISCONNECTED - Cleanup game connection but stay connected to Archipelago
             logger.info("")
-            logger.info("═════════════════════════════════════════════════════════════")
-            logger.info("  Game disconnected!")
-            logger.info("═════════════════════════════════════════════════════════════")
+            logger.info("============================")
+            logger.info("     Game disconnected")
+            logger.info("============================")
+            logger.info("")
+
+            # Stop the queue worker before setting game_connected to False
+            # This ensures a clean shutdown of the worker task
+            if self.queue_worker_task and not self.queue_worker_task.done():
+                self.queue_worker_task.cancel()
+                try:
+                    await self.queue_worker_task
+                except asyncio.CancelledError:
+                    pass  # Expected when cancelling the task
+                except Exception as e:
+                    logger.error(f"Error stopping queue worker: {e}")
+
+            # Log queue status if there are remaining items
+            queue_size = self.item_send_queue.qsize()
+            if queue_size > 0:
+                logger.info(f"  Note: {queue_size} item(s) remain in queue (will resume on reconnect)")
 
             self.game_connected = False
             self.game_client_writer = None
@@ -696,14 +881,14 @@ if __name__ == "__main__":
     launch()
 
 
-# ═════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 # PROTOCOL DOCUMENTATION FOR REDSCRIPT MOD
-# ═════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 
 """
-═══════════════════════════════════════════════════════════════════════════════
+==============================================================================
 SIMPLE TEXT-BASED TCP PROTOCOL
-═══════════════════════════════════════════════════════════════════════════════
+==============================================================================
 
 Connection Setup:
 RedScript connects to localhost:(port)
@@ -715,9 +900,10 @@ Message Format:
 - RedScript should send: "COMMAND:PARAMS\r\n"
 - Python server responds: "RESPONSE\r\n"
 
-═══════════════════════════════════════════════════════════════════════════════
+==============================================================================
 COMMANDS FROM REDSCRIPT TO PYTHON SERVER
-═══════════════════════════════════════════════════════════════════════════════
+==============================================================================
+
 
 1. HELLO:<client_version>
    Version handshake - verify client/server compatibility
@@ -874,9 +1060,9 @@ COMMANDS FROM REDSCRIPT TO PYTHON SERVER
     ← DISCONNECT:OK
 
 
-═══════════════════════════════════════════════════════════════════════════════
-COMMANDS FROM PYTHON SERVER TO REDSCRIPT (PUSHED)
-═══════════════════════════════════════════════════════════════════════════════
+#==============================================================================
+COMMANDS FROM PYTHON SERVER TO REDSCRIPT
+#==============================================================================
 
 These are sent automatically by the server when events occur.
 RedScript MUST respond to these commands.
@@ -923,9 +1109,9 @@ RedScript MUST respond to these commands.
    - Respond with DEATHLINK_RECEIVED:OK
 
 
-═══════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 TYPICAL SESSION FLOW
-═══════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 
 1. Game Startup:
    RedScript → TCP Connect to localhost:51234
@@ -964,9 +1150,9 @@ TYPICAL SESSION FLOW
    Python    ← DISCONNECT:OK
    RedScript → TCP Disconnect
 
-═══════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 ERROR HANDLING
-═══════════════════════════════════════════════════════════════════════════════
+#==============================================================================
 
 All errors follow the format: FAIL:<error_message>
 

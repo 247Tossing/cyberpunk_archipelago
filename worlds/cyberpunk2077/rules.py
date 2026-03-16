@@ -57,7 +57,8 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # Phantom Liberty
     # =================
 
-    # TODO: Add remaining quests
+    # TODO: Still need the remaining rules for Phantom Liberty quests, but this should be enough
+    # TODO: to make sure that the player wouldn't be locked by out-of-order logic once the blocker is in
     if world.options.include_phantom_liberty_dlc:
         # Require Myers' Plane Ticket to start Phantom Liberty
         set_rule(
@@ -177,6 +178,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         lambda state: state.has_any({"q000_street_kid", "q000_corpo", "q000_nomad"}, player)
     )
 
+    # Victory item is placed directly on each epilogue location in regions.py
     # Set access rule on Victory location - requires completing one of the ending questlines
     set_rule(
         world.multiworld.get_location("Victory", world.player),

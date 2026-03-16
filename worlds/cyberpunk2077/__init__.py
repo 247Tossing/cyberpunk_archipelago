@@ -225,9 +225,14 @@ class Cyberpunk2077World(World):
             Exception: If no filler items are defined in item_table
         """
         # Get all filler items from item_table
+        # NOTE: ItemClassification.filler = 0, so we check for ABSENCE of other type flags
+        # Filler items are those without progression, useful, or trap flags
+        # They may still have modifier flags like deprioritized or skip_balancing
         filler_items = [
             name for name, data in item_table.items()
-            if data.classification == ItemClassification.filler and data.code is not None
+            if (not (data.classification & (ItemClassification.progression |
+                                           ItemClassification.useful |
+                                           ItemClassification.trap))) and data.code is not None
         ]
 
         if not filler_items:

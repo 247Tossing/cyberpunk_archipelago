@@ -1,11 +1,14 @@
 module Archipelago
 
 public class APGameSystem extends ScriptableSystem {
-    let items: array<String>;
     let listenerID: Uint32;
 
     public func OnAttach() -> Void {
         LogChannel(n"DEBUG", "Cyberpunk 2077 Archipelago Game System Ready");
+    }
+
+    public func SyncData() -> Void {
+
     }
 
     //Deathlink    
@@ -32,12 +35,39 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func AddCyberware(cyberware: String) -> Void {
-        
+        //to be implemented
     }
 
     public func AddSkillPoint(skillPoint: String) -> Void {
         //let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
          
+    }
+
+    public func AddInventoryItem(item: String) -> Void {
+        let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+        if !IsDefined(player) {
+            return; 
+        }
+
+        let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
+        let tdbid: TweakDBID = TDBID.Create(item);
+        let invItem: ItemID = ItemID.FromTDBID(tdbid);
+        transactionSystem.GiveItem(player, invItem, 1);
+
+        LogChannel(n"INFO", s"Gave Item \(item)");
+    }
+
+    public func AddEddies(amount: Int32) -> Void {
+        let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+        if !IsDefined(player) {
+            return; 
+        }
+
+        let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
+        let moneyId: ItemID = ItemID.FromTDBID(t"Items.money");
+        transactionSystem.GiveItem(player, moneyId, amount);
+
+        LogChannel(n"INFO", "Gave Player Eddies");
     }
 
     public func DoTrap(trapName: String) {

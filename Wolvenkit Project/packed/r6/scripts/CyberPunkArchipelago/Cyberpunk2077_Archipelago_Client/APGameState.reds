@@ -49,6 +49,33 @@ public class APGameState extends ScriptableService {
             if StrCmp(itemType, "trp") == 0 {
                 this.HandleTrapReceived(item);
             }
+            if StrCmp(itemType, "ed") == 0 {
+                this.HandleEddiesReceived(item);
+            }
+            if StrCmp(itemType, "inv") == 0 {
+                this.HandleInventoryItemReceived(item);
+            }
+        }
+    }
+
+    public func HandleInventoryItemReceived(item: String) -> Void {
+        let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        let parts : array<String> = StrSplit(item, "_");
+        let itemID: String = "";
+        if ArraySize(parts) > 2 { //This is because some Item IDs in the game have _ in the item id, this makes sure it keeps the item ID in tact
+                let i: Int32 = 2; 
+                
+                while i < ArraySize(parts) {
+                    if i == 2 {
+                        itemID = parts[i];
+                    } else {
+                        itemID = itemID + "_" + parts[i];
+                    }
+                    i += 1;
+                }
+            }
+        if IsDefined(APGameSystem) {
+            APGameSystem.AddInventoryItem(itemID);
         }
     }
 
@@ -70,6 +97,14 @@ public class APGameState extends ScriptableService {
 
     public func HandleTrapReceived(trapName: String) -> Void {
         //LogChannel(n"DEBUG", "Handling received trap: " + trapName);
+    }
+
+    public func HandleEddiesReceived(eddies: String) -> Void {
+        let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        let parts: array<String> = StrSplit(eddies, "_");
+        let amount: Int32 = StringToInt(parts[3]);
+
+        APGameSystem.AddEddies(amount);
     }
 
     public func DiedFromDeathLink() -> Void {

@@ -156,7 +156,7 @@ public class APRedSocketTCPService extends IScriptable {
     }
 
     public cb func OnCommand(command: String) -> Void {
-        //LogChannel(n"DEBUG", "TCPClient: Server Response: " + command);
+        LogChannel(n"DEBUG", "TCPClient: Server Response: " + command);
         //First check if were receiving a HELLO response from the server
         if StrContains(command, "HELLO:") {
             this.HandleHelloResponse(command);
