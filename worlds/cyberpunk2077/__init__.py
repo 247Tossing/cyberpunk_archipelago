@@ -196,6 +196,11 @@ class Cyberpunk2077World(World):
             if item_data.code is None:
                 continue
 
+            # Skip DLC items if Phantom Liberty DLC is disabled
+            # Prevents unusable items from appearing in the item pool
+            if item_data.dlc_only and not self.options.include_phantom_liberty_dlc:
+                continue
+
             # TODO: Add logic to determine how many of each item to include
             # For now, add each item once
             item_pool.append(self.create_item(item_name))

@@ -63,10 +63,13 @@ location_table: Dict[str, LocationData] = {
     #==================================
     # Prologue Locations
     #==================================
-    # TODO: Make sure that the rules only use one of the path checks during generation
-    "q000_street_kid": LocationData(display_name="Prologue - The Streetkid", code=1000, region="Watson"),
-    "q000_corpo": LocationData(display_name="Prologue - The Corpo-Rat", code=1001, region="Watson"),
-    "q000_nomad": LocationData(display_name="Prologue - The Nomad", code=1002, region="Watson"),
+    # NOTE: Lifepath intros are EVENT locations (code=None)
+    # All 3 grant the same "Lifepath Chosen" event item
+    # Player only completes ONE lifepath per playthrough (can't restart to get all 3)
+    # This ensures player doesn't need to replay game 3 times to complete all checks
+    "q000_street_kid": LocationData(display_name="Prologue - The Streetkid", code=None, region="Watson"),
+    "q000_corpo": LocationData(display_name="Prologue - The Corpo-Rat", code=None, region="Watson"),
+    "q000_nomad": LocationData(display_name="Prologue - The Nomad", code=None, region="Watson"),
     # Tutorial might get re-added if requested
     #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", code=1003, region="Watson"),
     "q001_intro": LocationData(display_name="Prologue - The Rescue", code=1004, region="Watson"),

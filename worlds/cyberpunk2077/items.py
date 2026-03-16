@@ -40,10 +40,14 @@ class ItemData:
                        Multiple flags can be combined using the | (OR) operator:
                        - progression | useful: An especially useful progression item
                        - progression | skip_balancing: Progression that won't be moved by balancing
+        dlc_only: Whether this item requires Phantom Liberty DLC (default: False)
+                 Items marked dlc_only=True are excluded from the item pool when
+                 include_phantom_liberty_dlc option is disabled
     """
     name: str
     code: Optional[int]  # None for event items
     classification: ItemClassification
+    dlc_only: bool = False  # True for Phantom Liberty DLC items
 
 
 # ===== ITEM CLASSIFICATION TYPES =====
@@ -119,6 +123,16 @@ item_table: Dict[str, ItemData] = {
     # Prologue Items
     #====================================
 
+    # Lifepath Chosen Event
+    # Granted when player completes any one of the 3 lifepath intros
+    # (Streetkid, Corpo, or Nomad)
+    # Used to unlock district access - player only needs ONE lifepath, not all 3
+    "Lifepath Chosen": ItemData(
+        name="ap_ev_lifepath_chosen",
+        code=None,  # Event item
+        classification=ItemClassification.progression
+    ),
+
     "Dex's Limo Keys": ItemData(
         name="ap_qk_dex_keys",
         code=4000,  # base_id + 1
@@ -139,12 +153,14 @@ item_table: Dict[str, ItemData] = {
     #====================================
     # Phantom Liberty Items
     #====================================
+    # Items marked dlc_only=True are excluded when Phantom Liberty DLC is disabled
 
     # Has no effect currently
     "Myers' Plane Ticket": ItemData(
         name="ap_qk_myers_ticket",
         code=4002,
-        classification=ItemClassification.progression_deprioritized
+        classification=ItemClassification.progression_deprioritized,
+        dlc_only=True  # Phantom Liberty DLC required
     ),
 
     # ===== USEFUL ITEMS =====

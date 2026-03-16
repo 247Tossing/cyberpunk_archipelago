@@ -166,8 +166,37 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     connect_regions(world, regions["Orbital Station"], regions["City Center"], "Orbital Station to City Center")
 
     # TODO: Add more connections as needed
-    # TODO: Add access rules to connections in rules.py
-    # Example: Might need to complete certain quests to unlock some districts
+
+    # ===== SET REGION ACCESS RULES =====
+    # Set basic access rules on regions to ensure accessibility check passes
+    # These rules apply to ALL locations within each region
+    # More specific location rules can be added in rules.py
+
+    # All main districts require completing the prologue (having chosen a lifepath)
+    # This ensures the generator knows these areas aren't accessible from the start
+    # NOTE: "Lifepath Chosen" is an event granted by completing any ONE of the 3 lifepath intros
+    # (Streetkid, Corpo, or Nomad) - player doesn't need to complete all 3
+    lifepath_event = "Lifepath Chosen"
+
+    # Watson is the starting region, accessible from Menu with "New Game"
+    # No additional requirements beyond entering the game
+
+    # Other districts require having completed a lifepath intro
+    for region_name in ["Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands"]:
+        region = regions[region_name]
+        # Region is accessible if player has the "Lifepath Chosen" event
+        # Using a closure to capture the correct world.player value
+        region.access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
+
+    # Special regions with additional requirements can be set here
+    # Example: Dogtown requires Phantom Liberty DLC
+    if world.options.include_phantom_liberty_dlc:
+        regions["Dogtown"].access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
+
+    # North Oak, Afterlife, Cyberspace, Orbital Station also require lifepath
+    for region_name in ["North Oak", "Afterlife", "Cyberspace", "Orbital Station"]:
+        region = regions[region_name]
+        region.access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
 
 
 def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
@@ -200,6 +229,22 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
         if location_data.region == region_name:
             # Handle event locations - they have code=None
             if location_data.code is None:
+                # Special case: Lifepath intros all grant the same "Lifepath Chosen" event
+                # Player completes ONE lifepath (Streetkid, Corpo, or Nomad) per playthrough
+                # All 3 grant "Lifepath Chosen" event, but player only gets one
+                if location_name in ["q000_street_kid", "q000_corpo", "q000_nomad"]:
+                    event_location = Cyberpunk2077Location(
+                        world.player,
+                        location_name,
+                        None,
+                        region
+                    )
+                    # All 3 lifepaths grant the same "Lifepath Chosen" event
+                    event_location.place_locked_item(world.create_event("Lifepath Chosen"))
+                    region.locations.append(event_location)
+                    continue
+
+                # Normal event location handling
                 # Event location - create it and add to region
                 event_location = Cyberpunk2077Location(
                     world.player,
