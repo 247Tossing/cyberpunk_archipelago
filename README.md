@@ -20,13 +20,13 @@ There are checks for every major story quests and most side quests as well the c
 ## Requirements
 
 You will need the following mods for this to work:
-| Mod          | Link |
+| Mod          | Github Link | Nexusmods Link |
 | ----------------- | ------------------------------------------------------------------ |
-| RedScript 0.5.31 | [Github Link](https://github.com/jac3km4/redscript)|
-| Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) |
+| RedScript 0.5.31 | [Github Link](https://github.com/jac3km4/redscript)| [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/1511)
+| Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/107)
+| Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/7780)
+| Red4Ext | [Github Link](https://github.com/wopss/RED4ext) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/2380)
 | RedSocket | [Github Link](https://github.com/rayshader/cp2077-red-socket) |
-| Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) |
-| Red4Ext | [Github Link](https://github.com/wopss/RED4ext) |
 
 ## Mod Installation
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
