@@ -19,6 +19,7 @@ You will need the following mods for this to work:
 | Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) |
 | RedSocket | [Github Link](https://github.com/rayshader/cp2077-red-socket) |
 | Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) |
+| Red4Ext | [Github Link](https://github.com/wopss/RED4ext) |
 
 ## Mod Installation
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
