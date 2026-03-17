@@ -40,6 +40,19 @@ You ***MUST*** restart the launcher before it will show up.
 6. From the CET overlay, put in either ```locahost``` or ```127.0.0.1``` in the Server IP field, and the Port you got from the AP Client into the ```Port``` field.
 7. Profit. Have Fun.
 
+## Linux Users (like me!)
+### For Heroic:
+1. Open the game settings
+2. Go to Advanced
+3. Scroll down to Environment Variables
+4. in the ```Variable Name```, put ```WINEDLLOVERRIDES```
+5. in the ```Value```, put ```"version,winmm=n,b"```
+
+### For Steam:
+1. Rightclick the game in Steam
+2. Select ```Properties```
+3. Under ```Launch Options```, ```put in WINEDLLOVERRIDES="version,winmm=n,b" %command%```
+
 ## What does this do?
 At the moment, not much.
 There are checks for every major story quests and most side quests as well the cyber psychos. There is one blocker in plan for "The Ride". More quests will be added as blockers over time.
