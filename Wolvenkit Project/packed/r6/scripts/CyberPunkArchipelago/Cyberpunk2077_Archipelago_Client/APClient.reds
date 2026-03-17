@@ -4,27 +4,27 @@ public class APGameSystem extends ScriptableSystem {
     let listenerID: Uint32;
 
     public func OnAttach() -> Void {
-        LogChannel(n"INFO", "Cyberpunk 2077 System Ready");
+        APLogger.LogInfo( "Cyberpunk 2077 System Ready");
     }
 
     public func SyncData() -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
         let gameStateItems: ref<APItemList> = APGameState.GetItems();
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        LogChannel(n"INFO", "Starting Sync");
-        //LogChannel(n"DEBUG", s"Game State Item List has \(ArraySize(gameStateItems.Items)) Items");
+        APLogger.LogInfo( "Starting Sync");
+        //APLogger.LogInfo( s"Game State Item List has \(ArraySize(gameStateItems.Items)) Items");
         for item in gameStateItems.Items {
             // Try to get the item from the FactsDB.
             let itemCountFromFact: Int32 = questSystem.GetFact(StringToName(item.itemID));
             let stateCount = item.totalFromAP;
 
-            //LogChannel(n"DEBUG", s"Processing Item: \(item.itemID)");
-            //LogChannel(n"DEBUG", s"Local Item Count Is: \(itemCountFromFact) State Count is: \(stateCount)");
+            //APLogger.LogInfo( s"Processing Item: \(item.itemID)");
+            //APLogger.LogInfo( s"Local Item Count Is: \(itemCountFromFact) State Count is: \(stateCount)");
 
             // If state has more than local, give the difference to player
             if itemCountFromFact < stateCount {
                 let difference: Int32 = stateCount - itemCountFromFact;
-                //LogChannel(n"DEBUG", s"Syncing \(difference)x \(item.itemID) to player");
+                //APLogger.LogInfo( s"Syncing \(difference)x \(item.itemID) to player");
 
                 if StrCmp(item.itemID, "Items.money") == 0
                 {
@@ -44,10 +44,10 @@ public class APGameSystem extends ScriptableSystem {
                     let totalWithDifference: Int32 = itemCountFromFact + difference;
                     questSystem.SetFact(StringToName(item.itemID), totalWithDifference);
                 }
-                //LogChannel(n"DEBUG", s"Sync complete for \(item.itemID)");
+                //APLogger.LogInfo( s"Sync complete for \(item.itemID)");
             }
         }
-        LogChannel(n"INFO", "Sync Complete");
+        APLogger.LogInfo( "Sync Complete");
     }
 
     //Deathlink    
@@ -68,7 +68,7 @@ public class APGameSystem extends ScriptableSystem {
     public func AddQuestKey(questKey: String) -> Void {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         if IsDefined(questSystem) {
-            //LogChannel(n"DEBUG", "Adding Quest Key: " + questKey);
+            //APLogger.LogInfo( "Adding Quest Key: " + questKey);
             questSystem.SetFact(StringToName(questKey), 1);
         }
     }
@@ -97,7 +97,7 @@ public class APGameSystem extends ScriptableSystem {
 
         transactionSystem.GiveItem(player, invItem, 1);
 
-        //LogChannel(n"INFO", s"Gave Item \(item)");
+        //APLogger.LogInfo( s"Gave Item \(item)");
     }
 
     public func AddEddies(amount: Int32) -> Void {
@@ -114,7 +114,7 @@ public class APGameSystem extends ScriptableSystem {
         questSystem.SetFact(StringToName("Items.money"), totalWithDifference);
         transactionSystem.GiveItem(player, moneyId, amount);
 
-        //LogChannel(n"INFO", "Gave Player Eddies");
+        //APLogger.LogInfo( "Gave Player Eddies");
     }
 
     public func DoTrap(trapName: String) {
@@ -128,9 +128,9 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     let result = wrappedMethod(evt);
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
     let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-    //LogChannel(n"DEBUG", s"Character Visible");
+    //APLogger.LogInfo( s"Character Visible");
     if IsDefined(APGameState) {
-        //LogChannel(n"DEBUG", "AP Game State Defined");
+        //APLogger.LogInfo( "AP Game State Defined");
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
     }
@@ -149,7 +149,7 @@ protected cb func OnShowDeathMenu() -> Bool {
 
     let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
     if IsDefined(APGameState) && APGameState.diedFromDeathLink {
-        LogChannel(n"INFO", "Death caused by Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
+        APLogger.LogInfo( "Death caused by Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
         return wrappedMethod();
     }
     if IsDefined(tcpService) {
@@ -178,7 +178,7 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
             
             // Extract the string ID
             let questStringId: String = questEntry.GetId();
-            //LogChannel(n"DEBUG", "Quest Completed: " + questStringId);
+            //APLogger.LogInfo( "Quest Completed: " + questStringId);
             
             // send to the archipelago server
             let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;

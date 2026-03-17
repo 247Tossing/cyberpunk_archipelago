@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/17/2026 2:53:09 AM">
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/17/2026 4:09:02 AM">
   <Files>
-    <file>E:\CyperPunk2077\Cyberpunk 2077\.redscript</file>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc">
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod">
@@ -15,8 +14,6 @@
           <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks">
             <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods">
               <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge">
-                <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\Cyberpunk_Archipelago_Bridge.log</file>
-                <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\db.sqlite3</file>
                 <file>E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins\cyber_engine_tweaks\mods\Cyberpunk_Archipelago_Bridge\init.lua</file>
               </Directory>
             </Directory>
@@ -31,6 +28,7 @@
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APClient.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APGameState.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APItemList.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APModLogger.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\TCPClient.reds</file>
           </Directory>
         </Directory>
