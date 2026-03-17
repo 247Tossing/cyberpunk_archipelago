@@ -10,6 +10,11 @@ It is currently prone to **generation issues**. Thar be dragons!
 I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listed in the Requirements are supported.
 ---
 
+## What does this do?
+At the moment, not much.
+There are checks for every major story quests and most side quests as well the cyber psychos. There is one blocker in place for "The Ride". More quests will get blockers over time.
+***Have Patience***
+
 # Installation
 
 ## Requirements
@@ -41,6 +46,9 @@ You ***MUST*** restart the launcher before it will show up.
 7. Profit. Have Fun.
 
 ## Linux Users (like me!)
+
+Before anything follow this guide: [Cyber Engine Tweaks Linux Instructions](https://wiki.redmodding.org/cyber-engine-tweaks/getting-started/installing/linux-proton)
+
 ### For Heroic:
 1. Open the game settings
 2. Go to Advanced
@@ -52,11 +60,6 @@ You ***MUST*** restart the launcher before it will show up.
 1. Rightclick the game in Steam
 2. Select ```Properties```
 3. Under ```Launch Options```, ```put in WINEDLLOVERRIDES="version,winmm=n,b" %command%```
-
-## What does this do?
-At the moment, not much.
-There are checks for every major story quests and most side quests as well the cyber psychos. There is one blocker in plan for "The Ride". More quests will be added as blockers over time.
-***Have Patience***
 
 ## What if something is broken?
 Open an [Issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose)
