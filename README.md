@@ -1,7 +1,7 @@
 
 # Cyberpunk 2077 Archipelago Mod
 
-A mod and client for Cyberpunk 2077 for Archipelago
+A mod and client for Cyberpunk 2077 for [Archipelago](https://archipelago.gg/)
 
 ## ⚠️ WARNING: Experimental Release
 **This current release is NOT recommended for use in large community async environments.**
