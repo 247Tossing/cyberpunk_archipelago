@@ -1,7 +1,7 @@
 module Archipelago
 import RedSocket.*
 
-public class TCPClient extends ScriptableService { 
+public class TCPClient extends ScriptableService {  
     private let socketService: ref<APRedSocketTCPService>;
 
     public func SendDeathLink() -> Void {
@@ -36,6 +36,11 @@ public class TCPClient extends ScriptableService {
         this.AttemptConnectionToAPServer(ip, Cast<Uint16>(port), slotName);
     }
 
+    public func SendSyncCompleteResponse(currentCount: Int32) -> Void {
+        //LogChannel(n"DEBUG", s"TCPClient: Sending SYNC_COMPLETE with count \(currentCount)");
+        this.socketService.SendMessage(s"SYNC_COMPLETE:CURRENT_COUNT:\(currentCount)\r\n");
+    }
+
     public func SendReadySignal() -> Void {
         if IsDefined(this.socketService) && this.socketService.isConnected {
             //LogChannel(n"DEBUG", "TCPClient: Sending Ready Signal to server.");
@@ -57,7 +62,7 @@ public class TCPClient extends ScriptableService {
             this.socketService.Connect();
         }
         else {
-            LogChannel(n"DEBUG", "TCPClient: Socket service already initialized. Ignoring duplicate connection attempt.");
+            //LogChannel(n"DEBUG", "TCPClient: Socket service already initialized. Ignoring duplicate connection attempt.");
         }
     }
 
@@ -109,7 +114,7 @@ public class APRedSocketTCPService extends IScriptable {
     // 2. Open the connection
     public final func Connect() -> Void {
         if IsDefined(this.socket) && !this.isConnected {
-            LogChannel(n"DEBUG", "TCPClient: Attempting Connection to TCP Server at " + this.ip + ":" + ToString(this.port));
+            LogChannel(n"INFO", "Attempting Connection To:" + this.ip + ":" + ToString(this.port));
             
             this.socket.RegisterListener(this, n"OnCommand", n"OnConnected", n"OnDisconnected");
 
@@ -132,7 +137,7 @@ public class APRedSocketTCPService extends IScriptable {
     // 4. Safely close the connection (Crucial for when the player quits to desktop)
     public final func Disconnect() -> Void {
         if IsDefined(this.socket) && this.isConnected {
-            LogChannel(n"DEBUG", "TCPClient: Closing connection.");
+            LogChannel(n"INFO", "Closing connection.");
             this.socket.Disconnect();
             this.isConnected = false;
         }
@@ -141,22 +146,22 @@ public class APRedSocketTCPService extends IScriptable {
     public cb func OnConnected(status: Int32) -> Void {
         //LogChannel(n"DEBUG", "TCPClient: Status recieved");
         if status == 0 {
-            LogChannel(n"DEBUG", "TCPClient: Successfully connected to Cyberpunk AP Client Server.");
+            LogChannel(n"INFO", "Successfully connected to Cyberpunk AP Client Server.");
             this.isConnected = true;
             this.SendHello();
         } else {
-            LogChannel(n"DEBUG", "TCPClient: Failed to connect to Cyberpunk AP Client server. Status code: " + ToString(status));
+            LogChannel(n"ERROR", "TCPClient: Failed to connect to Cyberpunk AP Client server. Status code: " + ToString(status));
             this.isConnected = false;
         }
     }
 
     public cb func OnDisconnected() -> Void {
-        LogChannel(n"DEBUG", "TCPClient: Disconnected from Cyberpunk AP Client Server.");
+        LogChannel(n"INFO", "Disconnected from Cyberpunk AP Client Server.");
         this.isConnected = false;
     }
 
     public cb func OnCommand(command: String) -> Void {
-        LogChannel(n"DEBUG", "TCPClient: Server Response: " + command);
+        //LogChannel(n"DEBUG", "TCPClient: Server Response: " + command);
         //First check if were receiving a HELLO response from the server
         if StrContains(command, "HELLO:") {
             this.HandleHelloResponse(command);
@@ -222,8 +227,10 @@ Below is handler methods for processing incoming commands from the server.
             if StrCmp(parts[0], "ITEM_RECEIVED") == 0 {
                 let itemName: String = parts[1];
                 let senderName: String = parts[2];
+                let itemDisplayName: String = parts[3];
                 //LogChannel(n"DEBUG", "TCPClient: Item received from server: " + itemName + " sent by " + senderName);
                 // Here you would add code to actually grant the item to the player in-game
+                LogChannel(n"INFO", s"Received \(itemDisplayName) from \(senderName)");
                 let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
                 APGameState.HandleItemReceived(itemName);
                 this.SendMessage(s"ITEM_RECEIVED:OK\r\n");
@@ -250,7 +257,7 @@ Below is the full handshake process
         // Safety check: ensure we have exactly 3 parts (HELLO, Version, Status)
         if ArraySize(parts) == 3 {
             let command: String = parts[0];
-            let serverVersion: String = parts[1];
+            //let serverVersion: String = parts[1];
             let status: String = parts[2];
             
             // StrCmp returns 0 if the strings are identical
@@ -264,7 +271,7 @@ Below is the full handshake process
                     
                 } else if StrCmp(status, "FAIL") == 0 {
                     // Handshake failed! Alert the user.
-                    LogChannel(n"WARN", "TCPClient: Version mismatch! The server requires version " + this.CyberpunkTCPServerRequiredVersion + ". Please update from GitHub.");
+                    LogChannel(n"ERROR", "TCPClient: Version mismatch! The server requires version " + this.CyberpunkTCPServerRequiredVersion + ". Please update from GitHub.");
                 }
             }
         } else {
@@ -292,7 +299,7 @@ Below is the full handshake process
                     // Now that we're connected and authenticated, we can start sending/receiving game state updates
                     this.SendSyncItemsRequest();
                 } else {
-                    LogChannel(n"WARN", "TCPClient: Failed to connect to Archipelago server with slot " + this.slotName);
+                    LogChannel(n"ERROR", "TCPClient: Failed to connect to Archipelago server with slot " + this.slotName);
                 }
             }
         } else {
@@ -303,7 +310,21 @@ Below is the full handshake process
 
     private func SendSyncItemsRequest() -> Void {
         //LogChannel(n"DEBUG", "TCPClient: Sending SYNC_ITEMS request");
-        let payload: String = "SYNC_ITEMS";
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        let totalItemCount: Int32;
+
+        // Get the total NetworkItems received count from persistent storage
+        // This tracks the index into the Python server's received_items list
+        if IsDefined(APGameState) {
+            for item in APGameState.items.Items {
+                totalItemCount = totalItemCount + item.totalFromAP;
+            }
+        }
+        else {
+            totalItemCount = 0;
+        }
+
+        let payload: String = s"SYNC_ITEMS:CURRENT_COUNT:\(totalItemCount)";
         this.SendMessage(payload);
     }
 
@@ -315,6 +336,8 @@ Below is the full handshake process
             let itemsHeader: String = parts[1];
             let itemsString: String = parts[2];
 
+            //LogChannel(n"DEBUG", s"Command: \(command) itemsHeader: \(itemsHeader) itemsString: \(itemsString)");
+
             if StrCmp(command, "SYNC_ITEMS") == 0 {
                 if StrCmp(itemsHeader, "ITEMS") == 0 {
                     //LogChannel(n"DEBUG", "TCPClient: SYNC_ITEMS response contains item list.");
@@ -322,12 +345,21 @@ Below is the full handshake process
                     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
                     APGameState.FeedItemsList(items);
 
-                    // After items are synced, request config
+                    // Send SYNC_COMPLETE to tell server we've processed the sync
+                    // This synchronizes server's items_sent_count with our totalItemsReceived
+                    let currentCount: Int32 = 0;
+                    if IsDefined(APGameState) {
+                        currentCount = ArraySize(APGameState.items.Items);
+                    }
+
+                    let payload: String = s"SYNC_ITEMS:CURRENT_COUNT:\(currentCount)\r\n";
+                    this.SendMessage(payload);
+
+                    // After sync complete, request config
                     this.SendSyncConfigRequest();
                 } else {
-                    LogChannel(n"WARN", "TCPClient: Failed to Sync Items, is the client connected to an Archipelago server?");
+                    LogChannel(n"ERROR", "TCPClient: Failed to Sync Items, is the client connected to an Archipelago server?");
                 }
-
             }
         } else {
             LogChannel(n"ERROR", "TCPClient: Malformed SYNC_ITEMS response from server.");
@@ -346,34 +378,43 @@ Below is the full handshake process
         if ArraySize(parts) >= 3 {
             let commandType: String = parts[0];
             let status: String = parts[1];
-            let configData: String = parts[2];
-
-            if StrCmp(commandType, "SYNC_CONFIG") == 0 && StrCmp(status, "CONFIG") == 0 {
-                //LogChannel(n"DEBUG", "TCPClient: Processing SYNC_CONFIG data.");
-                // Parse config data as comma-separated key:value pairs
-                let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-
-                if StrContains(configData, "skill_points_as_items:true") {
-                    APGameState.skillPointsAsItems = true;
-                    LogChannel(n"DEBUG", "TCPClient: Configured to treat skill points as items.");
+            let configData: String = "";
+            let i: Int32 = 2;
+            while i < ArraySize(parts) {
+                if i == 2 {
+                    configData = parts[i];
                 } else {
-                    APGameState.skillPointsAsItems = false;
-                    LogChannel(n"DEBUG", "TCPClient: Configured to NOT treat skill points as items.");
+                    configData = configData + "_" + parts[i];
                 }
-
-                if StrContains(configData, "death_link:true") {
-                    APGameState.enableDeathLink = true;
-                    LogChannel(n"DEBUG", "TCPClient: Configured to enable DeathLink.");
-                } else {
-                    APGameState.enableDeathLink = false;
-                    LogChannel(n"DEBUG", "TCPClient: Configured to disable DeathLink.");
-                }
-
-            } else {
-                LogChannel(n"WARN", "TCPClient: Received unknown config response in SYNC_CONFIG command.");
+                i += 1;
             }
-        } else {
-            LogChannel(n"ERROR", "TCPClient: Malformed SYNC_CONFIG command from server.");
+            
+            let configOptions: array<String> = StrSplit(configData, ",");
+            let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
+            
+            for option in configOptions {
+                //LogChannel(n"DEBUG", s"Option: \(option)");
+                if StrContains(option, "death_link") {
+                    if StrContains(option, "true") {
+                        APGameState.enableDeathLink = true;
+                        LogChannel(n"INFO", "Set Deathlink to Enabled");
+                    }
+                    else {
+                        APGameState.enableDeathLink = false;
+                    }
+                    
+                }
+                if StrContains(option, "skill_points_as_items") { //Not implemented
+                    if StrContains(option, "true") {
+                        APGameState.skillPointsAsItems = true;
+                    }
+                    else {
+                        APGameState.skillPointsAsItems = false;
+                    }
+                    
+                }
+            }
         }
     }
 
@@ -384,12 +425,12 @@ Below is the full handshake process
             if StrCmp(parts[0], "OK_READY") == 0 {
                 //LogChannel(n"DEBUG", "TCPClient: Server acknowledged ready signal. Starting game sync.");
                 if (StrCmp(parts[1], "OK") == 0) {
-                    LogChannel(n"DEBUG", "TCPClient: Ready signal accepted by server. You are now synced and will receive item updates.");
+                    LogChannel(n"INFO", "Client TCP Handshake Complete");
                 } else {
                     LogChannel(n"WARN", "TCPClient: Server did not accept ready signal: " + response);
                 }
             } else {
-                LogChannel(n"WARN", "TCPClient: Received unexpected response to ready signal: " + response);
+                LogChannel(n"ERROR", "TCPClient: Received unexpected response to ready signal: " + response);
             }
         }
     }

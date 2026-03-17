@@ -12,6 +12,10 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 from BaseClasses import Item, ItemClassification
 
+# Base ID for Cyberpunk 2077 location/item IDs
+# Must match the base_id in __init__.py
+BASE_ID = 2077000
+
 
 class Cyberpunk2077Item(Item):
     """
@@ -107,17 +111,22 @@ class ItemData:
 # This dictionary maps item names to their definitions
 # The item table is the single source of truth for all items in the game
 
-# TODO: Replace these example items with actual Cyberpunk 2077 items
-# The item codes should start at base_id + 1 and increment from there
-item_table: Dict[str, ItemData] = {
-    # ===== EXAMPLE PROGRESSION ITEMS =====
-    # These items are required to beat the game
-    # They might unlock new areas, allow access to quests, or enable critical gameplay
+# Item codes are OFFSETS that get added to base_id (2077000) when creating items
+# Codes stored here: 4000-9999 (offsets)
+# Actual Archipelago IDs: 2081000-2086999 (base_id + offset)
+# This range is separate from locations to avoid conflicts
 
-    # IDs starting with 4 are required for progression
-    # IDs starting with 5 are useful items
-    # IDs starting with 6 are filler items
-    # IDs starting with 7 are traps
+# Offset ranges by category:
+# 4000-4999: Progression items (keys, access items, story progression)
+# 5000-5999: Useful items (quickhacks, cyberware, weapons)
+# 6000-6999: Filler items (common items, money, consumables)
+# 7000-7999: Trap items (debuffs, penalties)
+# 8000-9999: Reserved for future content
+
+item_table: Dict[str, ItemData] = {
+    # ===== PROGRESSION ITEMS =====
+    # These items are required to progress through the game
+    # They unlock new areas, allow access to quests, or enable critical gameplay
 
     #====================================
     # Prologue Items
@@ -135,7 +144,7 @@ item_table: Dict[str, ItemData] = {
 
     "Dex's Limo Keys": ItemData(
         name="ap_qk_dex_keys",
-        code=4000,  # base_id + 1
+        code=4000,  # First progression item
         classification=ItemClassification.progression
     ),
 
@@ -653,7 +662,7 @@ item_table: Dict[str, ItemData] = {
 # Example: {"Mantis Blades": 77_2077_001, "Kerenzikov": 77_2077_002, ...}
 # Filters out event items (code=None) to get only real items
 item_name_to_id: Dict[str, int] = {
-    name: data.code
+    name: BASE_ID + data.code
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }
@@ -662,18 +671,20 @@ item_name_to_id: Dict[str, int] = {
 # Example: {4000: "Dex's Limo Keys", 5000: "Myers' Plane Ticket", ...}
 # Allows bidirectional lookup - searching by ID to get the display name
 # Used for Archipelago UI and logging
+# Stores full Archipelago IDs (BASE_ID + offset) as keys for server database
 item_id_to_name: Dict[int, str] = {
-    data.code: name
+    BASE_ID + data.code: name
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }
 
 # Dictionary mapping Archipelago IDs to internal game IDs
-# Example: {4000: "ap_qk_dex_keys", 5000: "ap_qk_myers_ticket", ...}
+# Example: {2081000: "ap_qk_dex_keys", 2085000: "ap_qk_myers_ticket", ...}
 # Used by the client to translate item IDs to game-recognizable identifiers
 # RedScript needs these internal IDs to give items to the player
+# Stores full Archipelago IDs (BASE_ID + offset) as keys for server communication
 item_id_to_game_id: Dict[int, str] = {
-    data.code: data.name  # Maps to ItemData.name field (internal game ID)
+    BASE_ID + data.code: data.name  # Maps to ItemData.name field (internal game ID)
     for name, data in item_table.items()
     if data.code is not None  # Exclude event items
 }
@@ -817,7 +828,7 @@ def get_item_name_by_id(item_id: int) -> Optional[str]:
     receiving item IDs over the network.
 
     Args:
-        item_id: The Archipelago item ID
+        item_id: The full Archipelago item ID (BASE_ID + offset)
 
     Returns:
         The item name, or None if not found
@@ -836,6 +847,6 @@ def get_item_id_by_name(item_name: str) -> Optional[int]:
         item_name: The item name
 
     Returns:
-        The Archipelago item ID, or None if not found
+        The full Archipelago item ID (BASE_ID + offset), or None if not found
     """
     return item_name_to_id.get(item_name, None)

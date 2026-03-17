@@ -229,22 +229,6 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
         if location_data.region == region_name:
             # Handle event locations - they have code=None
             if location_data.code is None:
-                # Special case: Lifepath intros all grant the same "Lifepath Chosen" event
-                # Player completes ONE lifepath (Streetkid, Corpo, or Nomad) per playthrough
-                # All 3 grant "Lifepath Chosen" event, but player only gets one
-                if location_name in ["q000_street_kid", "q000_corpo", "q000_nomad"]:
-                    event_location = Cyberpunk2077Location(
-                        world.player,
-                        location_name,
-                        None,
-                        region
-                    )
-                    # All 3 lifepaths grant the same "Lifepath Chosen" event
-                    event_location.place_locked_item(world.create_event("Lifepath Chosen"))
-                    region.locations.append(event_location)
-                    continue
-
-                # Normal event location handling
                 # Event location - create it and add to region
                 event_location = Cyberpunk2077Location(
                     world.player,
@@ -252,18 +236,20 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
                     None,
                     region
                 )
-                # Place the corresponding event item on this event location
+                # Automatically place an event item with the same name as the location
                 event_location.place_locked_item(world.create_event(location_name))
+
                 # Add event location to region so it can be found via get_location()
                 # It will be automatically filtered out when serializing to server
                 region.locations.append(event_location)
                 continue
 
             # Create regular location instance
+            # Add base_id to location code to get the full Archipelago location ID
             location = Cyberpunk2077Location(
                 world.player,
                 location_data.display_name,  # Use display name for UI
-                location_data.code,
+                world.base_id + location_data.code,  # Convert offset to full ID
                 region
             )
 

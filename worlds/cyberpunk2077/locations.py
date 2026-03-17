@@ -12,6 +12,10 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 from BaseClasses import Location
 
+# Base ID for Cyberpunk 2077 location/item IDs
+# Must match the base_id in __init__.py
+BASE_ID = 2077000
+
 
 class Cyberpunk2077Location(Location):
     """
@@ -46,14 +50,17 @@ class LocationData:
 # Keys are internal game IDs (what the game client sends)
 # Values contain display names, codes, and regions
 
-# TODO: Replace these example locations with actual Cyberpunk 2077 locations
-# The location codes should start at base_id + 1 and increment from there
+# Location codes are OFFSETS that get added to base_id (2077000) when creating locations
+# Codes stored here: 0-499 (offsets)
+# Actual Archipelago IDs: 2077000-2077499 (base_id + offset)
 # Organize locations by region/district for easier management
 
-# ID's are sorted into prefixes so its simpler to add to later
-# IDs starting with 1 are main quests
-# IDs starting with 2 are side quests
-# IDs starting with 3 are psychos
+# Offset ranges by category:
+# 1000-1999: Main quests (Prologue, Acts, Endings)
+# 2000-2999: Side quests
+# 3000-3999: Cyberpsycho Sightings
+# 4000-4999: Gigs and NCPD Scanner Hustles
+# 5000-5999: Reserved for future content
 
 location_table: Dict[str, LocationData] = {
     # =================================
@@ -63,13 +70,11 @@ location_table: Dict[str, LocationData] = {
     #==================================
     # Prologue Locations
     #==================================
-    # NOTE: Lifepath intros are EVENT locations (code=None)
-    # All 3 grant the same "Lifepath Chosen" event item
+    # NOTE: All 3 lifepath intros (Streetkid, Corpo, Nomad) map to this single location
     # Player only completes ONE lifepath per playthrough (can't restart to get all 3)
     # This ensures player doesn't need to replay game 3 times to complete all checks
-    "q000_street_kid": LocationData(display_name="Prologue - The Streetkid", code=None, region="Watson"),
-    "q000_corpo": LocationData(display_name="Prologue - The Corpo-Rat", code=None, region="Watson"),
-    "q000_nomad": LocationData(display_name="Prologue - The Nomad", code=None, region="Watson"),
+    # The 3 internal IDs are manually mapped to this location below
+    "Lifepath Chosen": LocationData(display_name="Lifepath Chosen", code=1000, region="Watson"),
     # Tutorial might get re-added if requested
     #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", code=1003, region="Watson"),
     "q001_intro": LocationData(display_name="Prologue - The Rescue", code=1004, region="Watson"),
@@ -110,7 +115,7 @@ location_table: Dict[str, LocationData] = {
     "q113_corpo": LocationData(display_name="Ending - Totalimmortal", code=1031, region="City Center"),
     "q114_01_nomad_initiation": LocationData(display_name="Ending - We Gotta Live Together", code=1032, region="Badlands"),
     "q114_02_maglev_line_assault": LocationData(display_name="Ending - Forward to Death", code=1033, region="Badlands"),
-    "q114_03_attack_on_arasaka_tower": LocationData(display_name="Ending - Belly of the Beast", code=1034,region="City Center"),
+    "q114_03_attack_on_arasaka_tower": LocationData(display_name="Ending - Belly of the Beast", code=1034, region="City Center"),
     "q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Watson"),
     "q115_rogues_last_flight": LocationData(display_name="Ending - Knockin' on Heaven's Door", code=1036,                                    region="City Center"),
     "q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Watson"),
@@ -170,10 +175,10 @@ location_table: Dict[str, LocationData] = {
     "ma_wat_kab_02": LocationData(display_name="Cyberpsycho Sighting: Demons of War", code=3003, region="Watson"),
     "ma_wat_kab_08": LocationData(display_name="Cyberpsycho Sighting: Lt. Mower", code=3004, region="Watson"),
     "ma_wat_lch_06": LocationData(display_name="Cyberpsycho Sighting: Ticket to the Major Leagues", code=3005, region="Watson"),
-    "ma_bls_ina_se1_07": LocationData(display_name="Cyberpsycho Sighting: The Wasteland",code=3006,region="Badlands"),
-    "ma_bls_ina_se1_08": LocationData(display_name="Cyberpsycho Sighting: House on a Hill",code=3007,region="Badlands"),
-    "ma_bls_ina_se1_22": LocationData(display_name="Cyberpsycho Sighting: Second Chances",code=3008,region="Badlands"),
-    "ma_cct_dtn_03": LocationData(display_name="Cyberpsycho Sighting: On Deaf Ears",code=3009,region="City Center"),
+    "ma_bls_ina_se1_07": LocationData(display_name="Cyberpsycho Sighting: The Wasteland",code=3006, region="Badlands"),
+    "ma_bls_ina_se1_08": LocationData(display_name="Cyberpsycho Sighting: House on a Hill",code=3007, region="Badlands"),
+    "ma_bls_ina_se1_22": LocationData(display_name="Cyberpsycho Sighting: Second Chances",code=3008, region="Badlands"),
+    "ma_cct_dtn_03": LocationData(display_name="Cyberpsycho Sighting: On Deaf Ears",code=3009, region="City Center"),
     "ma_cct_dtn_07": LocationData(display_name="Cyberpsycho Sighting: Phantom of Night City", code=3010, region="City Center"),
     "ma_hey_spr_04": LocationData(display_name="Cyberpsycho Sighting: Seaside Cafe", code=3011, region="Heywood"),
     "ma_hey_spr_06": LocationData(display_name="Cyberpsycho Sighting: Letter of the Law", code=3012, region="Heywood"),
@@ -215,8 +220,9 @@ location_table: Dict[str, LocationData] = {
 # Example: {"Prologue - The Streetkid": 1000, "Prologue - The Rescue": 1004, ...}
 # Filters out event locations (code=None) to get only real locations
 # This is used by Archipelago for location lookups and UI display
+# Stores full Archipelago IDs (BASE_ID + offset) for server database
 location_name_to_id: Dict[str, int] = {
-    data.display_name: data.code
+    data.display_name: BASE_ID + data.code
     for name, data in location_table.items()
     if data.code is not None  # Exclude event locations
 }
@@ -228,6 +234,13 @@ location_internal_id_to_display_name: Dict[str, str] = {
     name: data.display_name
     for name, data in location_table.items()
 }
+
+# Manual mappings: All 3 lifepath intro IDs map to the same "Lifepath Chosen" location
+# This allows the game to send CHECK:q000_street_kid, CHECK:q000_corpo, or CHECK:q000_nomad
+# and they all register as checking the same location
+location_internal_id_to_display_name["q000_street_kid"] = "Lifepath Chosen"
+location_internal_id_to_display_name["q000_corpo"] = "Lifepath Chosen"
+location_internal_id_to_display_name["q000_nomad"] = "Lifepath Chosen"
 
 
 # ===== LOCATION NAME GROUPS =====
@@ -246,8 +259,9 @@ location_internal_id_to_display_name: Dict[str, str] = {
 # Dictionary mapping Archipelago codes to display names (reverse lookup)
 # Example: {1000: "Prologue - The Streetkid", 3000: "Cyberpsycho Sighting: Six Feet Under", ...}
 # Bidirectional lookup - allows searching by code to get the display name
+# Stores full Archipelago IDs (BASE_ID + offset) as keys for server database
 location_id_to_name: Dict[int, str] = {
-    data.code: data.display_name
+    BASE_ID + data.code: data.display_name
     for name, data in location_table.items()
     if data.code is not None  # Exclude event locations
 }
@@ -337,7 +351,7 @@ def get_location_name_by_id(location_id: int) -> Optional[str]:
     receiving location IDs over the network.
 
     Args:
-        location_id: The Archipelago location ID
+        location_id: The full Archipelago location ID (BASE_ID + offset)
 
     Returns:
         The location name, or None if not found
@@ -356,7 +370,7 @@ def get_location_id_by_name(location_name: str) -> Optional[int]:
         location_name: The location name
 
     Returns:
-        The Archipelago location ID, or None if not found
+        The full Archipelago location ID (BASE_ID + offset), or None if not found
     """
     return location_name_to_id.get(location_name, None)
 

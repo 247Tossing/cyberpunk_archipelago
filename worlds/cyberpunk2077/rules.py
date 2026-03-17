@@ -68,8 +68,8 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         )
         # Require completing Phantom Liberty Start to access Dog Eat Dog
         set_rule(
-            world.multiworld.get_location("DLC - Dog Eat Dog", player),
-            lambda state: state.can_reach_location("DLC - Phantom Liberty", player)
+            world.multiworld.get_location("Phantom Liberty - Dog Eat Dog", player),
+            lambda state: state.can_reach_location("Phantom Liberty - Phantom Liberty", player)
         )
 
     #=============

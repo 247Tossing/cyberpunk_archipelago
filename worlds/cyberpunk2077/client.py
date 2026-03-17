@@ -181,6 +181,10 @@ class CyberpunkContext(CommonContext):
         self.queue_worker_task: Optional[asyncio.Task] = None
         self.item_send_delay: float = 0.25  # Seconds between items (configurable)
 
+        # Sync lock to prevent queue worker from interfering with handshake
+        # Set to True during handshake, False when ready for item sending
+        self.is_syncing: bool = False
+
 
     async def server_auth(self, password_requested: bool = False) -> None:
         """
@@ -247,13 +251,13 @@ class CyberpunkContext(CommonContext):
             # Check if these are new items or a resend (can happen on reconnect)
             if start_index < len(self.received_items):
                 # We already have these items, skip
-                logger.debug(f"Skipping {len(items)} items (already received, start_index={start_index})")
+                #logger.debug(f"Skipping {len(items)} items (already received, start_index={start_index})")
                 return
 
             # Add all new items to our list
             # Each NetworkItem is unique, even if they have the same item ID
             self.received_items.extend(items)
-            logger.info(f"Received {len(items)} item(s) from Archipelago (total: {len(self.received_items)})")
+            #logger.info(f"Received {len(items)} item(s) from Archipelago (total: {len(self.received_items)})")
 
             # Send new items to the game if connected
             if self.game_connected:
@@ -295,7 +299,7 @@ class CyberpunkContext(CommonContext):
         for network_item in new_items:
             await self.item_send_queue.put(network_item)
 
-        logger.info(f"Queued {len(new_items)} item(s) for sending (queue size: {self.item_send_queue.qsize()})")
+        #logger.info(f"Queued {len(new_items)} item(s) for sending (queue size: {self.item_send_queue.qsize()})")
 
 
     async def item_queue_worker(self) -> None:
@@ -314,10 +318,16 @@ class CyberpunkContext(CommonContext):
         - Apply configurable delay before processing next item
         - Handle cancellation gracefully when game disconnects
         """
-        logger.info(f"Item queue worker started (delay: {self.item_send_delay}s between items)")
+        #logger.info(f"Item queue worker started (delay: {self.item_send_delay}s between items)")
 
         try:
             while self.game_connected:
+                # Wait while handshake is in progress
+                # This prevents race condition with socket reader
+                if self.is_syncing:
+                    await asyncio.sleep(0.1)
+                    continue
+
                 try:
                     # Pop NetworkItem from queue (not just ID)
                     # Timeout allows us to check connection status periodically
@@ -346,26 +356,14 @@ class CyberpunkContext(CommonContext):
                 # Get sender from NetworkItem (not from searching items_received)
                 sender = self.player_names.get(network_item.player, f"Player {network_item.player}")
 
-                # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>
-                # RedScript receives the internal game ID (e.g., "ap_qk_dex_keys") and sender
-                # RedScript must respond with OK/FAIL
-                logger.info(f"Sending item to game: {item_display_name} (from {sender})")
-                response = await self.send_to_game(f"ITEM_RECEIVED:{item_game_id}:{sender}")
+                # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>:<display_name>
+                # RedScript receives the item and will send back ITEM_RECEIVED:OK as a separate command
+                # Using fire-and-forget to avoid concurrency issues with handle_game_client reading
+                await self.send_to_game_raw(f"ITEM_RECEIVED:{item_game_id}:{sender}:{item_display_name}")
 
-                if response and response.startswith("ITEM_RECEIVED:OK"):
-                    # Game acknowledged, increment sent count
-                    self.items_sent_count += 1
-                    logger.info(f"✓ Item sent successfully: {item_display_name} ({self.items_sent_count}/{len(self.received_items)})")
-
-                elif response and response.startswith("ITEM_RECEIVED:FAIL"):
-                    # Game failed to receive item
-                    logger.error(f"✗ Game failed to receive item: {item_display_name} (game ID: {item_game_id}) - {response}")
-                    # Don't increment counter, item not marked as sent
-
-                else:
-                    # Unexpected response or timeout
-                    logger.warning(f"✗ Game gave unexpected response for item {item_display_name} (game ID: {item_game_id}): {response}")
-                    # Don't increment counter
+                # Increment sent count immediately (game will process it)
+                self.items_sent_count += 1
+                #logger.info(f"→ Sent item to game: {item_display_name} (from {sender}) [{self.items_sent_count}/{len(self.received_items)}]")
 
                 # Mark queue task as done
                 self.item_send_queue.task_done()
@@ -378,7 +376,7 @@ class CyberpunkContext(CommonContext):
 
         except asyncio.CancelledError:
             # Worker cancelled (game disconnected)
-            logger.info("Item queue worker cancelled (game disconnected)")
+            #logger.info("Item queue worker cancelled (game disconnected)")
             # Note: Items remaining in queue will be preserved for reconnect
             raise  # Re-raise to properly handle cancellation
 
@@ -386,8 +384,8 @@ class CyberpunkContext(CommonContext):
             logger.error(f"Error in item queue worker: {e}")
             # Worker will restart when game reconnects
 
-        finally:
-            logger.info("Item queue worker stopped")
+        #finally:
+            #logger.info("Item queue worker stopped")
 
 
     # ===== GAME CLIENT (RedScript TCP Client) COMMUNICATION =====
@@ -434,19 +432,25 @@ class CyberpunkContext(CommonContext):
         self.game_client_writer = writer
         self.game_connected = True
 
+        # Set syncing flag to block queue worker during handshake
+        # This prevents race condition where queue worker and handshake both try to read from socket
+        if self.archipelago_connected:
+            self.is_syncing = True
+            #logger.info("Starting handshake - queue worker will wait...")
+
         # Start the item queue worker
         # This background task processes items sequentially with rate limiting
+        # It will wait while is_syncing = True
         self.queue_worker_task = asyncio.create_task(
             self.item_queue_worker(),
             name="item_queue_worker"
         )
 
-        # If already connected to Archipelago, sync now
-        if self.archipelago_connected:
-            #logger.info("Syncing items and configuration with game...")
-            async_start(self.send_to_game("CONNECTED"))
-            # Queue any items that were received while game was disconnected
-            async_start(self.send_new_items_to_game())
+        # If already connected to Archipelago, game will initiate handshake
+        # Don't call send_new_items_to_game() here - SYNC_ITEMS will handle catch-up
+        # if self.archipelago_connected:
+        #     # Handshake happens via game commands: HELLO → CONNECT_REQ → SYNC_ITEMS → SYNC_CONFIG
+        #     pass
 
         try:
             while True:
@@ -532,6 +536,7 @@ class CyberpunkContext(CommonContext):
             Response string to send back to RedScript (or None)
         """
         try:
+            #logger.info(f"processing command: '{command}'")
             # Split command by : delimiter
             parts = command.split(':')
             cmd = parts[0].upper()
@@ -546,7 +551,7 @@ class CyberpunkContext(CommonContext):
                     return "FAIL:Invalid HELLO format. Expected: HELLO:<client_version>"
 
                 client_version = parts[1]
-                print(f"HELLO from RedScript client version {client_version}")
+                #print(f"HELLO from RedScript client version {client_version}")
 
                 # Version compatibility check
                 # Simple version string comparison
@@ -554,10 +559,10 @@ class CyberpunkContext(CommonContext):
                 is_compatible = self._check_version_compatibility(client_version)
 
                 if is_compatible:
-                    print(f"✓ Client version {client_version} is compatible")
+                    print(f"Client version {client_version}")
                     return f"HELLO:{SERVER_VERSION}:OK"
                 else:
-                    logger.info(f"✗ Client version {client_version} is incompatible (requires >= {MIN_CLIENT_VERSION})")
+                    logger.info(f"Client version {client_version} is incompatible (requires >= {MIN_CLIENT_VERSION})")
                     return f"HELLO:{SERVER_VERSION}:FAIL"
 
 
@@ -570,17 +575,35 @@ class CyberpunkContext(CommonContext):
 
             # ===== SYNC_ITEMS =====
             elif cmd == "SYNC_ITEMS":
-                # SYNC_ITEMS
+                # SYNC_ITEMS:CURRENT_COUNT:<count>
                 # Returns: ITEMS:<name>,<name>,<name>... or ITEMS: (empty if none)
+                # Only returns NEW items (delta sync)
                 if not self.archipelago_connected:
                     return "SYNC_ITEMS:FAIL:Not connected to Archipelago server"
 
-                # Build comma-separated list of item names
-                if self.received_item_ids:
-                    # Convert IDs to names using our lookup function
+                # Parse current count from game (if provided)
+                current_count = 0
+                if len(parts) >= 3 and parts[1] == "CURRENT_COUNT":
+                    try:
+                        current_count = int(parts[2])
+                    except ValueError:
+                        #logger.warning(f"Invalid CURRENT_COUNT in SYNC_ITEMS: {parts[2]}")
+                        current_count = 0
+
+                # Get total items received from Archipelago
+                total_items = len(self.received_items)
+
+                # Calculate delta: only send items from current_count onwards
+                if current_count < total_items:
+                    # Get new items (NetworkItem objects)
+                    new_items = self.received_items[current_count:]
+
+                    # Convert NetworkItem objects to game IDs
                     item_game_ids = []
-                    for item_id in self.received_item_ids:
+                    for network_item in new_items:
+                        item_id = network_item.item
                         item_name = item_id_to_game_id.get(item_id)
+
                         if item_name:
                             item_game_ids.append(item_name)
                         else:
@@ -589,8 +612,11 @@ class CyberpunkContext(CommonContext):
                             item_game_ids.append(f"Unknown Item {item_id}")
 
                     item_list = ','.join(item_game_ids)
+                    #logger.info(f"SYNC_ITEMS: Sending {len(new_items)} new items (game has {current_count}, server has {total_items})")
                     return f"SYNC_ITEMS:ITEMS:{item_list}"
                 else:
+                    # Game is up to date or ahead
+                    #logger.info(f"SYNC_ITEMS: No new items (game has {current_count}, server has {total_items})")
                     return "SYNC_ITEMS:ITEMS:"
 
 
@@ -613,9 +639,39 @@ class CyberpunkContext(CommonContext):
                         config_pairs.append(f"{key}:{value_str}")
 
                     config_list = ','.join(config_pairs)
+
+                    # Handshake complete - allow queue worker to send items now
+                    self.is_syncing = False
+                    #logger.info("Handshake complete - queue worker can now send items")
+
                     return f"SYNC_CONFIG:CONFIG:{config_list}"
                 else:
+                    # Handshake complete even if no config
+                    self.is_syncing = False
+                    #logger.info("Handshake complete - queue worker can now send items")
+
                     return "SYNC_CONFIG:CONFIG:"
+
+            # ===== SYNC_COMPLETE =====
+            elif cmd == "SYNC_COMPLETE":
+                # SYNC_COMPLETE:CURRENT_COUNT:<count>
+                # Game finished processing SYNC_ITEMS, update our sent count
+                # This prevents the queue worker from re-sending items that were already synced
+
+                if len(parts) >= 3 and parts[1] == "CURRENT_COUNT":
+                    try:
+                        game_count = int(parts[2])
+                        # Update our sent count to match what the game has
+                        # This ensures queue worker only sends NEW items from this point
+                        self.items_sent_count = game_count
+                        #logger.info(f"SYNC_COMPLETE: Game confirmed {game_count} items received, server counter synchronized")
+                        return "SYNC_COMPLETE:OK"
+                    except ValueError:
+                        logger.warning(f"Invalid CURRENT_COUNT in SYNC_COMPLETE: {parts[2]}")
+                        return "SYNC_COMPLETE:FAIL:Invalid count"
+                else:
+                    return "SYNC_COMPLETE:FAIL:Invalid format"
+
 
             # ===== OK_READY =====
             elif cmd == "OK_READY":
@@ -652,12 +708,30 @@ class CyberpunkContext(CommonContext):
                         "cmd": "LocationChecks",
                         "locations": [location_id],
                     }])
-                    #logger.info(f"✓ Location checked: {display_name} ({location_id})")
                 else:
-                    # User requested NOT to return fail if it doesn't exist
-                    logger.warning(f"Unknown location name: {location_name} (display: {display_name}). Skipping check.")
+                    # Location lookup failed - log detailed error for debugging
+                    logger.error(f"Failed to check location: '{location_name}' (mapped to '{display_name}') - location ID not found")
+                    logger.error(f"  This location may not be defined in location_table or the mapping is incorrect")
 
                 return "CHECK:OK"
+
+
+            # ===== ITEM_RECEIVED:OK =====
+            elif cmd == "ITEM_RECEIVED" and len(parts) == 2 and parts[1] == "OK":
+                # Game successfully processed an item
+                # This is sent by RedScript after receiving ITEM_RECEIVED command
+                # No response needed - this is purely informational
+                logger.debug("✓ Game confirmed item received")
+                return ""  # No response needed
+
+
+            # ===== ITEM_RECEIVED:FAIL =====
+            elif cmd == "ITEM_RECEIVED" and len(parts) >= 2 and parts[1] == "FAIL":
+                # Game failed to process an item
+                # Format: ITEM_RECEIVED:FAIL:<reason>
+                reason = ":".join(parts[2:]) if len(parts) > 2 else "Unknown error"
+                logger.error(f"✗ Game failed to process item: {reason}")
+                return ""  # No response needed
 
 
             # ===== CHECK_REQ =====
@@ -797,7 +871,7 @@ class CyberpunkContext(CommonContext):
             )
 
             response = response_line.decode('utf-8').strip()
-            logger.debug(f"→ Game: {response}")
+            #debug(f"→ Game: {response}")
             return response
 
         except asyncio.TimeoutError:

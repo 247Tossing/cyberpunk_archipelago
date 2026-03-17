@@ -71,11 +71,11 @@ registerForEvent("onDraw", function()
 
     -- Connection status indicator
     if connectionStatus == "CONNECTED" then
-        ImGui.TextColored(0.0, 1.0, 0.0, 1.0, "● CONNECTED")
+        ImGui.TextColored(0.0, 1.0, 0.0, 1.0, "CONNECTED")
     elseif connectionStatus == "CONNECTING" then
-        ImGui.TextColored(1.0, 1.0, 0.0, 1.0, "● CONNECTING")
+        ImGui.TextColored(1.0, 1.0, 0.0, 1.0, "CONNECTING")
     else
-        ImGui.TextColored(1.0, 0.0, 0.0, 1.0, "● DISCONNECTED")
+        ImGui.TextColored(1.0, 0.0, 0.0, 1.0, "DISCONNECTED")
     end
 
     ImGui.SameLine()

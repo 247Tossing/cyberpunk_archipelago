@@ -82,8 +82,10 @@ class Cyberpunk2077World(World):
 
     # Base ID for items/locations
     # Archipelago assigns each game a unique ID range to avoid conflicts between games
-    # All item/location IDs for this game start from this number
-    base_id = 77_2077_000
+    # Cyberpunk 2077 uses the range: 2077000-2077999 (1000 IDs available)
+    # Format: 2077XXX where XXX is the specific offset for each item/location
+    # Locations: 2077000-2077499, Items: 2077500-2077999
+    base_id = 2077000
 
     # Minimum client version required to play this world
     # Format: (major, minor, patch) tuple
@@ -261,10 +263,13 @@ class Cyberpunk2077World(World):
             A new Cyberpunk2077Item instance with the correct properties
         """
         item_data = item_table[name]
+        # Add base_id to item code to get the full Archipelago item ID
+        # Event items (code=None) don't need base_id added
+        item_code = self.base_id + item_data.code if item_data.code is not None else None
         return Cyberpunk2077Item(
             name,
             item_data.classification,
-            item_data.code,
+            item_code,
             self.player
         )
 

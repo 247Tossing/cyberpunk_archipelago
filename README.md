@@ -3,9 +3,6 @@
 
 A mod and client for Cyberpunk 2077 for Archipelago
 
-
-
-
 # Installation
 
 ## Requirements
@@ -28,9 +25,9 @@ You ***MUST*** restart the launcher before it will show up.
 
 ## Using the Client
 1. After you restart the launcher, launch the Cyberpunk 2077 Client.
-1. Connect to the AP Server and enter your save slot.
-2. The client will provide the ```localhost:port``` for the local TCP socket
-3. Start up Cyberpunk 2077
-4. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-5. From the CET overlay, put in either ```locahost``` or ```127.0.0.1``` in the Server IP field, and the Port you got from the AP Client into the ```Port``` field.
-6. Profit. Have Fun.
+2. Connect to the AP Server and enter your save slot.
+3. The client will provide the ```localhost:port``` for the local TCP socket
+4. Start up Cyberpunk 2077
+5. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
+6. From the CET overlay, put in either ```locahost``` or ```127.0.0.1``` in the Server IP field, and the Port you got from the AP Client into the ```Port``` field.
+7. Profit. Have Fun.
