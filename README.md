@@ -7,7 +7,7 @@ A mod and client for Cyberpunk 2077 for Archipelago
 **This current release is NOT recommended for use in large community async environments.**
 It is currently prone to **generation issues**. Thar be dragons!
 ## ⚠️ WARNING: Other Mod Support
-I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listen in the Requirements are supported.
+I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listed in the Requirements are supported.
 ---
 
 # Installation
