@@ -56,56 +56,42 @@ def create_regions(world: "Cyberpunk2077World") -> None:
         phantom_liberty_prologue_questline = create_region(world, "Phantom Liberty Prologue Questline")
         regions["Phantom Liberty Prologue Questline"] = phantom_liberty_prologue_questline
 
-    # Create Watson district region
     watson = create_region(world, "Watson")
     regions["Watson"] = watson
 
-    # Create Westbrook district region
     westbrook = create_region(world, "Westbrook")
     regions["Westbrook"] = westbrook
 
-    # Create City Center region
     city_center = create_region(world, "City Center")
     regions["City Center"] = city_center
 
-    # Create Heywood district region
     heywood = create_region(world, "Heywood")
     regions["Heywood"] = heywood
 
-    # Create Pacifica district region
     pacifica = create_region(world, "Pacifica")
     regions["Pacifica"] = pacifica
 
-    # Create Santo Domingo district region
     santo_domingo = create_region(world, "Santo Domingo")
     regions["Santo Domingo"] = santo_domingo
 
-    # Create Badlands region
     badlands = create_region(world, "Badlands")
     regions["Badlands"] = badlands
 
-    # Create Dogtown region (Phantom Liberty DLC only)
-    if world.options.include_phantom_liberty_dlc:
-        dogtown = create_region(world, "Dogtown")
-        regions["Dogtown"] = dogtown
-
-    # Create North Oak region (Westbrook sub-district)
     north_oak = create_region(world, "North Oak")
     regions["North Oak"] = north_oak
 
-    # Create Afterlife region (special location - famous bar)
     afterlife = create_region(world, "Afterlife")
     regions["Afterlife"] = afterlife
 
-    # Create Cyberspace region (virtual location)
     cyberspace = create_region(world, "Cyberspace")
     regions["Cyberspace"] = cyberspace
 
-    # Create Orbital Station region (space station ending location)
     orbital_station = create_region(world, "Orbital Station")
     regions["Orbital Station"] = orbital_station
 
-    # TODO: Add more regions as needed for your game
+    if world.options.include_phantom_liberty_dlc:
+        dogtown = create_region(world, "Dogtown")
+        regions["Dogtown"] = dogtown
 
 
     # ===== CONNECT REGIONS =====
@@ -182,21 +168,14 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     # No additional requirements beyond entering the game
 
     # Other districts require having completed a lifepath intro
-    for region_name in ["Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands"]:
+    for region_name in ["Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands", "North Oak", "Afterlife", "Cyberspace", "Orbital Station"]:
         region = regions[region_name]
         # Region is accessible if player has the "Lifepath Chosen" event
         # Using a closure to capture the correct world.player value
         region.access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
 
-    # Special regions with additional requirements can be set here
-    # Example: Dogtown requires Phantom Liberty DLC
     if world.options.include_phantom_liberty_dlc:
         regions["Dogtown"].access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
-
-    # North Oak, Afterlife, Cyberspace, Orbital Station also require lifepath
-    for region_name in ["North Oak", "Afterlife", "Cyberspace", "Orbital Station"]:
-        region = regions[region_name]
-        region.access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
 
 
 def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:

@@ -228,7 +228,6 @@ Below is handler methods for processing incoming commands from the server.
                 let itemName: String = parts[1];
                 let senderName: String = parts[2];
                 let itemDisplayName: String = parts[3];
-                //APLogger.LogInfo( "TCPClient: Item received from server: " + itemName + " sent by " + senderName);
                 // Here you would add code to actually grant the item to the player in-game
                 APLogger.LogInfo( s"Received \(itemDisplayName) from \(senderName)");
                 let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;

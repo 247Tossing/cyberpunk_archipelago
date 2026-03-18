@@ -50,6 +50,20 @@ public class APGameSystem extends ScriptableSystem {
         APLogger.LogInfo( "Sync Complete");
     }
 
+    //Progressive Items
+    public func HandleProgressiveItem(item: String) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        if questSystem.GetFact(StringToName(item)) < 1 {
+            questSystem.SetFact(StringToName(item), 1);
+            this.AddInventoryItem(APItemProgression.GetProgressiveItem(item, 1));
+        }
+        else
+        {
+            let progressionLevel: Int32 = questSystem.GetFact(StringToName(item)) + 1;
+            this.AddInventoryItem(APItemProgression.GetProgressiveItem(item, progressionLevel));
+        }
+    }
+
     //Deathlink    
     public func HandleDeathLink() -> Void {
         let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject() as PlayerPuppet;

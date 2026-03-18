@@ -96,11 +96,19 @@ public class APGameState extends ScriptableService {
             if StrCmp(itemType, "inv") == 0 {
                 this.HandleInventoryItemReceived(item);
             }
+            if StrCmp(itemType, "prog") == 0 {
+                let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+                APGameSystem.HandleProgressiveItem(item);
+            }
 
             // NOTE: Do NOT increment totalItemsReceived here!
             // Queue worker sends items that are ALREADY in server's received_items list
             // Only FeedItemsList should increment (during SYNC_ITEMS)
         }
+    }
+
+    public func HandleProgressiveItemReceived(item: String) -> Void {
+
     }
 
     public func HandleInventoryItemReceived(item: String) -> Void {

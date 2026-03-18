@@ -79,108 +79,107 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # ===== CYBERPSYCHO SIGHTINGS =====
     # All Cyberpsycho locations require completing "Prologue - The Ride"
     # Region-level access rules (set in regions.py) already require a lifepath
-    # These location-specific rules add the additional requirement of progressing through Act 1
 
     # Cyberpsycho Sighting: Six Feet Under
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Six Feet Under", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Bloody Ritual
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Bloody Ritual", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Where the Bodies Hit the Floor
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Where the Bodies Hit the Floor", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Demons of War
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Demons of War", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Lt. Mower
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Lt. Mower", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Ticket to the Major Leagues
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Ticket to the Major Leagues", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: The Wasteland
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: The Wasteland", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: House on a Hill
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: House on a Hill", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Second Chances
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Second Chances", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: On Deaf Ears
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: On Deaf Ears", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Phantom of Night City
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Phantom of Night City", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Seaside Cafe
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Seaside Cafe", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Letter of the Law
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Letter of the Law", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Smoke on the Water
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Smoke on the Water", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Lex Talionis
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Lex Talionis", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Under the Bridge
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Under the Bridge", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Cyberpsycho Sighting: Discount Doc
     set_rule(
         world.multiworld.get_location("Cyberpsycho Sighting: Discount Doc", player),
-        lambda state: state.has_any({"Prologue - The Ride"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ride", player)
     )
 
     # Victory item is placed directly on each epilogue location in regions.py

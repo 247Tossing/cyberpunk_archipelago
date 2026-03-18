@@ -75,6 +75,7 @@ location_table: Dict[str, LocationData] = {
     # This ensures player doesn't need to replay game 3 times to complete all checks
     # The 3 internal IDs are manually mapped to this location below
     "Lifepath Chosen": LocationData(display_name="Lifepath Chosen", code=1000, region="Watson"),
+    "Ending Reached" : LocationData(display_name="Ending Reached", code=1001, region="Watson"),
     # Tutorial might get re-added if requested
     #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", code=1003, region="Watson"),
     "q001_intro": LocationData(display_name="Prologue - The Rescue", code=1004, region="Watson"),
@@ -119,10 +120,6 @@ location_table: Dict[str, LocationData] = {
     "q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Watson"),
     "q115_rogues_last_flight": LocationData(display_name="Ending - Knockin' on Heaven's Door", code=1036,                                    region="City Center"),
     "q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Watson"),
-    "q201_heir": LocationData(display_name="Epilogue - Where is My Mind?", code=1038, region="Watson"),
-    "q202_nomads": LocationData(display_name="Epilogue - All Along the Watchtower", code=1039, region="Badlands"),
-    "q203_legend": LocationData(display_name="Epilogue - Path of Glory", code=1040, region="Watson"),
-    "q204_reborn": LocationData(display_name="Epilogue - New Dawn Fades", code=1041, region="Badlands"),
 
     # =====================================
     # Phantom Liberty Checks
@@ -144,6 +141,13 @@ location_table: Dict[str, LocationData] = {
     "q305_border_crossing": LocationData(display_name="Phantom Liberty - Leave in Silence", code=1054, region="Dogtown"),
     "q306_devils_bargain": LocationData(display_name="Phantom Liberty - The Killing Moon", code=1055, region="Dogtown"),
     "q307_before_tomorrow": LocationData(display_name="Phantom Liberty - Who Wants to Live Forever", code=1056, region="Dogtown"),
+    # =================================
+    # Epilogues
+    # =================================
+    "q201_heir": LocationData(display_name="Epilogue - Where is My Mind?", code=1038, region="Watson"),
+    "q202_nomads": LocationData(display_name="Epilogue - All Along the Watchtower", code=1039, region="Badlands"),
+    "q203_legend": LocationData(display_name="Epilogue - Path of Glory", code=1040, region="Watson"),
+    "q204_reborn": LocationData(display_name="Epilogue - New Dawn Fades", code=1041, region="Badlands"),
     "q307_tomorrow": LocationData(display_name="Phantom Liberty - Things Done Changed", code=1057, region="Dogtown"),
 
     # =================================
@@ -235,12 +239,14 @@ location_internal_id_to_display_name: Dict[str, str] = {
     for name, data in location_table.items()
 }
 
-# Manual mappings: All 3 lifepath intro IDs map to the same "Lifepath Chosen" location
-# This allows the game to send CHECK:q000_street_kid, CHECK:q000_corpo, or CHECK:q000_nomad
-# and they all register as checking the same location
+"""
+Manual Mappings for multiples quests that result in the same thing, but require a major investment to be reached.
+"""
 location_internal_id_to_display_name["q000_street_kid"] = "Lifepath Chosen"
 location_internal_id_to_display_name["q000_corpo"] = "Lifepath Chosen"
 location_internal_id_to_display_name["q000_nomad"] = "Lifepath Chosen"
+
+
 
 
 # ===== LOCATION NAME GROUPS =====

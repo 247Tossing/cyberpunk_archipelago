@@ -17,7 +17,6 @@ from Options import (
     PerGameCommonOptions  # Base class for game options
 )
 
-
 # ===== OPTION CLASSES =====
 # Each class defines one configurable option that appears in the player's YAML
 

@@ -191,6 +191,30 @@ class Cyberpunk2077World(World):
         # Create the item pool
         item_pool: List[Item] = []
 
+        item_quantities = {
+            # 5-Step Progressions
+            "Progressive Overheat Quickhack": 5,
+            "Progressive Short Circuit Quickhack": 5,
+            "Progressive Reboot Optics Quickhack": 5,
+            "Progressive Contaigion Quickhack": 5,  # Kept your exact spelling!
+            "Progressive Cyberware Malfunction Quickhack": 5,
+            "Progressive Cripple Movement Quickhack": 5,
+            "Progressive Weapon Glitch Quickhack": 5,
+            "Progressive Sonic Shock Quickhack": 5,
+            "Progressive Request Backup Quickhack": 5,
+            "Progressive Synapse Burnout Quickhack": 4,
+            "Progressive Ping Quickhack": 4,
+            "Progressive Memory Wipe Quickhack": 4,
+            "Progressive Bait Quickhack": 6,
+            "Progressive Cyberpsychosis Quickhack": 3,
+            "Progressive Suicide Quickhack": 3,
+            "Progressive System Collapse Quickhack": 3,
+            "Progressive Detonate Grenade Quickhack": 3,
+            "Progressive Blackwall Gateway Quickhack": 3,
+
+            # Future static/filler items go down here
+        }
+
         # Add all defined items from item_table
         for item_name, item_data in item_table.items():
             # Skip event items - they have code=None and are placed manually on event locations
@@ -201,6 +225,10 @@ class Cyberpunk2077World(World):
             # Skip DLC items if Phantom Liberty DLC is disabled
             # Prevents unusable items from appearing in the item pool
             if item_data.dlc_only and not self.options.include_phantom_liberty_dlc:
+                continue
+
+            if item_name in item_quantities:
+                item_pool.extend([self.create_item(item_name) for _ in range(item_quantities[item_name])])
                 continue
 
             # TODO: Add logic to determine how many of each item to include

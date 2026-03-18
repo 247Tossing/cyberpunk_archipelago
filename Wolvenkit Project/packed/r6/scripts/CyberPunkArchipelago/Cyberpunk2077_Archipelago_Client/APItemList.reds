@@ -4,7 +4,7 @@ public class APItemList {
     public let Items: array<ref<APItem>>;
 
     public func AddItem(itemID: String, amount: Int32) -> Void {
-        //LogChannel(n"DEBUG", s"Adding Item to List \(itemID) amount: \(amount)");
+        ////LogChannel(n"DEBUG", s"Adding Item to List \(itemID) amount: \(amount)");
         //If we already have this item, add to the amount
         if this.Contains(itemID){
             for extractedItem in this.Items {

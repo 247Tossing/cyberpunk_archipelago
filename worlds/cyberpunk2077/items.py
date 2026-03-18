@@ -180,418 +180,95 @@ item_table: Dict[str, ItemData] = {
         code=5000,
         classification=ItemClassification.useful
     ),
-    "Tier 1 Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatProgram",
+    "Progressive Overheat Quickhack": ItemData(
+        name="ap_prog_overheat",
         code=5001,
         classification=ItemClassification.useful
     ),
-    "Tier 2 Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatLvl1Program",
+    "Progressive Short Circuit Quickhack" : ItemData(
+        name="ap_prog_short_circuit",
         code=5002,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 3 Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatLvl2Program",
+    "Progressive Contaigion Quickhack" : ItemData(
+        name="ap_prog_contagion",
         code=5003,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 4 Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatLvl3Program",
+    "Progressive Synapse Burnout Quickhack" : ItemData(
+        name="ap_prog_synapse_burnout",
         code=5004,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5 Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatLvl4Program",
+    "Progressive Cripple Movement Quickhack" : ItemData(
+        name="ap_prog_cripple_movement",
         code=5005,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5++ Overheat Quickhack": ItemData(
-        name="ap_inv_Items.OverheatLvl4PlusPlusProgram",
+    "Progressive Weapon Glitch Quickhack" : ItemData(
+        name="ap_prog_weapon_glitch",
         code=5006,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 1 Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadProgram",
+    "Progressive Ping Quickhack" : ItemData(
+        name="ap_prog_ping",
         code=5007,
         classification=ItemClassification.useful
     ),
-    "Tier 2 Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadLvl1Program",
+    "Progressive Bait Quickhack" : ItemData(
+        name="ap_prog_bait",
         code=5008,
         classification=ItemClassification.useful
     ),
-    "Tier 3 Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadLvl2Program",
+    "Progressive Request Backup Quickhack" : ItemData(
+        name="ap_prog_request_backup",
         code=5009,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 4 Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadLvl3Program",
+    "Progressive Memory Wipe Quickhack" : ItemData(
+        name="ap_prog_memory_wipe",
         code=5010,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5 Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadLvl4Program",
+    "Progressive Sonic Shock Quickhack" : ItemData(
+        name="ap_prog_sonic_shock",
         code=5011,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5++ Short Circuit Quickhack": ItemData(
-        name="ap_inv_Items.EMPOverloadLvl4PlusPlusProgram",
+    "Progressive Cyberpsychosis Quickhack" : ItemData(
+        name="ap_prog_madness",
         code=5012,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 2 Contagion Quickhack": ItemData(
-        name="ap_inv_Items.ContagionProgram",
+    "Progressive Suicide Quickhack" : ItemData(
+        name="ap_prog_suicide",
         code=5013,
         classification=ItemClassification.useful
     ),
-    "Tier 3 Contagion Quickhack": ItemData(
-        name="ap_inv_Items.ContagionLvl2Program",
+    "Progressive System Collapse Quickhack" : ItemData(
+        name="ap_prog_system_collapse",
         code=5014,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 4 Contagion Quickhack": ItemData(
-        name="ap_inv_Items.ContagionLvl3Program",
+    "Progressive Detonate Grenade Quickhack" : ItemData(
+        name="ap_prog_grenade_explode",
         code=5015,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5 Contagion Quickhack": ItemData(
-        name="ap_inv_Items.ContagionLvl4Program",
+    "Progressive Blackwall Gateway Quickhack" : ItemData(
+        name="ap_prog_blackwall_gateway",
         code=5016,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 5++ Contagion Quickhack": ItemData(
-        name="ap_inv_Items.ContagionLvl4PlusPlusProgram",
+    "Progressive Reboot Optics Quickhack" : ItemData(
+        name="ap_prog_reboot_optics",
         code=5017,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
+        classification=ItemClassification.useful
     ),
-    "Tier 3 Synapse Burnout Quickhack": ItemData(
-        name="ap_inv_Items.BrainMeltLvl2Program",
+    "Progressive Cyberware Malfunction Quickhack" : ItemData(
+        name="ap_prog_cyberware_malfunction",
         code=5018,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Synapse Burnout Quickhack": ItemData(
-        name="ap_inv_Items.BrainMeltLvl3Program",
-        code=5019,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Synapse Burnout Quickhack": ItemData(
-        name="ap_inv_Items.BrainMeltLvl4Program",
-        code=5020,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Synapse Burnout Quickhack": ItemData(
-        name="ap_inv_Items.BrainMeltLvl4PlusPlusProgram",
-        code=5021,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 1 Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindProgram",
-        code=5022,
         classification=ItemClassification.useful
-    ),
-    "Tier 2 Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindLvl1Program",
-        code=5023,
-        classification=ItemClassification.useful
-    ),
-    "Tier 3 Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindLvl2Program",
-        code=5024,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindLvl3Program",
-        code=5025,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindLvl4Program",
-        code=5026,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Reboot Optics Quickhack": ItemData(
-        name="ap_inv_Items.BlindLvl4PlusPlusProgram",
-        code=5027,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 2 Cyberware Malfunction Quickhack": ItemData(
-        name="ap_inv_Items.DisableCyberwareProgram",
-        code=5028,
-        classification=ItemClassification.useful
-    ),
-    "Tier 3 Cyberware Malfunction Quickhack": ItemData(
-        name="ap_inv_Items.DisableCyberwareLvl2Program",
-        code=5029,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Cyberware Malfunction Quickhack": ItemData(
-        name="ap_inv_Items.DisableCyberwareLvl3Program",
-        code=5030,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Cyberware Malfunction Quickhack": ItemData(
-        name="ap_inv_Items.DisableCyberwareLvl4Program",
-        code=5031,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Cyberware Malfunction Quickhack": ItemData(
-        name="ap_inv_Items.DisableCyberwareLvl4PlusPlusProgram",
-        code=5032,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 2 Cripple Movement Quickhack": ItemData(
-        name="ap_inv_Items.LocomotionMalfunctionProgram",
-        code=5033,
-        classification=ItemClassification.useful
-    ),
-    "Tier 3 Cripple Movement Quickhack": ItemData(
-        name="ap_inv_Items.LocomotionMalfunctionLvl2Program",
-        code=5034,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Cripple Movement Quickhack": ItemData(
-        name="ap_inv_Items.LocomotionMalfunctionLvl3Program",
-        code=5035,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Cripple Movement Quickhack": ItemData(
-        name="ap_inv_Items.LocomotionMalfunctionLvl4Program",
-        code=5036,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Cripple Movement Quickhack": ItemData(
-        name="ap_inv_Items.LocomotionMalfunctionLvl4PlusPlusProgram",
-        code=5037,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 2 Weapon Glitch Quickhack": ItemData(
-        name="ap_inv_Items.WeaponMalfunctionProgram",
-        code=5038,
-        classification=ItemClassification.useful
-    ),
-    "Tier 3 Weapon Glitch Quickhack": ItemData(
-        name="ap_inv_Items.WeaponMalfunctionLvl2Program",
-        code=5039,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Weapon Glitch Quickhack": ItemData(
-        name="ap_inv_Items.WeaponMalfunctionLvl3Program",
-        code=5040,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Weapon Glitch Quickhack": ItemData(
-        name="ap_inv_Items.WeaponMalfunctionLvl4Program",
-        code=5041,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Weapon Glitch Quickhack": ItemData(
-        name="ap_inv_Items.WeaponMalfunctionLvl4PlusPlusProgram",
-        code=5042,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 1 Ping Quickhack": ItemData(
-        name="ap_inv_Items.PingProgram",
-        code=5043,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 3 Ping Quickhack": ItemData(
-        name="ap_inv_Items.PingLvl2Program",
-        code=5044,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Ping Quickhack": ItemData(
-        name="ap_inv_Items.PingLvl4Program",
-        code=5045,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Ping Quickhack": ItemData(
-        name="ap_inv_Items.PingLvl4PlusPlusProgram",
-        code=5046,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 1 Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl0Program",
-        code=5047,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 2 Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl1Program",
-        code=5048,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 3 Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl2Program",
-        code=5049,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl3Program",
-        code=5050,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl4Program",
-        code=5051,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Bait Quickhack": ItemData(
-        name="ap_inv_Items.WhistleLvl4PlusPlusProgram",
-        code=5052,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 2 Request Backup Quickhack": ItemData(
-        name="ap_inv_Items.CommsCallInLvl1Program",
-        code=5053,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 3 Request Backup Quickhack": ItemData(
-        name="ap_inv_Items.CommsCallInLvl2Program",
-        code=5054,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Request Backup Quickhack": ItemData(
-        name="ap_inv_Items.CommsCallInLvl3Program",
-        code=5055,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Request Backup Quickhack": ItemData(
-        name="ap_inv_Items.CommsCallInLvl4Program",
-        code=5056,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Request Backup Quickhack": ItemData(
-        name="ap_inv_Items.CommsCallInLvl4PlusPlusProgram",
-        code=5057,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 3 Memory Wipe Quickhack": ItemData(
-        name="ap_inv_Items.MemoryWipeLvl2Program",
-        code=5058,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Memory Wipe Quickhack": ItemData(
-        name="ap_inv_Items.MemoryWipeLvl3Program",
-        code=5059,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Memory Wipe Quickhack": ItemData(
-        name="ap_inv_Items.MemoryWipeLvl4Program",
-        code=5060,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Memory Wipe Quickhack": ItemData(
-        name="ap_inv_Items.MemoryWipeLvl4PlusPlusProgram",
-        code=5061,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 1 Sonic Shock Quickhack": ItemData(
-        name="ap_inv_Items.CommsNoiseProgram",
-        code=5062,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 3 Sonic Shock Quickhack": ItemData(
-        name="ap_inv_Items.CommsNoiseLvl2Program",
-        code=5063,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Sonic Shock Quickhack": ItemData(
-        name="ap_inv_Items.CommsNoiseLvl3Program",
-        code=5064,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Sonic Shock Quickhack": ItemData(
-        name="ap_inv_Items.CommsNoiseLvl4Program",
-        code=5065,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Sonic Shock Quickhack": ItemData(
-        name="ap_inv_Items.CommsNoiseLvl4PlusPlusProgram",
-        code=5066,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Cyberpsychosis Quickhack": ItemData(
-        name="ap_inv_Items.MadnessLvl3Program",
-        code=5067,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Cyberpsychosis Quickhack": ItemData(
-        name="ap_inv_Items.MadnessLvl4Program",
-        code=5068,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Cyberpsychosis Quickhack": ItemData(
-        name="ap_inv_Items.MadnessLvl4PlusPlusProgram",
-        code=5069,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 4 Suicide Quickhack": ItemData(
-        name="ap_inv_Items.SuicideLvl3Program",
-        code=5070,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Suicide Quickhack": ItemData(
-        name="ap_inv_Items.SuicideLvl4Program",
-        code=5071,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Suicide Quickhack": ItemData(
-        name="ap_inv_Items.SuicideLvl4PlusPlusProgram",
-        code=5072,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 4 System Collapse Quickhack": ItemData(
-        name="ap_inv_Items.SystemCollapseLvl3Program",
-        code=5073,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 System Collapse Quickhack": ItemData(
-        name="ap_inv_Items.SystemCollapseLvl4Program",
-        code=5074,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ System Collapse Quickhack": ItemData(
-        name="ap_inv_Items.SystemCollapseLvl4PlusPlusProgram",
-        code=5075,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 4 Detonate Grenade Quickhack": ItemData(
-        name="ap_inv_Items.GrenadeExplodeLvl3Program",
-        code=5076,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Detonate Grenade Quickhack": ItemData(
-        name="ap_inv_Items.GrenadeExplodeLvl4Program",
-        code=5077,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5++ Detonate Grenade Quickhack": ItemData(
-        name="ap_inv_Items.GrenadeExplodeLvl4PlusPlusProgram",
-        code=5078,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-
-    "Tier 3 Blackwall Gateway Quickhack": ItemData(
-        name="ap_inv_Items.BlackWallProgramLvl2",
-        code=5079,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 4 Blackwall Gateway Quickhack": ItemData(
-        name="ap_inv_Items.BlackWallProgramLvl3",
-        code=5080,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
-    ),
-    "Tier 5 Blackwall Gateway Quickhack": ItemData(
-        name="ap_inv_Items.BlackWallProgramLvl4",
-        code=5081,
-        classification=ItemClassification.useful | ItemClassification.deprioritized
     ),
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
@@ -605,6 +282,12 @@ item_table: Dict[str, ItemData] = {
     "1000 Eddies" : ItemData(
         name = "ap_ed_Items.money_1000",
         code = 6001,
+        classification = ItemClassification.filler | ItemClassification.deprioritized
+    ),
+
+    "2500 Eddies" : ItemData(
+        name = "ap_ed_Items.money_2500",
+        code = 6002,
         classification = ItemClassification.filler | ItemClassification.deprioritized
     ),
 
