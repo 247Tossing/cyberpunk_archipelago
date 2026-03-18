@@ -50,17 +50,25 @@ public class APGameSystem extends ScriptableSystem {
         APLogger.LogInfo( "Sync Complete");
     }
 
+    public func HandleTarotCollected(value: Int32) -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState; //Not a fan of this implementation, but it works...
+        APGameState.SendTarotFound(value);
+
+    }
+
     //Progressive Items
     public func HandleProgressiveItem(item: String) -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         if questSystem.GetFact(StringToName(item)) < 1 {
-            questSystem.SetFact(StringToName(item), 1);
             this.AddInventoryItem(APItemProgression.GetProgressiveItem(item, 1));
+            APGameState.items.AddItem(APItemProgression.GetProgressiveItem(item, 1), 1);
         }
         else
         {
             let progressionLevel: Int32 = questSystem.GetFact(StringToName(item)) + 1;
             this.AddInventoryItem(APItemProgression.GetProgressiveItem(item, progressionLevel));
+            APGameState.items.AddItem(APItemProgression.GetProgressiveItem(item, 1), 1);
         }
     }
 
@@ -148,6 +156,9 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
     }
+
+    let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+    questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
     
     return result;
 }
@@ -171,6 +182,8 @@ protected cb func OnShowDeathMenu() -> Bool {
     }
     return wrappedMethod();
 }
+
+
 
 //For sending quest completion updates to the Archipelago server.
 @wrapMethod(JournalNotificationQueue)

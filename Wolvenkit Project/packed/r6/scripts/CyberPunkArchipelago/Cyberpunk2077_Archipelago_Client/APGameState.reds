@@ -97,8 +97,7 @@ public class APGameState extends ScriptableService {
                 this.HandleInventoryItemReceived(item);
             }
             if StrCmp(itemType, "prog") == 0 {
-                let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-                APGameSystem.HandleProgressiveItem(item);
+                this.HandleProgressiveItemReceived(item);
             }
 
             // NOTE: Do NOT increment totalItemsReceived here!
@@ -108,7 +107,8 @@ public class APGameState extends ScriptableService {
     }
 
     public func HandleProgressiveItemReceived(item: String) -> Void {
-
+        let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        APGameSystem.HandleProgressiveItem(item);
     }
 
     public func HandleInventoryItemReceived(item: String) -> Void {
@@ -135,6 +135,11 @@ public class APGameState extends ScriptableService {
         if IsDefined(APGameSystem) {
             APGameSystem.AddInventoryItem(itemID);
         }
+    }
+
+    public func SendTarotFound(tarotNumber: Int32) -> Void {
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        tcpService.SendCheck(s"ap_tarot_\(tarotNumber)");
     }
 
     public func HandleQuestKeyReceived(questKey: String) -> Void {

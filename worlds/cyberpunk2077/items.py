@@ -185,88 +185,88 @@ item_table: Dict[str, ItemData] = {
         code=5001,
         classification=ItemClassification.useful
     ),
-    "Progressive Short Circuit Quickhack" : ItemData(
-        name="ap_prog_short_circuit",
+    "Progressive Short Circuit Quickhack": ItemData(
+        name="ap_prog_shortCircuit",
         code=5002,
         classification=ItemClassification.useful
     ),
-    "Progressive Contaigion Quickhack" : ItemData(
+    "Progressive Contaigion Quickhack": ItemData(
         name="ap_prog_contagion",
         code=5003,
         classification=ItemClassification.useful
     ),
-    "Progressive Synapse Burnout Quickhack" : ItemData(
-        name="ap_prog_synapse_burnout",
+    "Progressive Synapse Burnout Quickhack": ItemData(
+        name="ap_prog_synapseBurnout",
         code=5004,
         classification=ItemClassification.useful
     ),
-    "Progressive Cripple Movement Quickhack" : ItemData(
-        name="ap_prog_cripple_movement",
+    "Progressive Cripple Movement Quickhack": ItemData(
+        name="ap_prog_crippleMovement",
         code=5005,
         classification=ItemClassification.useful
     ),
-    "Progressive Weapon Glitch Quickhack" : ItemData(
-        name="ap_prog_weapon_glitch",
+    "Progressive Weapon Glitch Quickhack": ItemData(
+        name="ap_prog_weaponGlitch",
         code=5006,
         classification=ItemClassification.useful
     ),
-    "Progressive Ping Quickhack" : ItemData(
+    "Progressive Ping Quickhack": ItemData(
         name="ap_prog_ping",
         code=5007,
         classification=ItemClassification.useful
     ),
-    "Progressive Bait Quickhack" : ItemData(
+    "Progressive Bait Quickhack": ItemData(
         name="ap_prog_bait",
         code=5008,
         classification=ItemClassification.useful
     ),
-    "Progressive Request Backup Quickhack" : ItemData(
-        name="ap_prog_request_backup",
+    "Progressive Request Backup Quickhack": ItemData(
+        name="ap_prog_requestBackup",
         code=5009,
         classification=ItemClassification.useful
     ),
-    "Progressive Memory Wipe Quickhack" : ItemData(
-        name="ap_prog_memory_wipe",
+    "Progressive Memory Wipe Quickhack": ItemData(
+        name="ap_prog_memoryWipe",
         code=5010,
         classification=ItemClassification.useful
     ),
-    "Progressive Sonic Shock Quickhack" : ItemData(
-        name="ap_prog_sonic_shock",
+    "Progressive Sonic Shock Quickhack": ItemData(
+        name="ap_prog_sonicShock",
         code=5011,
         classification=ItemClassification.useful
     ),
-    "Progressive Cyberpsychosis Quickhack" : ItemData(
+    "Progressive Cyberpsychosis Quickhack": ItemData(
         name="ap_prog_madness",
         code=5012,
         classification=ItemClassification.useful
     ),
-    "Progressive Suicide Quickhack" : ItemData(
+    "Progressive Suicide Quickhack": ItemData(
         name="ap_prog_suicide",
         code=5013,
         classification=ItemClassification.useful
     ),
-    "Progressive System Collapse Quickhack" : ItemData(
-        name="ap_prog_system_collapse",
+    "Progressive System Collapse Quickhack": ItemData(
+        name="ap_prog_systemCollapse",
         code=5014,
         classification=ItemClassification.useful
     ),
-    "Progressive Detonate Grenade Quickhack" : ItemData(
-        name="ap_prog_grenade_explode",
+    "Progressive Detonate Grenade Quickhack": ItemData(
+        name="ap_prog_grenadeExplode",
         code=5015,
         classification=ItemClassification.useful
     ),
-    "Progressive Blackwall Gateway Quickhack" : ItemData(
-        name="ap_prog_blackwall_gateway",
+    "Progressive Blackwall Gateway Quickhack": ItemData(
+        name="ap_prog_blackwallGateway",
         code=5016,
         classification=ItemClassification.useful
     ),
-    "Progressive Reboot Optics Quickhack" : ItemData(
-        name="ap_prog_reboot_optics",
+    "Progressive Reboot Optics Quickhack": ItemData(
+        name="ap_prog_rebootOptics",
         code=5017,
         classification=ItemClassification.useful
     ),
-    "Progressive Cyberware Malfunction Quickhack" : ItemData(
-        name="ap_prog_cyberware_malfunction",
+    "Progressive Cyberware Malfunction Quickhack": ItemData(
+        name="ap_prog_cyberwareMalfunction",
         code=5018,
         classification=ItemClassification.useful
     ),

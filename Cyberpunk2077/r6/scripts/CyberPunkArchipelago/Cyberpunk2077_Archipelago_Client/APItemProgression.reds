@@ -2,28 +2,28 @@ module Archipelago
 
 public class APItemProgression extends ScriptableSystem {
 
-// Input is the item from the AP server
+    // Input is the item from the AP server
     // Returns the ID for the progressive item
     public static func GetProgressiveItem(item: String, savedProgressionLevel: Int32) -> String {
         
         switch item {
             case "ap_prog_overheat": return APItemProgression.GetProgressiveOverheat(savedProgressionLevel);
-            case "ap_prog_short_circuit": return APItemProgression.GetProgressiveShortCircuit(savedProgressionLevel);
+            case "ap_prog_shortCircuit": return APItemProgression.GetProgressiveShortCircuit(savedProgressionLevel);
             case "ap_prog_rebootOptics": return APItemProgression.GetProgressiveRebootOptics(savedProgressionLevel);
             case "ap_prog_contagion": return APItemProgression.GetProgressiveContagion(savedProgressionLevel);
-            case "ap_prog_synapse_burnout": return APItemProgression.GetProgressiveSynapseBurnout(savedProgressionLevel);
-            case "ap_prog_cyberware_malfunction": return APItemProgression.GetProgressiveCyberwareMalfunction(savedProgressionLevel);
-            case "ap_prog_cripple_movement": return APItemProgression.GetProgressiveCrippleMovement(savedProgressionLevel);
-            case "ap_prog_weapon_glitch": return APItemProgression.GetProgressiveWeaponGlitch(savedProgressionLevel);
+            case "ap_prog_synapseBurnout": return APItemProgression.GetProgressiveSynapseBurnout(savedProgressionLevel);
+            case "ap_prog_cyberwareMalfunction": return APItemProgression.GetProgressiveCyberwareMalfunction(savedProgressionLevel);
+            case "ap_prog_crippleMovement": return APItemProgression.GetProgressiveCrippleMovement(savedProgressionLevel);
+            case "ap_prog_weaponGlitch": return APItemProgression.GetProgressiveWeaponGlitch(savedProgressionLevel);
             case "ap_prog_ping": return APItemProgression.GetProgressivePing(savedProgressionLevel);
             case "ap_prog_bait": return APItemProgression.GetProgressiveBait(savedProgressionLevel);
-            case "ap_prog_request_backup": return APItemProgression.GetProgressiveRequestBackup(savedProgressionLevel);
-            case "ap_prog_memory_wipe": return APItemProgression.GetProgressiveMemoryWipe(savedProgressionLevel);
-            case "ap_prog_sonic_shock": return APItemProgression.GetProgressiveSonicShock(savedProgressionLevel);
+            case "ap_prog_requestBackup": return APItemProgression.GetProgressiveRequestBackup(savedProgressionLevel);
+            case "ap_prog_memoryWipe": return APItemProgression.GetProgressiveMemoryWipe(savedProgressionLevel);
+            case "ap_prog_sonicShock": return APItemProgression.GetProgressiveSonicShock(savedProgressionLevel);
             case "ap_prog_suicide": return APItemProgression.GetProgressiveSuicide(savedProgressionLevel);
-            case "ap_prog_system_collapse": return APItemProgression.GetProgressiveSystemCollapse(savedProgressionLevel);
-            case "ap_prog_detonate_grenade": return APItemProgression.GetProgressiveDetonateGrenade(savedProgressionLevel);
-            case "ap_prog_blackwall_gateway": return APItemProgression.GetProgressiveBlackwallGateway(savedProgressionLevel);
+            case "ap_prog_systemCollapse": return APItemProgression.GetProgressiveSystemCollapse(savedProgressionLevel);
+            case "ap_prog_grenadeExplode": return APItemProgression.GetProgressiveDetonateGrenade(savedProgressionLevel);
+            case "ap_prog_blackwallGateway": return APItemProgression.GetProgressiveBlackwallGateway(savedProgressionLevel);
             case "ap_prog_madness": return APItemProgression.GetProgressiveCyberpsychosis(savedProgressionLevel);
             
             default: return "";
