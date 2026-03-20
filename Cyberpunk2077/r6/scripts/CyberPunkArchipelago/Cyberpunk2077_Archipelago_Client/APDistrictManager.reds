@@ -16,11 +16,14 @@ public class APDistrictManager extends ScriptableSystem {
         APLogger.LogInfo("APDistrictManager initialized");
     }
 
-    // Check if a district is unlocked
+    // Check if a district is unlocked 
     public func IsDistrictUnlocked(districtId: String) -> Bool {
         if !IsDefined(this.questHandler) {
             APLogger.LogWarning("APDistrictManager: Quest handler not initialized");
             return false;
+        }
+        if StrCmp(districtId, "unknown") == 0 {
+            return true;
         }
         return this.questHandler.HasQuestKey(districtId);
     }
