@@ -139,7 +139,7 @@ public class APDistrictEnforcer extends ScriptableSystem {
                 return APDistrict.Badlands;
 
             default:
-                // If the game throws an interior zone or something unmapped, we ignore it.
+                
                 return APDistrict.Unknown;
         }
     }

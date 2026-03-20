@@ -51,7 +51,7 @@ public class APDistrictManager extends ScriptableSystem {
         }
 
         // Don't enforce during lifepath intro
-        if !this.questHandler.IsLifepathIntroComplete() {
+        if !this.questHandler.IsPassedPrologue() {
             return;
         }
 
@@ -64,7 +64,7 @@ public class APDistrictManager extends ScriptableSystem {
             return;
         }
 
-        APLogger.LogInfo(s"District \(districtId) locked. Requires Access Token");
+        APLogger.LogInfo(s"District locked. Requires Access Token");
         // District is locked - teleport player to nearest safe point
         this.TeleportToSafeZone();
     }

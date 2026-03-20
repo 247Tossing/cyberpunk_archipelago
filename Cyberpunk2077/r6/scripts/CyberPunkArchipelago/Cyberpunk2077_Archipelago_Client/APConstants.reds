@@ -58,6 +58,8 @@ public class APConstants {
     // Important quest facts used for progression tracking
     public static func GetQuestQ000Done() -> String { return "q000_done"; }
     public static func GetQuestQ001Done() -> String { return "q001_done"; }
+    public static func GetQuestQ101Done() -> String { return "ap_q101_resurrection"; }
+    public static func GetQuestQ101_01_firestormDone() -> String { return "ap_q101_01_firestorm"; }
     public static func GetTarotCounterFact() -> String { return "mq033_grafitti_counter"; }
 
     // ===== SERVICE NAMES =====

@@ -69,9 +69,10 @@ public class APQuestHandler extends ScriptableSystem {
     }
 
     // Check if lifepath intro is complete (used for district enforcement)
-    public func IsLifepathIntroComplete() -> Bool {
-        return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 &&
-               this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0;
+    public func IsPassedPrologue() -> Bool {
+        return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 && 
+        this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0 && 
+        this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone()) > 0;
     }
 
     // Send a location check to the server
