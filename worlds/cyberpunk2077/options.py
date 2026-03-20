@@ -14,12 +14,13 @@ from Options import (
     DefaultOnToggle,  # Toggle that defaults to On
     Choice,           # Multiple choice option (like a dropdown)
     Range,            # Numeric range option (like a slider)
-    PerGameCommonOptions  # Base class for game options
+    PerGameCommonOptions,  # Base class for game options
+    OptionGroup,       # For grouping options on WebHost
+    Visibility
 )
 
 # ===== OPTION CLASSES =====
 # Each class defines one configurable option that appears in the player's YAML
-
 
 #class IncludeCyberware(DefaultOnToggle):
 #    """Include cyberware items in the randomizer."""
@@ -29,11 +30,68 @@ from Options import (
 #    """Include weapon items in the randomizer."""
 #    display_name = "Add Unique World Weapon Checks"
 
-#class StartingPath(Choice): # TODO: Still needs to be implemented on the RedScript side
+#class StartingPath(Choice):
 #    display_name = "Starting path"
 #    option_street_kid = 0
 #    option_corpo_rat = 1
 #    option_nomad = 2
+
+class IncludeGigs(Toggle):
+    display_name = "Include Gigs"
+    default = 1
+
+class IncludeTarot(Toggle):
+    display_name = "Include Tarot"
+    default = 1
+
+class IncludeCyberPsychoSighting(Toggle):
+    display_name = "Include Cyber Psycho Sighting"
+    default = 1
+
+class IncludeSideQuests(Toggle):
+    display_name = "Include Side Quests"
+    default = 1
+
+class IncludeAllEndings(Toggle):
+    """By default, this will only require you to reach Nocturne Op55N1 and the default ending
+    Enabling this option will include any possible ending in the generated multiworld and the requisite items to do so
+    """
+    display_name = "Include All Endings"
+    default = 0
+
+class IncludeContracts(Toggle):
+    display_name = "Include Contracts"
+    default = 1
+
+class IncludeNCPDHustles(Toggle):
+    display_name = "Include NCPD Hustles"
+    default = 1
+
+class IncludeMinorQuests(Toggle):
+    display_name = "Include Minor Quests"
+    default = 1
+
+class RestrictByMajorDistrict(Toggle):
+    """Restrict access to districts
+    When enabled, players will only be able to access major districts by aquiring access tokens from the multiworld.
+    """
+    display_name = "Restrict by Major District"
+    default = 1
+
+class RestrictBySubDistrict(Toggle):
+    """Restrict access to subdistricts
+    When enabled, players will only be able to access subdistricts by aquiring access tokens from the multiworld.
+    **Restrict by Major District must be enabled for this option to work.**
+    """
+    display_name = "Restrict by Sub District"
+    default = 0
+    visibility = Visibility.none # Temporary
+
+class QuickHacksAsItems(Toggle):
+    """Put progressive quickhack items into the multiworld"""
+    display_name = "Quick Hacks as Items"
+    default = 1
+
 
 class IncludePhantomLibertyDLC(Toggle):
     display_name = "Include Phantom Liberty DLC"
@@ -71,11 +129,55 @@ class Cyberpunk2077Options(PerGameCommonOptions):
         Example: if self.options.include_cyberware: add_cyberware_items()
     """
 
+    restrict_by_major_district: RestrictByMajorDistrict
+    restrict_by_sub_district: RestrictBySubDistrict
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
+    death_link: EnableDeathLink
+    include_gigs: IncludeGigs
+    include_tarot: IncludeTarot
+    include_cyber_psycho_sighting: IncludeCyberPsychoSighting
+    include_side_quests: IncludeSideQuests
+    include_contracts: IncludeContracts
+    quick_hacks_as_items: QuickHacksAsItems
+    include_ncpd_hustles: IncludeNCPDHustles
+    include_minor_quests: IncludeMinorQuests
+    include_all_endings: IncludeAllEndings
+
     #starting_path: StartingPath
     #include_cyberware: IncludeCyberware
     #include_weapons: IncludeWeapons
-    death_link: EnableDeathLink
+
+
+# ===== OPTION GROUPS =====
+# Groups organize options on the WebHost for better user experience
+# Options are displayed in the order specified here
+
+cyberpunk_option_groups = [
+    OptionGroup("Quest Options", [
+        IncludeAllEndings,
+        IncludeGigs,
+        IncludeTarot,
+        IncludeCyberPsychoSighting,
+        IncludeSideQuests,
+        IncludeContracts,
+        IncludeNCPDHustles,
+        IncludeMinorQuests,
+    ]),
+    OptionGroup("DLC Options", [
+        IncludePhantomLibertyDLC,
+    ]),
+    OptionGroup("Restriction Options", [
+        RestrictByMajorDistrict,
+        RestrictBySubDistrict,
+    ]),
+    OptionGroup("Item Options", [
+        QuickHacksAsItems,
+    ]),
+    OptionGroup("Extra Challenge", [
+        EnableDeathLink,
+    ], start_collapsed=True),
+]
+
 
 # ===== USAGE EXAMPLES =====
 #

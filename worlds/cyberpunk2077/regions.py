@@ -4,7 +4,8 @@ Cyberpunk 2077 Region Definitions
 
 from typing import Dict, TYPE_CHECKING
 from BaseClasses import Region, Entrance
-from .locations import Cyberpunk2077Location, location_table
+from .locations import Cyberpunk2077Location, location_table, LocationCategory
+from worlds.generic.Rules import set_rule
 
 # TYPE_CHECKING is used for type hints without circular imports
 # This allows us to reference Cyberpunk2077World for type hints without actually importing it
@@ -50,15 +51,12 @@ def create_regions(world: "Cyberpunk2077World") -> None:
         "Menu": menu_region
     }
 
-    # Include Phantom Liberty DLC regions
-    # if the player has the phantom liberty DLC
-    if world.options.include_phantom_liberty_dlc:
-        phantom_liberty_prologue_questline = create_region(world, "Phantom Liberty Prologue Questline")
-        regions["Phantom Liberty Prologue Questline"] = phantom_liberty_prologue_questline
-
+    # ===== CREATE MAIN DISTRICT REGIONS =====
+    # Watson - Starting district (no restrictions)
     watson = create_region(world, "Watson")
     regions["Watson"] = watson
 
+    # Other main districts
     westbrook = create_region(world, "Westbrook")
     regions["Westbrook"] = westbrook
 
@@ -68,18 +66,16 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     heywood = create_region(world, "Heywood")
     regions["Heywood"] = heywood
 
-    pacifica = create_region(world, "Pacifica")
-    regions["Pacifica"] = pacifica
-
     santo_domingo = create_region(world, "Santo Domingo")
     regions["Santo Domingo"] = santo_domingo
+
+    pacifica = create_region(world, "Pacifica")
+    regions["Pacifica"] = pacifica
 
     badlands = create_region(world, "Badlands")
     regions["Badlands"] = badlands
 
-    north_oak = create_region(world, "North Oak")
-    regions["North Oak"] = north_oak
-
+    # ===== CREATE SPECIAL REGIONS =====
     afterlife = create_region(world, "Afterlife")
     regions["Afterlife"] = afterlife
 
@@ -89,10 +85,58 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     orbital_station = create_region(world, "Orbital Station")
     regions["Orbital Station"] = orbital_station
 
+    north_oak = create_region(world, "North Oak")
+    regions["North Oak"] = north_oak
+
+    # ===== CREATE SUBDISTRICT REGIONS (if restriction enabled) =====
+    if world.options.restrict_by_sub_district:
+        # Watson Subdistricts
+        for subdistrict in ["Arasaka Waterfront", "Northside", "Little China", "Kabuki"]:
+            region = create_region(world, f"Watson - {subdistrict}")
+            regions[f"Watson - {subdistrict}"] = region
+
+        # Westbrook Subdistricts
+        for subdistrict in ["Japantown", "North Oak", "Charter Hill"]:
+            region = create_region(world, f"Westbrook - {subdistrict}")
+            regions[f"Westbrook - {subdistrict}"] = region
+
+        # City Center Subdistricts
+        for subdistrict in ["Downtown", "Corpo Plaza"]:
+            region = create_region(world, f"City Center - {subdistrict}")
+            regions[f"City Center - {subdistrict}"] = region
+
+        # Heywood Subdistricts
+        for subdistrict in ["Wellsprings", "The Glen", "Vista del Rey"]:
+            region = create_region(world, f"Heywood - {subdistrict}")
+            regions[f"Heywood - {subdistrict}"] = region
+
+        # Santo Domingo Subdistricts
+        for subdistrict in ["Arroyo", "Rancho Coronado"]:
+            region = create_region(world, f"Santo Domingo - {subdistrict}")
+            regions[f"Santo Domingo - {subdistrict}"] = region
+
+        # Pacifica Subdistricts
+        for subdistrict in ["Coastview", "West Wind Estate"]:
+            region = create_region(world, f"Pacifica - {subdistrict}")
+            regions[f"Pacifica - {subdistrict}"] = region
+
+        # Badlands Subdistricts (9 total)
+        badlands_subs = [
+            "Biotechnica Flats", "Jackson Plains", "Laguna Bend",
+            "Red Peaks", "Rocky Ridge", "Sierra Sonora",
+            "SoCal Badlands", "Yucca", "Morro Rock"
+        ]
+        for subdistrict in badlands_subs:
+            region = create_region(world, f"Badlands - {subdistrict}")
+            regions[f"Badlands - {subdistrict}"] = region
+
+    # ===== CREATE DLC REGIONS (if DLC enabled) =====
     if world.options.include_phantom_liberty_dlc:
         dogtown = create_region(world, "Dogtown")
         regions["Dogtown"] = dogtown
 
+        morro_rock = create_region(world, "Morro Rock")
+        regions["Morro Rock"] = morro_rock
 
     # ===== CONNECT REGIONS =====
     # Define how regions are connected (which areas lead to which areas)
@@ -106,52 +150,68 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     connect_regions(world, regions["Watson"], regions["Westbrook"], "Watson to Westbrook")
     connect_regions(world, regions["Watson"], regions["City Center"], "Watson to City Center")
 
+    # Watson Sub-Districts
+    if world.options.restrict_by_sub_district:
+        watson_subs = ["Watson - Arasaka Waterfront", "Watson - Northside", "Watson - Little China", "Watson - Kabuki"]
+        for start in watson_subs:
+            for end in watson_subs:
+                if start != end:
+                    connect_regions(world, regions[start], regions[end], f"{start} to {end}")
+
+        # Bridge connections from Watson to other districts
+        connect_regions(world, regions["Watson - Little China"], regions["City Center - Downtown"],
+                        "Little China to Downtown")
+        connect_regions(world, regions["Watson - Kabuki"], regions["Westbrook - Japantown"], "Kabuki to Japantown")
+
     # Westbrook connections
     connect_regions(world, regions["Westbrook"], regions["Watson"], "Westbrook to Watson")
     connect_regions(world, regions["Westbrook"], regions["City Center"], "Westbrook to City Center")
+    connect_regions(world, regions["Westbrook"], regions["Heywood"], "Westbrook to Heywood")
+    connect_regions(world, regions["Westbrook"], regions["Santo Domingo"], "Westbrook to Santo Domingo")
+    connect_regions(world, regions["Westbrook"], regions["Badlands"], "Westbrook to Badlands")
 
-    # City Center connections (hub area connecting multiple districts)
+    # City Center connections
     connect_regions(world, regions["City Center"], regions["Watson"], "City Center to Watson")
     connect_regions(world, regions["City Center"], regions["Westbrook"], "City Center to Westbrook")
     connect_regions(world, regions["City Center"], regions["Heywood"], "City Center to Heywood")
-    connect_regions(world, regions["City Center"], regions["Pacifica"], "City Center to Pacifica")
 
     # Heywood connections
     connect_regions(world, regions["Heywood"], regions["City Center"], "Heywood to City Center")
-
-    # Pacifica & Dogtown connections
-    connect_regions(world, regions["Pacifica"], regions["City Center"], "Pacifica to City Center")
-    if world.options.include_phantom_liberty_dlc:
-        connect_regions(world, regions["Pacifica"], regions["Dogtown"], "Pacifica to Dogtown")
-        connect_regions(world, regions["Dogtown"], regions["Pacifica"], "Dogtown to Pacifica")
+    connect_regions(world, regions["Heywood"], regions["Pacifica"], "Heywood to Pacifica")
+    connect_regions(world, regions["Heywood"], regions["Santo Domingo"], "Heywood to Santo Domingo")
 
     # Santo Domingo connections
     connect_regions(world, regions["City Center"], regions["Santo Domingo"], "City Center to Santo Domingo")
     connect_regions(world, regions["Santo Domingo"], regions["City Center"], "Santo Domingo to City Center")
+    connect_regions(world, regions["Santo Domingo"], regions["Heywood"], "Santo Domingo to Heywood")
+    connect_regions(world, regions["Santo Domingo"], regions["Pacifica"], "Santo Domingo to Pacifica")
+    connect_regions(world, regions["Santo Domingo"], regions["Badlands"], "Santo Domingo to Badlands")
+
+    # Pacifica connections
+    connect_regions(world, regions["Pacifica"], regions["City Center"], "Pacifica to City Center")
+    connect_regions(world, regions["Pacifica"], regions["Heywood"], "Pacifica to Heywood")
+    connect_regions(world, regions["Pacifica"], regions["Santo Domingo"], "Pacifica to Santo Domingo")
 
     # Badlands connections (accessible from Watson and Santo Domingo)
-    connect_regions(world, regions["Watson"], regions["Badlands"], "Watson to Badlands")
-    connect_regions(world, regions["Badlands"], regions["Watson"], "Badlands to Watson")
-    connect_regions(world, regions["Santo Domingo"], regions["Badlands"], "Santo Domingo to Badlands")
+    connect_regions(world, regions["Badlands"], regions["Westbrook"], "Badlands to Westbrook")
     connect_regions(world, regions["Badlands"], regions["Santo Domingo"], "Badlands to Santo Domingo")
+    connect_regions(world, regions["Badlands"], regions["Pacifica"], "Badlands to Pacifica")
 
-    # North Oak connections (accessible from City Center, part of Westbrook area)
-    connect_regions(world, regions["City Center"], regions["North Oak"], "City Center to North Oak")
-    connect_regions(world, regions["North Oak"], regions["City Center"], "North Oak to City Center")
+    # Special Regions
+    connect_regions(world, regions["Watson"], regions["Afterlife"], "Watson to Afterlife")
+    connect_regions(world, regions["Afterlife"], regions["Watson"], "Afterlife to Watson")
+    # Cyberspace and Orbital Station are usually late-game/one-way or specific event triggers
+    connect_regions(world, regions["City Center"], regions["Orbital Station"], "Arasaka Tower to Orbital Station")
 
-    # Afterlife connections (special bar, accessed from City Center)
-    connect_regions(world, regions["City Center"], regions["Afterlife"], "City Center to Afterlife")
-    connect_regions(world, regions["Afterlife"], regions["City Center"], "Afterlife to City Center")
+    # DLC Only Connections
+    if world.options.include_phantom_liberty_dlc:
+        connect_regions(world, regions["City Center"], regions["Morro Rock"], "City Center to Morro Rock")
+        connect_regions(world, regions["Morro Rock"], regions["City Center"], "Morro Rock to City Center")
+        connect_regions(world, regions["Santo Domingo"], regions["Dogtown"], "Santo Domingo to Dogtown")
+        connect_regions(world, regions["Dogtown"], regions["Santo Domingo"], "Dogtown to Santo Domingo")
+        connect_regions(world, regions["Dogtown"], regions["Pacifica"], "Dogtown to Pacifica")
+        connect_regions(world, regions["Pacifica"], regions["Dogtown"], "Pacifica to Dogtown")
 
-    # Cyberspace connections (virtual space, accessed from Pacifica)
-    connect_regions(world, regions["Pacifica"], regions["Cyberspace"], "Pacifica to Cyberspace")
-    connect_regions(world, regions["Cyberspace"], regions["Pacifica"], "Cyberspace to Pacifica")
-
-    # Orbital Station connections (ending location, accessed via City Center)
-    connect_regions(world, regions["City Center"], regions["Orbital Station"], "City Center to Orbital Station")
-    connect_regions(world, regions["Orbital Station"], regions["City Center"], "Orbital Station to City Center")
-
-    # TODO: Add more connections as needed
 
     # ===== SET REGION ACCESS RULES =====
     # Set basic access rules on regions to ensure accessibility check passes
@@ -160,22 +220,271 @@ def create_regions(world: "Cyberpunk2077World") -> None:
 
     # All main districts require completing the prologue (having chosen a lifepath)
     # This ensures the generator knows these areas aren't accessible from the start
-    # NOTE: "Lifepath Chosen" is an event granted by completing any ONE of the 3 lifepath intros
+    # NOTE: "Lifepath Chosen" location is granted by completing any ONE of the 3 lifepath intros
     # (Streetkid, Corpo, or Nomad) - player doesn't need to complete all 3
-    lifepath_event = "Lifepath Chosen"
+    lifepath_location = "Lifepath Chosen"
 
     # Watson is the starting region, accessible from Menu with "New Game"
     # No additional requirements beyond entering the game
 
     # Other districts require having completed a lifepath intro
+    # Set rules on all entrances leading to these regions
     for region_name in ["Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands", "North Oak", "Afterlife", "Cyberspace", "Orbital Station"]:
         region = regions[region_name]
-        # Region is accessible if player has the "Lifepath Chosen" event
-        # Using a closure to capture the correct world.player value
-        region.access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
+        # Set access rule on all entrances leading to this region
+        for entrance in region.entrances:
+            set_rule(entrance, lambda state, w=world: state.can_reach_location(lifepath_location, w.player))
 
     if world.options.include_phantom_liberty_dlc:
-        regions["Dogtown"].access_rule = lambda state, w=world: state.has(lifepath_event, w.player)
+        for entrance in regions["Dogtown"].entrances:
+            set_rule(entrance, lambda state, w=world: state.can_reach_location(lifepath_location, w.player))
+
+    # Set rules for region restrictions if enabled
+    # These rules combine with the lifepath requirement using AND logic
+    if world.options.restrict_by_major_district:
+        # Westbrook - requires token AND lifepath
+        for entrance in regions["Westbrook"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("Westbrook Access Token", world.player)
+            ))
+
+        # City Center - requires token AND lifepath
+        for entrance in regions["City Center"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("City Center Access Token", world.player)
+            ))
+
+        # Heywood - requires token AND lifepath
+        for entrance in regions["Heywood"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("Heywood Access Token", world.player)
+            ))
+
+        # Santo Domingo - requires token AND lifepath
+        for entrance in regions["Santo Domingo"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("Santo Domingo Access Token", world.player)
+            ))
+
+        # Pacifica - requires token AND lifepath
+        for entrance in regions["Pacifica"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("Pacifica Access Token", world.player)
+            ))
+
+        # Badlands - requires token AND lifepath
+        for entrance in regions["Badlands"].entrances:
+            set_rule(entrance, lambda state: (
+                state.can_reach_location(lifepath_location, world.player) and
+                state.has("Badlands Access Token", world.player)
+            ))
+
+        # Dogtown (DLC) - requires token AND lifepath AND DLC enabled
+        if world.options.include_phantom_liberty_dlc:
+            for entrance in regions["Dogtown"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.can_reach_location(lifepath_location, world.player) and
+                    state.has("Dogtown Access Token", world.player)
+                ))
+
+
+    # Set rules for subdistrict restrictions if enabled
+    # Subdistricts require: lifepath + parent district token + subdistrict token
+    if world.options.restrict_by_sub_district:
+        # Watson Subdistricts - NO parent token required (Watson is starting area)
+        # Only need lifepath + subdistrict token
+        if "Watson - Kabuki" in regions:
+            for entrance in regions["Watson - Kabuki"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Watson Kabuki Access Token", world.player)
+                ))
+
+        if "Watson - Little China" in regions:
+            for entrance in regions["Watson - Little China"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Watson Little China Access Token", world.player)
+                ))
+
+        # Westbrook Subdistricts - require Westbrook token + subdistrict token
+        if "Westbrook - Japantown" in regions:
+            for entrance in regions["Westbrook - Japantown"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Westbrook Access Token", world.player) and
+                    state.has("Westbrook Japantown Access Token", world.player)
+                ))
+
+        if "Westbrook - Charter Hill" in regions:
+            for entrance in regions["Westbrook - Charter Hill"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Westbrook Access Token", world.player) and
+                    state.has("Westbrook Charter Hill Access Token", world.player)
+                ))
+
+        if "Westbrook - North Oak" in regions:
+            for entrance in regions["Westbrook - North Oak"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Westbrook Access Token", world.player) and
+                    state.has("Westbrook North Oak Access Token", world.player)
+                ))
+
+        # City Center Subdistricts - require City Center token + subdistrict token
+        if "City Center - Corpo Plaza" in regions:
+            for entrance in regions["City Center - Corpo Plaza"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("City Center Access Token", world.player) and
+                    state.has("City Center Corpo Plaza Access Token", world.player)
+                ))
+
+        if "City Center - Downtown" in regions:
+            for entrance in regions["City Center - Downtown"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("City Center Access Token", world.player) and
+                    state.has("City Center Downtown Access Token", world.player)
+                ))
+
+        # Heywood Subdistricts - require Heywood token + subdistrict token
+        if "Heywood - Wellsprings" in regions:
+            for entrance in regions["Heywood - Wellsprings"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Heywood Access Token", world.player) and
+                    state.has("Heywood Wellsprings Access Token", world.player)
+                ))
+
+        if "Heywood - The Glen" in regions:
+            for entrance in regions["Heywood - The Glen"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Heywood Access Token", world.player) and
+                    state.has("Heywood The Glen Access Token", world.player)
+                ))
+
+        if "Heywood - Vista del Rey" in regions:
+            for entrance in regions["Heywood - Vista del Rey"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Heywood Access Token", world.player) and
+                    state.has("Heywood Vista Del Rey Access Token", world.player)
+                ))
+
+        # Santo Domingo Subdistricts - require Santo Domingo token + subdistrict token
+        if "Santo Domingo - Arroyo" in regions:
+            for entrance in regions["Santo Domingo - Arroyo"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Santo Domingo Access Token", world.player) and
+                    state.has("Santo Domingo Arroyo Access Token", world.player)
+                ))
+
+        if "Santo Domingo - Rancho Coronado" in regions:
+            for entrance in regions["Santo Domingo - Rancho Coronado"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Santo Domingo Access Token", world.player) and
+                    state.has("Santo Domingo Rancho Coronado Access Token", world.player)
+                ))
+
+        # Pacifica Subdistricts - require Pacifica token + subdistrict token
+        if "Pacifica - Coastview" in regions:
+            for entrance in regions["Pacifica - Coastview"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Pacifica Access Token", world.player) and
+                    state.has("Pacifica Coastview Access Token", world.player)
+                ))
+
+        if "Pacifica - West Wind Estate" in regions:
+            for entrance in regions["Pacifica - West Wind Estate"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Pacifica Access Token", world.player) and
+                    state.has("Pacifica West Wind Estate Access Token", world.player)
+                ))
+
+        # Badlands Subdistricts - require Badlands token + subdistrict token
+        if "Badlands - Biotechnica Flats" in regions:
+            for entrance in regions["Badlands - Biotechnica Flats"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Biotechnica Flats Access Token", world.player)
+                ))
+
+        if "Badlands - Jackson Plains" in regions:
+            for entrance in regions["Badlands - Jackson Plains"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Jackson Plains Access Token", world.player)
+                ))
+
+        if "Badlands - Laguna Bend" in regions:
+            for entrance in regions["Badlands - Laguna Bend"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Laguna Bend Access Token", world.player)
+                ))
+
+        if "Badlands - Red Peaks" in regions:
+            for entrance in regions["Badlands - Red Peaks"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Red Peaks Access Token", world.player)
+                ))
+
+        if "Badlands - Rocky Ridge" in regions:
+            for entrance in regions["Badlands - Rocky Ridge"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Rocky Ridge Access Token", world.player)
+                ))
+
+        if "Badlands - Sierra Sonora" in regions:
+            for entrance in regions["Badlands - Sierra Sonora"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Sierra Sonora Access Token", world.player)
+                ))
+
+        if "Badlands - SoCal Badlands" in regions:
+            for entrance in regions["Badlands - SoCal Badlands"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands SoCal Badlands Access Token", world.player)
+                ))
+
+        if "Badlands - Yucca" in regions:
+            for entrance in regions["Badlands - Yucca"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Yucca Access Token", world.player)
+                ))
+
+        if "Badlands - Morro Rock" in regions:
+            for entrance in regions["Badlands - Morro Rock"].entrances:
+                set_rule(entrance, lambda state: (
+                    state.has(lifepath_location, world.player) and
+                    state.has("Badlands Access Token", world.player) and
+                    state.has("Badlands Morro Rock Access Token", world.player)
+                ))
 
 
 def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
@@ -202,8 +511,27 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
     # Add all locations that belong to this region
     for location_name, location_data in location_table.items():
         # Skip DLC locations if the player didn't enable them
-        if location_data.region == "Dogtown" and not world.options.include_phantom_liberty_dlc:
+        # Check both region and dlc_only flag (events may be in Watson to avoid circular deps)
+        if (location_data.region == "Dogtown" or location_data.dlc_only) and not world.options.include_phantom_liberty_dlc:
             continue
+        # Skip location if the category is not enabled in the options
+        if location_data.category in (LocationCategory.SIDE_QUEST, LocationCategory.DLC_SIDE) and not world.options.include_side_quests:
+            continue
+        # Ending side quests included when EITHER include_all_endings OR include_side_quests is true
+        if location_data.category == LocationCategory.ENDING_SIDE_QUEST and not (world.options.include_all_endings or world.options.include_side_quests):
+            continue
+        if location_data.category == LocationCategory.GIG and not world.options.include_gigs:
+            continue
+        if location_data.category == LocationCategory.TAROT and not world.options.include_tarot:
+            continue
+        if location_data.category == LocationCategory.CYBERPSYCHO and not world.options.include_cyber_psycho_sighting:
+            continue
+        if location_data.category == LocationCategory.NCPD_HUSTLE and not world.options.include_ncpd_hustles:
+            continue
+        if location_data.category == LocationCategory.MINOR_QUEST and not world.options.include_minor_quests:
+            continue
+
+
         # Only add locations that belong to this region
         if location_data.region == region_name:
             # Handle event locations - they have code=None

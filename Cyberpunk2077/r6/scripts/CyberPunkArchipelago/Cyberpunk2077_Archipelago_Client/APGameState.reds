@@ -99,6 +99,10 @@ public class APGameState extends ScriptableService {
             if StrCmp(itemType, "prog") == 0 {
                 this.HandleProgressiveItemReceived(item);
             }
+            if StrCmp(itemType, "dat") == 0 {
+                let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+                APGameSystem.HandleDistrictUnlock(item);
+            }
 
             // NOTE: Do NOT increment totalItemsReceived here!
             // Queue worker sends items that are ALREADY in server's received_items list

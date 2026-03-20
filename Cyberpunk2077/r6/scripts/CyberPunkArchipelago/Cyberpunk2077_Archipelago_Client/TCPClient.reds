@@ -191,6 +191,10 @@ public class APRedSocketTCPService extends IScriptable {
 /*
 Below is handler methods for processing incoming commands from the server.
 */
+    private func HandleCheckRequestResponse(command: String) -> Void {
+        
+    }
+
     private func HandleDeathLinkCommand(command: String) -> Void {
         //APLogger.LogInfo( "TCPClient: Received DeathLink command from server. Triggering player death.");
         if StrCmp(command, "DEATHLINK_RECEIVED") == 0 {
@@ -375,8 +379,8 @@ Below is the full handshake process
         //APLogger.LogInfo( "TCPClient: Received SYNC_CONFIG command: " + command);
         let parts: array<String> = StrSplit(command, ":");
         if ArraySize(parts) >= 3 {
-            let commandType: String = parts[0];
-            let status: String = parts[1];
+            //let commandType: String = parts[0];
+            //let status: String = parts[1];
             let configData: String = "";
             let i: Int32 = 2;
             while i < ArraySize(parts) {

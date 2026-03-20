@@ -14,196 +14,181 @@ Rules are lambda functions that check the player's current item collection.
 from typing import TYPE_CHECKING
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
+from .locations import location_table
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
 
 def set_rules(world: "Cyberpunk2077World") -> None:
+    """
+    Set all access rules for quest progression and victory condition.
+
+    This implements the canonical Cyberpunk 2077 quest chain structure:
+    - Prologue (linear progression)
+    - Act 2 (three branches that can be done in any order, all required)
+    - Point of No Return (requires all three Act 2 branches)
+    - Endings (each with different prerequisites)
+    """
     player = world.player
 
-    # ============================================
-    # Prologue Rules
-    # ============================================
+    # ===== PROLOGUE CHAIN =====
+    # Linear progression through prologue quests
+
+    set_rule(
+        world.multiworld.get_location("Prologue - The Ripperdoc", player),
+        lambda state: state.can_reach_location("Prologue - The Rescue", player)
+    )
 
     set_rule(
         world.multiworld.get_location("Prologue - The Ride", player),
-        lambda state: state.has_any({"Dex's Limo Keys"}, player)
+        lambda state: state.can_reach_location("Prologue - The Ripperdoc", player)
     )
 
-    set_rule(
-        world.multiworld.get_location("Prologue - The Pickup", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
-
-    set_rule(
-        world.multiworld.get_location("Prologue - The Information", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
-
+    # Both The Information AND The Pickup must be completed before The Heist
     set_rule(
         world.multiworld.get_location("Prologue - The Heist", player),
-        lambda state: state.can_reach_location("Prologue - The Pickup", player)
-                      and state.can_reach_location("Prologue - The Information", player)
-                      #and state.has("Konpeki Plaza Room Key", player)
+        lambda state: (
+            state.can_reach_location("Prologue - The Pickup", player) and
+            state.can_reach_location("Prologue - The Information", player)
+        )
     )
 
     set_rule(
-        world.multiworld.get_location("Main - Transmission", player),
+        world.multiworld.get_location("Act 1 - Love Like Fire", player),
         lambda state: state.can_reach_location("Prologue - The Heist", player)
     )
 
-    # =================
-    # Phantom Liberty
-    # =================
-
-    # TODO: Still need the remaining rules for Phantom Liberty quests, but this should be enough
-    # TODO: to make sure that the player wouldn't be locked by out-of-order logic once the blocker is in
-    if world.options.include_phantom_liberty_dlc:
-        # Require Myers' Plane Ticket to start Phantom Liberty
-        set_rule(
-            world.multiworld.get_location("Phantom Liberty - Phantom Liberty", player),
-            lambda state: state.has("Myers' Plane Ticket", player)
-                          and state.can_reach_location("Main - Transmission", player)
-        )
-        # Require completing Phantom Liberty Start to access Dog Eat Dog
-        set_rule(
-            world.multiworld.get_location("Phantom Liberty - Dog Eat Dog", player),
-            lambda state: state.can_reach_location("Phantom Liberty - Phantom Liberty", player)
-        )
-
-    #=============
-    # CyberPsychos
-    #=============
-
-    # ===== CYBERPSYCHO SIGHTINGS =====
-    # All Cyberpsycho locations require completing "Prologue - The Ride"
-    # Region-level access rules (set in regions.py) already require a lifepath
-
-    # Cyberpsycho Sighting: Six Feet Under
     set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Six Feet Under", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
+        world.multiworld.get_location("Act 1 - Playing for Time", player),
+        lambda state: state.can_reach_location("Act 1 - Love Like Fire", player)
     )
 
-    # Cyberpsycho Sighting: Bloody Ritual
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Bloody Ritual", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # NOTE: Prologue milestone event access rules removed - these events were orphaned
+    # and not used by any progression logic
 
-    # Cyberpsycho Sighting: Where the Bodies Hit the Floor
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Where the Bodies Hit the Floor", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # NOTE: Branch completion event access rules removed - events eliminated to avoid
+    # circular dependencies with region access tokens
 
-    # Cyberpsycho Sighting: Demons of War
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Demons of War", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # NOTE: Side quest progression is handled by include_all_endings option (lines ~150-185)
+    # which checks quest locations directly, not via events
 
-    # Cyberpsycho Sighting: Lt. Mower
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Lt. Mower", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # NOTE: Phantom Liberty progression handled directly via quest location access rules
+    # DLC quests gated by region access and quest chain, not through event items
 
-    # Cyberpsycho Sighting: Ticket to the Major Leagues
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Ticket to the Major Leagues", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # ========== Act 2 ============
 
-    # Cyberpsycho Sighting: The Wasteland
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: The Wasteland", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # Only need to put the FIRST and LAST quest of a given chain for the generator to understand whats going on theoretically
+    # Vodoo Boys
+    set_rule(world.multiworld.get_location("Main - Automatic Love", player),
+             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
 
-    # Cyberpsycho Sighting: House on a Hill
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: House on a Hill", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    set_rule(world.multiworld.get_location("Main - Transmission", player),
+             lambda state: state.can_reach_location("Main - Automatic Love", player))
 
-    # Cyberpsycho Sighting: Second Chances
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Second Chances", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # Hellman
+    set_rule(world.multiworld.get_location("Main - Ghost Town", player),
+             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
 
-    # Cyberpsycho Sighting: On Deaf Ears
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: On Deaf Ears", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    set_rule(world.multiworld.get_location("Main - Life During Wartime", player),
+             lambda state: state.can_reach_location("Main - Ghost Town", player))
 
-    # Cyberpsycho Sighting: Phantom of Night City
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Phantom of Night City", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # Takemura
+    set_rule(world.multiworld.get_location("Main - Down on the Street", player),
+             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
 
-    # Cyberpsycho Sighting: Seaside Cafe
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Seaside Cafe", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    set_rule(world.multiworld.get_location("Main - Search and Destroy", player),
+             lambda state: state.can_reach_location("Main - Down on the Street", player))
 
-    # Cyberpsycho Sighting: Letter of the Law
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Letter of the Law", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # ======= Point of No Return ======
+    # Requires ALL THREE Act 2 branches to be completed
+    # Check quest locations directly instead of using event items to avoid circular dependencies
 
-    # Cyberpsycho Sighting: Smoke on the Water
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Smoke on the Water", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    set_rule(world.multiworld.get_location("Endgame - Nocturne Op55N1", player), lambda state: (
+            state.can_reach_location("Main - Transmission", player) and
+            state.can_reach_location("Main - Life During Wartime", player) and
+            state.can_reach_location("Main - Search and Destroy", player)
+    ))
 
-    # Cyberpsycho Sighting: Lex Talionis
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Lex Talionis", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # Default ending
+    set_rule(world.multiworld.get_location("Epilogue - Where is My Mind?", player), lambda state: (
+        state.can_reach_location("Endgame - Nocturne Op55N1", player)
+    ))
 
-    # Cyberpsycho Sighting: Under the Bridge
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Under the Bridge", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+    # ==========================================
+    # Alternate Endings & Side Quest Prerequisites
+    # ==========================================
+    # Set ending side quest chain rules when either include_all_endings OR include_side_quests is enabled
+    # These quests have ENDING_SIDE_QUEST category and are included automatically when either option is true
+    if (world.options.include_all_endings or world.options.include_side_quests):
+        # --- PANAM'S BRANCH (For The Star Ending) ---
+        # Unlocked after finishing Branch B (Hellman)
+        set_rule(world.multiworld.get_location("Riders on the Storm", player),
+                 lambda state: state.can_reach_location("Main - Life During Wartime", player))
 
-    # Cyberpsycho Sighting: Discount Doc
-    set_rule(
-        world.multiworld.get_location("Cyberpsycho Sighting: Discount Doc", player),
-        lambda state: state.can_reach_location("Prologue - The Ride", player)
-    )
+        # Shortcut: Tying the end of Panam's arc to the beginning of it
+        set_rule(world.multiworld.get_location("Queen of the Highway", player),
+                 lambda state: state.can_reach_location("Riders on the Storm", player))
 
-    # Victory item is placed directly on each epilogue location in regions.py
-    # Set access rule on Victory location - requires completing one of the ending questlines
+        # The Star Ending: Requires Point of No Return AND Panam's loyalty
+        set_rule(world.multiworld.get_location("Epilogue - All Along the Watchtower", player), lambda state: (
+                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
+                state.can_reach_location("Queen of the Highway", player)
+        ))
+
+        # --- ROGUE & JOHNNY'S BRANCH (For The Sun / Temperance Endings) ---
+        # Unlocked after finishing Branch C (Takemura)
+        set_rule(world.multiworld.get_location("Chippin' In", player),
+                 lambda state: state.can_reach_location("Main - Search and Destroy", player))
+
+        # Shortcut: Tying the end of Rogue's arc to the beginning of it
+        set_rule(world.multiworld.get_location("Blistering Love", player),
+                 lambda state: state.can_reach_location("Chippin' In", player))
+
+        # The Sun Ending: Requires Point of No Return AND Rogue's loyalty
+        set_rule(world.multiworld.get_location("Epilogue - Path of Glory", player), lambda state: (
+                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
+                state.can_reach_location("Blistering Love", player)
+        ))
+
+        # Temperance Ending: Branches from the exact same requirements as The Sun
+        set_rule(world.multiworld.get_location("Epilogue - New Dawn Fades", player), lambda state: (
+                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
+                state.can_reach_location("Blistering Love", player)
+        ))
+
+
+    # List of locations of which only ONE must be accessible to reach a point of no return
+    no_return_locations = [
+        "Epilogue - Where is My Mind?",
+        "Epilogue - All Along the Watchtower",
+        "Epilogue - Path of Glory",
+        "Epilogue - New Dawn Fades",
+        "Phantom Liberty - Firestarter",
+        "Phantom Liberty - The Last Stand"
+    ]
+
+
+
+    # ===== VICTORY CONDITION =====
+    # Victory requires reaching ANY epilogue location
     set_rule(
         world.multiworld.get_location("Victory", world.player),
         lambda state: (
-            # Arasaka/Hanako Path
-            state.can_reach_location("Epilogue - Where is My Mind?", world.player) or
-            # Nomad/Panam Path
-            state.can_reach_location("Epilogue - All Along the Watchtower", world.player) or
-            # Rogue/Johnny Path
-            state.can_reach_location("Epilogue - Path of Glory", world.player) or
-            # Temperance Path (Johnny takes the body)
-            state.can_reach_location("Epilogue - New Dawn Fades", world.player) or
-            # Phantom Liberty Ending (if DLC enabled)
+            # Base game epilogues
+            state.can_reach_location("Epilogue - Where is My Mind?", player) or
+            state.can_reach_location("Epilogue - All Along the Watchtower", player) or
+            state.can_reach_location("Epilogue - Path of Glory", player) or
+            state.can_reach_location("Epilogue - New Dawn Fades", player) or
+            # Phantom Liberty ending (if DLC enabled)
             (world.options.include_phantom_liberty_dlc and
-             state.can_reach_location("DLC - Things Done Changed", world.player))
+             state.can_reach_location("Phantom Liberty - Things Done Changed", player))
         )
     )
 
     # Set completion condition - player wins when they collect the Victory event item
-    world.multiworld.completion_condition[world.player] = \
-        lambda state: state.has("Victory", world.player)
+    world.multiworld.completion_condition[player] = \
+        lambda state: state.has("Victory", player)
 
 # ===== HELPER FUNCTIONS =====
 # These are utility functions to make rule creation easier

@@ -1,3 +1,6 @@
 base\quest\main_quests\prologue\q004\scenes\lipsync\en\q004_07_lets_meet_dex\dexter.anims
 base\quest\main_quests\prologue\q004\scenes\lipsync\en\q004_07_lets_meet_dex\jackie.anims
 base\quest\main_quests\prologue\q004\scenes\lipsync\en\q004_07_lets_meet_dex\v.anims
+base\quest\main_quests\prologue\q004\scenes\versions\gold\lipsync\en\q004_07_lets_meet_dex\dexter.anims
+base\quest\main_quests\prologue\q004\scenes\versions\gold\lipsync\en\q004_07_lets_meet_dex\jackie.anims
+base\quest\main_quests\prologue\q004\scenes\versions\gold\lipsync\en\q004_07_lets_meet_dex\v.anims

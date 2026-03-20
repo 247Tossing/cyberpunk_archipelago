@@ -47,11 +47,39 @@ class ItemData:
         dlc_only: Whether this item requires Phantom Liberty DLC (default: False)
                  Items marked dlc_only=True are excluded from the item pool when
                  include_phantom_liberty_dlc option is disabled
+        category: Item category for grouping and filtering (default: ItemCategory.MISC)
+                 Used to group items by type (quickhacks, tokens, currency, etc.)
+                 Makes it easier to filter items in options and generation logic
     """
     name: str
     code: Optional[int]  # None for event items
     classification: ItemClassification
     dlc_only: bool = False  # True for Phantom Liberty DLC items
+    category: str = "misc"  # Item category (use ItemCategory constants)
+    quantity: int = 1
+
+
+# ===== ITEM CATEGORY TYPES =====
+# These constants define item categories for grouping and filtering
+# Used with the ItemData.category field to explicitly categorize items
+
+class ItemCategory:
+    """
+    Item category constants for explicit categorization.
+
+    Categories allow grouping items independently of their classification
+    (progression/useful/filler), making it easier to filter items by type
+    in options and generation logic.
+    """
+    EVENT = "event"                      # Event items (code=None, never in item pool)
+    DISTRICT_TOKEN = "district_token"    # Main district access tokens
+    SUBDISTRICT_TOKEN = "subdistrict_token"  # Subdistrict access tokens
+    QUICKHACK = "quickhack"              # Progressive quickhacks
+    CURRENCY = "currency"                # Eddies (in-game money)
+    CONSUMABLE = "consumable"            # Food, drinks, RAM boosters
+    CYBERWARE = "cyberware"              # Cyberware upgrades (future)
+    WEAPON = "weapon"                    # Unique weapons (future)
+    MISC = "misc"                        # Uncategorized/miscellaneous items
 
 
 # ===== ITEM CLASSIFICATION TYPES =====
@@ -132,143 +160,361 @@ item_table: Dict[str, ItemData] = {
     # Prologue Items
     #====================================
 
-    # Lifepath Chosen Event
-    # Granted when player completes any one of the 3 lifepath intros
-    # (Streetkid, Corpo, or Nomad)
-    # Used to unlock district access - player only needs ONE lifepath, not all 3
-    "Lifepath Chosen": ItemData(
-        name="ap_ev_lifepath_chosen",
-        code=None,  # Event item
-        classification=ItemClassification.progression
+    # NOTE: Lifepath Chosen event removed - region access rules check the quest location
+    # directly instead of using an event item
+
+    # NOTE: Prologue milestone events removed - these were orphaned progression items
+    # not used by any rules. Quest completion tracked via location access directly.
+
+    # NOTE: Branch completion events removed - Nocturne Op55N1 checks quest locations
+    # directly instead of using event items to avoid circular dependencies
+
+    # NOTE: Side quest events removed - include_all_endings option handles this
+    # by checking quest locations directly instead of using event items
+
+    # NOTE: Phantom Liberty events removed - DLC progression tracked directly via
+    # quest location access rules, not through event items
+
+    # ===================================
+    # District Access Items
+    # ===================================
+
+    "Westbrook Access Token" : ItemData(
+        name = "ap_dat_westbrookAccessToken",
+        code = 4001,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
     ),
 
-    "Dex's Limo Keys": ItemData(
-        name="ap_qk_dex_keys",
-        code=4000,  # First progression item
-        classification=ItemClassification.progression
+    "City Center Access Token" : ItemData(
+        name = "ap_dat_cityCenterAccessToken",
+        code = 4002,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
     ),
 
-    # Has no effect currently
-    "Konpeki Plaza Room Key": ItemData(
-        name="ap_qk_konpeki_keys",
-        code=4001,
-        classification=ItemClassification.progression_deprioritized
+    "Heywood Access Token" : ItemData(
+        name = "ap_dat_heywoodAccessToken",
+        code = 4003,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
     ),
 
-    #====================================
-    # Main Story Items
-    #====================================
+    "Santo Domingo Access Token" : ItemData(
+        name = "ap_dat_santoDomingoAccessToken",
+        code = 4004,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
+    ),
 
-    #====================================
-    # Phantom Liberty Items
-    #====================================
-    # Items marked dlc_only=True are excluded when Phantom Liberty DLC is disabled
+    "Pacifica Access Token" : ItemData(
+        name = "ap_dat_pacificaAccessToken",
+        code = 4005,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
+    ),
 
-    # Has no effect currently
-    "Myers' Plane Ticket": ItemData(
-        name="ap_qk_myers_ticket",
-        code=4002,
-        classification=ItemClassification.progression_deprioritized,
-        dlc_only=True  # Phantom Liberty DLC required
+    "Dogtown Acccess Token" : ItemData(
+        name = "ap_dat_dogtownAccessToken",
+        code = 4006,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
+    ),
+
+    "Badlands Access Token" : ItemData(
+        name = "ap_dat_badlandsAccessToken",
+        code = 4007,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.DISTRICT_TOKEN
+    ),
+
+    # ===== Subdistrict Access Tokens =====
+    "Westbrook Japantown Access Token" : ItemData(
+        name = "ap_dat_westbrookJapantownAccessToken",
+        code = 4008,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== Westbrook Subdistricts =====
+    "Westbrook Charter Hill Access Token" : ItemData(
+        name = "ap_dat_westbrookCharterHillAccessToken",
+        code = 4009,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Westbrook North Oak Access Token" : ItemData(
+        name = "ap_dat_westbrookNorthOakAccessToken",
+        code = 4010,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== City Center Subdistricts =====
+    "City Center Corpo Plaza Access Token" : ItemData(
+        name = "ap_dat_cityCenterCorpoPlazaAccessToken",
+        code = 4011,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "City Center Downtown Access Token" : ItemData(
+        name = "ap_dat_cityCenterDowntownAccessToken",
+        code = 4012,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== Heywood Subdistricts =====
+    "Heywood Wellsprings Access Token" : ItemData(
+        name = "ap_dat_heywoodWellspringsAccessToken",
+        code = 4013,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Heywood The Glen Access Token" : ItemData(
+        name = "ap_dat_heywoodTheGlenAccessToken",
+        code = 4014,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Heywood Vista Del Rey Access Token" : ItemData(
+        name = "ap_dat_heywoodVistaDelReyAccessToken",
+        code = 4015,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== Santo Domingo Subdistricts =====
+    "Santo Domingo Arroyo Access Token" : ItemData(
+        name = "ap_dat_santoDomingoArroyoAccessToken",
+        code = 4016,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Santo Domingo Rancho Coronado Access Token" : ItemData(
+        name = "ap_dat_santoDomingoRanchoCoronadoAccessToken",
+        code = 4017,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== Pacifica Subdistricts =====
+    "Pacifica Coastview Access Token" : ItemData(
+        name = "ap_dat_pacificaCoastviewAccessToken",
+        code = 4018,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Pacifica West Wind Estate Access Token" : ItemData(
+        name = "ap_dat_pacificaWestWindEstateAccessToken",
+        code = 4019,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    # ===== Badlands Subdistricts =====
+    "Badlands Biotechnica Flats Access Token" : ItemData(
+        name = "ap_dat_badlandsBiotechnicaFlatsAccessToken",
+        code = 4020,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Jackson Plains Access Token" : ItemData(
+        name = "ap_dat_badlandsJacksonPlainsAccessToken",
+        code = 4021,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Laguna Bend Access Token" : ItemData(
+        name = "ap_dat_badlandsLagunaBendAccessToken",
+        code = 4022,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Red Peaks Access Token" : ItemData(
+        name = "ap_dat_badlandsRedPeaksAccessToken",
+        code = 4023,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Rocky Ridge Access Token" : ItemData(
+        name = "ap_dat_badlandsRockyRidgeAccessToken",
+        code = 4024,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Sierra Sonora Access Token" : ItemData(
+        name = "ap_dat_badlandsSierraSonoraAccessToken",
+        code = 4025,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands SoCal Badlands Access Token" : ItemData(
+        name = "ap_dat_badlandsSoCalBadlandsAccessToken",
+        code = 4026,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Yucca Access Token" : ItemData(
+        name = "ap_dat_badlandsYuccaAccessToken",
+        code = 4027,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
+    ),
+
+    "Badlands Morro Rock Access Token" : ItemData(
+        name = "ap_dat_badlandsMorroRockAccessToken",
+        code = 4028,
+        classification = ItemClassification.progression | ItemClassification.skip_balancing,
+        category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     # ===== USEFUL ITEMS =====
     # These items are helpful but not required
-
     "5000 Eddies": ItemData(
         name="ap_ed_Items.money_5000",
         code=5000,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.CURRENCY
     ),
     "Progressive Overheat Quickhack": ItemData(
         name="ap_prog_overheat",
         code=5001,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
     "Progressive Short Circuit Quickhack": ItemData(
         name="ap_prog_shortCircuit",
         code=5002,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
-    "Progressive Contaigion Quickhack": ItemData(
+    "Progressive Contagion Quickhack": ItemData(
         name="ap_prog_contagion",
         code=5003,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
     "Progressive Synapse Burnout Quickhack": ItemData(
         name="ap_prog_synapseBurnout",
         code=5004,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
     "Progressive Cripple Movement Quickhack": ItemData(
         name="ap_prog_crippleMovement",
         code=5005,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
     "Progressive Weapon Glitch Quickhack": ItemData(
         name="ap_prog_weaponGlitch",
         code=5006,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 5
     ),
     "Progressive Ping Quickhack": ItemData(
         name="ap_prog_ping",
         code=5007,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 4
     ),
     "Progressive Bait Quickhack": ItemData(
         name="ap_prog_bait",
         code=5008,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity= 6
     ),
     "Progressive Request Backup Quickhack": ItemData(
         name="ap_prog_requestBackup",
         code=5009,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=5
     ),
     "Progressive Memory Wipe Quickhack": ItemData(
         name="ap_prog_memoryWipe",
         code=5010,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=4
     ),
     "Progressive Sonic Shock Quickhack": ItemData(
         name="ap_prog_sonicShock",
         code=5011,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=5
     ),
     "Progressive Cyberpsychosis Quickhack": ItemData(
         name="ap_prog_madness",
         code=5012,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=3
     ),
     "Progressive Suicide Quickhack": ItemData(
         name="ap_prog_suicide",
         code=5013,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=3
     ),
     "Progressive System Collapse Quickhack": ItemData(
         name="ap_prog_systemCollapse",
         code=5014,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=3
     ),
     "Progressive Detonate Grenade Quickhack": ItemData(
         name="ap_prog_grenadeExplode",
         code=5015,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=3
     ),
     "Progressive Blackwall Gateway Quickhack": ItemData(
         name="ap_prog_blackwallGateway",
         code=5016,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=3
     ),
     "Progressive Reboot Optics Quickhack": ItemData(
         name="ap_prog_rebootOptics",
         code=5017,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=5
     ),
     "Progressive Cyberware Malfunction Quickhack": ItemData(
         name="ap_prog_cyberwareMalfunction",
         code=5018,
-        classification=ItemClassification.useful
+        classification=ItemClassification.useful,
+        category=ItemCategory.QUICKHACK,
+        quantity=5
     ),
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
@@ -276,37 +522,43 @@ item_table: Dict[str, ItemData] = {
     "500 Eddies": ItemData(
         name="ap_ed_Items.money_500",  # In-game currency
         code=6000,
-        classification=ItemClassification.filler | ItemClassification.deprioritized
+        classification=ItemClassification.filler | ItemClassification.deprioritized,
+        category=ItemCategory.CURRENCY
     ),
 
     "1000 Eddies" : ItemData(
         name = "ap_ed_Items.money_1000",
         code = 6001,
-        classification = ItemClassification.filler | ItemClassification.deprioritized
+        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        category = ItemCategory.CURRENCY
     ),
 
     "2500 Eddies" : ItemData(
         name = "ap_ed_Items.money_2500",
         code = 6002,
-        classification = ItemClassification.filler | ItemClassification.deprioritized
+        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        category = ItemCategory.CURRENCY
     ),
 
     "Ram Nugs" : ItemData(
         name = "ap_inv_Items.Blackmarket_MemoryBooster",
         code = 6003,
-        classification = ItemClassification.filler | ItemClassification.deprioritized
+        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        category = ItemCategory.CONSUMABLE
     ),
 
     "RAM Jolt" : ItemData(
         name = "ap_inv_Items.MemoryBooster",
         code = 6004,
-        classification = ItemClassification.filler | ItemClassification.deprioritized
+        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        category = ItemCategory.CONSUMABLE
     ),
 
     "Burrito XXXL" : ItemData(
         name = "ap_inv_Items.MediumQualityFood4",
         code = 6005,
-        classification = ItemClassification.filler | ItemClassification.deprioritized
+        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        category = ItemCategory.CONSUMABLE
     ),
 
     # ===== TRAP ITEMS =====
@@ -332,7 +584,8 @@ item_table: Dict[str, ItemData] = {
     "Victory": ItemData(
         name="Victory",
         code=None,
-        classification=ItemClassification.progression
+        classification=ItemClassification.progression,
+        category=ItemCategory.EVENT
     ),
 }
 
@@ -383,7 +636,7 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
 
     Groups are generated based on:
     - Item classification (Progression, Useful, Filler, Trap)
-    - Item name prefix (ap_qk_, ap_it_, ap_cw_, ap_sp_, ap_trp_)
+    - Item category (from ItemData.category field)
 
     Returns:
         Dictionary mapping group names to lists of item display names
@@ -396,18 +649,19 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
     filler_items = []
     trap_items = []
 
-    # Group by prefix/type
-    quest_keys = []
-    in_game_items = []
+    # Group by category
+    district_tokens = []
+    subdistrict_tokens = []
+    quickhacks = []
+    currency = []
+    consumables = []
     cyberware_items = []
-    skill_points = []
-    traps = []
+    weapon_items = []
+    misc_items = []
 
     for display_name, item_data in item_table.items():
         if item_data.code is None:
             continue  # Skip event items
-
-        item_name = item_data.name
 
         # Group by classification
         # Use bitwise AND (&) to check for flags since items can have multiple classifications
@@ -424,19 +678,25 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
         if item_data.classification & ItemClassification.trap:
             trap_items.append(display_name)
 
-        # Group by prefix
-        if item_name.startswith("ap_qk_"):
-            quest_keys.append(display_name)
-        elif item_name.startswith("ap_it_"):
-            in_game_items.append(display_name)
-        elif item_name.startswith("ap_cw_"):
+        # Group by category
+        if item_data.category == ItemCategory.DISTRICT_TOKEN:
+            district_tokens.append(display_name)
+        elif item_data.category == ItemCategory.SUBDISTRICT_TOKEN:
+            subdistrict_tokens.append(display_name)
+        elif item_data.category == ItemCategory.QUICKHACK:
+            quickhacks.append(display_name)
+        elif item_data.category == ItemCategory.CURRENCY:
+            currency.append(display_name)
+        elif item_data.category == ItemCategory.CONSUMABLE:
+            consumables.append(display_name)
+        elif item_data.category == ItemCategory.CYBERWARE:
             cyberware_items.append(display_name)
-        elif item_name.startswith("ap_sp_"):
-            skill_points.append(display_name)
-        elif item_name.startswith("ap_trp_"):
-            traps.append(display_name)
+        elif item_data.category == ItemCategory.WEAPON:
+            weapon_items.append(display_name)
+        elif item_data.category == ItemCategory.MISC:
+            misc_items.append(display_name)
 
-    # Add groups only if they have items
+    # Add classification groups only if they have items
     if progression_items:
         groups["Progression Items"] = progression_items
     if useful_items:
@@ -446,16 +706,23 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
     if trap_items:
         groups["Trap Items"] = trap_items
 
-    if quest_keys:
-        groups["Quest Keys"] = quest_keys
-    if in_game_items:
-        groups["In-Game Items"] = in_game_items
+    # Add category groups only if they have items
+    if district_tokens:
+        groups["District Tokens"] = district_tokens
+    if subdistrict_tokens:
+        groups["Subdistrict Tokens"] = subdistrict_tokens
+    if quickhacks:
+        groups["Quickhacks"] = quickhacks
+    if currency:
+        groups["Currency"] = currency
+    if consumables:
+        groups["Consumables"] = consumables
     if cyberware_items:
         groups["Cyberware"] = cyberware_items
-    if skill_points:
-        groups["Skill Points"] = skill_points
-    if traps:
-        groups["Traps"] = traps
+    if weapon_items:
+        groups["Weapons"] = weapon_items
+    if misc_items:
+        groups["Miscellaneous"] = misc_items
 
     return groups
 

@@ -734,26 +734,6 @@ class CyberpunkContext(CommonContext):
                 return ""  # No response needed
 
 
-            # ===== CHECK_REQ =====
-            elif cmd == "CHECK_REQ":
-                # CHECK_REQ:<item_id>
-                # Returns: TRUE or FALSE
-                # Example: CHECK_REQ:<item_id>
-
-                if len(parts) != 2:
-                    return "CHECK_REQ:FAIL:Invalid CHECK_REQ format. Expected: CHECK_REQ:<item_id>"
-
-                try:
-                    item_id = int(parts[1])
-                except ValueError:
-                    return f"CHECK_REQ:FAIL:Invalid item ID: {parts[1]}"
-
-                # Check if we have this item
-                has_item = item_id in self.received_item_ids
-                result = "TRUE" if has_item else "FALSE"
-                return f"CHECK_REQ:{result}"
-
-
             # ===== GET_SLOT_DATA =====
             elif cmd == "GET_SLOT_DATA":
                 # GET_SLOT_DATA:<key>

@@ -47,13 +47,54 @@ public class APGameSystem extends ScriptableSystem {
                 //APLogger.LogInfo( s"Sync complete for \(item.itemID)");
             }
         }
+        questSystem.SetFact(n"ap_dat_watson", 1);
         APLogger.LogInfo( "Sync Complete");
+    }
+
+    public func HandleDistrictRestriction(district: String) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        let districtEnforcer: ref<APDistrictEnforcer> = new APDistrictEnforcer();
+        //Dont do any enforcement if the lifepath intro is active
+
+        if questSystem.GetFact(n"q000_done") == 0 || questSystem.GetFact(n"q001_done") == 0 {
+            return;
+        }
+ 
+        if this.GetDistrictUnlockStatus(districtEnforcer.ParseEnumToDistrictID(districtEnforcer.GetMajorDistrict(district))) {
+            return;
+        }
+
+        let player = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+        let currentPos: Vector4 = player.GetWorldPosition();
+        let targetRotation: EulerAngles = EulerAngles();
+        targetRotation.Pitch = 0.0;
+        targetRotation.Roll = 0.0;
+        targetRotation.Yaw = 180.0;
+
+        districtEnforcer.InitializeSafePoints();
+        let nearestSafePoint: Vector4 = districtEnforcer.GetNearestSafePoint(currentPos);
+        let teleportFacility = GameInstance.GetTeleportationFacility(this.GetGameInstance());
+        teleportFacility.Teleport(player, nearestSafePoint, targetRotation);
+    }    
+
+
+    public func HandleDistrictUnlock(district: String) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        questSystem.SetFact(StringToName(district), 1);
+    }
+
+    public func GetDistrictUnlockStatus(district: String) -> Bool {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        if questSystem.GetFact(StringToName(district)) >= 1 {
+            return true;
+        }
+        return false;
+
     }
 
     public func HandleTarotCollected(value: Int32) -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState; //Not a fan of this implementation, but it works...
         APGameState.SendTarotFound(value);
-
     }
 
     //Progressive Items
@@ -139,9 +180,25 @@ public class APGameSystem extends ScriptableSystem {
         //APLogger.LogInfo( "Gave Player Eddies");
     }
 
+    public func HasItem(itemID: String) -> Bool {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        if questSystem.GetFact(n"itemID") >= 1 {
+            return true;
+        }
+        return false;
+    }
+
     public func DoTrap(trapName: String) {
         
     }
+}
+
+@wrapMethod(DistrictManager)
+public final func Update(evt: ref<DistrictEnteredEvent>) -> Void {
+    let districtString: String = TDBID.ToStringDEBUG(evt.district);
+    let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+    APGameSystem.HandleDistrictRestriction(districtString);
+    //APLogger.LogInfo(districtString);
 }
 
 // Making sure that the player is respawned before allowing another Deathlink call.
@@ -182,8 +239,6 @@ protected cb func OnShowDeathMenu() -> Bool {
     }
     return wrappedMethod();
 }
-
-
 
 //For sending quest completion updates to the Archipelago server.
 @wrapMethod(JournalNotificationQueue)

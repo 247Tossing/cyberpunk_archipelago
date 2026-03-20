@@ -1,13 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/18/2026 3:49:45 AM">
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/20/2026 12:39:24 AM">
   <Files>
-    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive">
-      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc">
-        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod">
-          <file>E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod\CyberpunkArchipelagoMod.archive</file>
-        </Directory>
-      </Directory>
-    </Directory>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64">
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64\plugins">
@@ -26,6 +19,7 @@
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago">
           <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client">
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APClient.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APDistrictEnforcer.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APGameState.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APItemList.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APItemProgression.reds</file>
