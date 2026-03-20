@@ -11,8 +11,9 @@ I do not support adding other mods on top of this one, nor will i assist if this
 ---
 
 ## What does this do?
-At the moment, not much.
-There are checks for every major story quests and most side quests as well the cyber psychos. There is one blocker in place for "The Ride". More quests will get blockers over time.
+If enabled, you will be restricted by District and be unable to travel to those districts until you aquire the access token from the multiworld.
+You can get extra items suchs as Eddies, Quckhacks, Burrito from the multi-world.
+More will come in due time.
 ***Have Patience***
 
 # Installation
