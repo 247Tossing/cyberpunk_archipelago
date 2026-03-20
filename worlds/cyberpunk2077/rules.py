@@ -110,13 +110,15 @@ def set_rules(world: "Cyberpunk2077World") -> None:
             state.can_reach_location("Main - Search and Destroy", player)
     ))
 
-    # Default ending
-    set_rule(world.multiworld.get_location("Epilogue - Where is My Mind?", player), lambda state: (
+    # Ending Reached - accessible after completing Nocturne Op55N1 and any ending path
+    # The epilogue quests (q201_heir, q202_nomads, q203_legend, q204_reborn, q307_tomorrow)
+    # all map to this single location, so completing ANY ending triggers this check
+    set_rule(world.multiworld.get_location("Ending Reached", player), lambda state: (
         state.can_reach_location("Endgame - Nocturne Op55N1", player)
     ))
 
     # ==========================================
-    # Alternate Endings & Side Quest Prerequisites
+    # Ending Side Quest Prerequisites
     # ==========================================
     # Set ending side quest chain rules when either include_all_endings OR include_side_quests is enabled
     # These quests have ENDING_SIDE_QUEST category and are included automatically when either option is true
@@ -130,12 +132,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         set_rule(world.multiworld.get_location("Queen of the Highway", player),
                  lambda state: state.can_reach_location("Riders on the Storm", player))
 
-        # The Star Ending: Requires Point of No Return AND Panam's loyalty
-        set_rule(world.multiworld.get_location("Epilogue - All Along the Watchtower", player), lambda state: (
-                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
-                state.can_reach_location("Queen of the Highway", player)
-        ))
-
         # --- ROGUE & JOHNNY'S BRANCH (For The Sun / Temperance Endings) ---
         # Unlocked after finishing Branch C (Takemura)
         set_rule(world.multiworld.get_location("Chippin' In", player),
@@ -144,18 +140,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         # Shortcut: Tying the end of Rogue's arc to the beginning of it
         set_rule(world.multiworld.get_location("Blistering Love", player),
                  lambda state: state.can_reach_location("Chippin' In", player))
-
-        # The Sun Ending: Requires Point of No Return AND Rogue's loyalty
-        set_rule(world.multiworld.get_location("Epilogue - Path of Glory", player), lambda state: (
-                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
-                state.can_reach_location("Blistering Love", player)
-        ))
-
-        # Temperance Ending: Branches from the exact same requirements as The Sun
-        set_rule(world.multiworld.get_location("Epilogue - New Dawn Fades", player), lambda state: (
-                state.can_reach_location("Endgame - Nocturne Op55N1", player) and
-                state.can_reach_location("Blistering Love", player)
-        ))
 
 
     # List of locations of which only ONE must be accessible to reach a point of no return
@@ -171,19 +155,10 @@ def set_rules(world: "Cyberpunk2077World") -> None:
 
 
     # ===== VICTORY CONDITION =====
-    # Victory requires reaching ANY epilogue location
+    # Victory requires reaching any ending (consolidated into "Ending Reached" location)
     set_rule(
         world.multiworld.get_location("Victory", world.player),
-        lambda state: (
-            # Base game epilogues
-            state.can_reach_location("Epilogue - Where is My Mind?", player) or
-            state.can_reach_location("Epilogue - All Along the Watchtower", player) or
-            state.can_reach_location("Epilogue - Path of Glory", player) or
-            state.can_reach_location("Epilogue - New Dawn Fades", player) or
-            # Phantom Liberty ending (if DLC enabled)
-            (world.options.include_phantom_liberty_dlc and
-             state.can_reach_location("Phantom Liberty - Things Done Changed", player))
-        )
+        lambda state: state.can_reach_location("Ending Reached", player)
     )
 
     # Set completion condition - player wins when they collect the Victory event item

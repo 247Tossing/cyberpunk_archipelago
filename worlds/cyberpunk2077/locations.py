@@ -132,20 +132,20 @@ location_table: Dict[str, LocationData] = {
     "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", code=1025, region="Westbrook", category=LocationCategory.MAIN_QUEST),
     "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", code=1026, region="Heywood", category=LocationCategory.MAIN_QUEST),
     "02_sickness": LocationData(display_name="Endgame - Nocturne Op55N1", code=1027, region="Heywood", category=LocationCategory.MAIN_QUEST),
-    "01_climbing_the_ladder": LocationData(display_name="Endgame - Become A Legend", code=1028, region="Watson", category=LocationCategory.MAIN_QUEST),
-    "09_solo": LocationData(display_name="Endgame - (Don't Fear) The Reaper", code=1029, region="City Center", category=LocationCategory.MAIN_QUEST),
 
     # =====================================
     # Endings
     # =====================================
-    "q113_rescuing_hanako": LocationData(display_name="Ending - Last Caress", code=1030, region="North Oak", category=LocationCategory.ENDING),
-    "q113_corpo": LocationData(display_name="Ending - Total Immortal", code=1031, region="City Center", category=LocationCategory.ENDING),
-    "q114_01_nomad_initiation": LocationData(display_name="Ending - We Gotta Live Together", code=1032, region="Badlands", category=LocationCategory.ENDING),
-    "q114_02_maglev_line_assault": LocationData(display_name="Ending - Forward to Death", code=1033, region="Badlands", category=LocationCategory.ENDING),
-    "q114_03_attack_on_arasaka_tower": LocationData(display_name="Ending - Belly of the Beast", code=1034, region="City Center", category=LocationCategory.ENDING),
-    "q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Watson", category=LocationCategory.ENDING),
-    "q115_rogues_last_flight": LocationData(display_name="Ending - Knockin' on Heaven's Door", code=1036, region="City Center", category=LocationCategory.ENDING),
-    "q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Watson", category=LocationCategory.ENDING),
+    #"01_climbing_the_ladder": LocationData(display_name="Endgame - Become A Legend", code=1028, region="Watson", category=LocationCategory.MAIN_QUEST),
+    #"09_solo": LocationData(display_name="Endgame - (Don't Fear) The Reaper", code=1029, region="City Center", category=LocationCategory.MAIN_QUEST),
+    #"q113_rescuing_hanako": LocationData(display_name="Ending - Last Caress", code=1030, region="North Oak", category=LocationCategory.ENDING),
+    #"q113_corpo": LocationData(display_name="Ending - Total Immortal", code=1031, region="City Center", category=LocationCategory.ENDING),
+    #"q114_01_nomad_initiation": LocationData(display_name="Ending - We Gotta Live Together", code=1032, region="Badlands", category=LocationCategory.ENDING),
+    #"q114_02_maglev_line_assault": LocationData(display_name="Ending - Forward to Death", code=1033, region="Badlands", category=LocationCategory.ENDING),
+    #"q114_03_attack_on_arasaka_tower": LocationData(display_name="Ending - Belly of the Beast", code=1034, region="City Center", category=LocationCategory.ENDING),
+    #"q115_afterlife": LocationData(display_name="Ending - For Whom the Bell Tolls", code=1035, region="Watson", category=LocationCategory.ENDING),
+    #"q115_rogues_last_flight": LocationData(display_name="Ending - Knockin' on Heaven's Door", code=1036, region="City Center", category=LocationCategory.ENDING),
+    #"q116_cyberspace": LocationData(display_name="Ending - Changes", code=1037, region="Watson", category=LocationCategory.ENDING),
 
     # =====================================
     # Phantom Liberty Checks
@@ -171,11 +171,9 @@ location_table: Dict[str, LocationData] = {
     # =================================
     # Epilogues
     # =================================
-    "q201_heir": LocationData(display_name="Epilogue - Where is My Mind?", code=1038, region="Watson", category=LocationCategory.EPILOGUE),
-    "q202_nomads": LocationData(display_name="Epilogue - All Along the Watchtower", code=1039, region="Badlands", category=LocationCategory.EPILOGUE),
-    "q203_legend": LocationData(display_name="Epilogue - Path of Glory", code=1040, region="Watson", category=LocationCategory.EPILOGUE),
-    "q204_reborn": LocationData(display_name="Epilogue - New Dawn Fades", code=1041, region="Badlands", category=LocationCategory.EPILOGUE),
-    "q307_tomorrow": LocationData(display_name="Phantom Liberty - Things Done Changed", code=1057, region="Dogtown", category=LocationCategory.EPILOGUE, dlc_only=True),
+    # NOTE: Individual epilogue locations removed - all epilogue quest IDs map to "Ending Reached" (code=1001)
+    # This prevents items from being placed on multiple ending screens
+    # See location_internal_id_to_display_name mappings below for quest ID assignments
 
     # =================================
     # Side Quests
@@ -618,6 +616,16 @@ Manual Mappings for multiples quests that result in the same thing, but require 
 location_internal_id_to_display_name["q000_street_kid"] = "Lifepath Chosen"
 location_internal_id_to_display_name["q000_corpo"] = "Lifepath Chosen"
 location_internal_id_to_display_name["q000_nomad"] = "Lifepath Chosen"
+
+# Map all epilogue quest IDs to the single "Ending Reached" location
+# Player only needs to complete ONE ending to get this check
+location_internal_id_to_display_name["q201_heir"] = "Ending Reached"
+location_internal_id_to_display_name["q202_nomads"] = "Ending Reached"
+location_internal_id_to_display_name["q203_legend"] = "Ending Reached"
+location_internal_id_to_display_name["q204_reborn"] = "Ending Reached"
+location_internal_id_to_display_name["q307_tomorrow"] = "Ending Reached"  # Phantom Liberty DLC epilogue
+
+
 
 
 
