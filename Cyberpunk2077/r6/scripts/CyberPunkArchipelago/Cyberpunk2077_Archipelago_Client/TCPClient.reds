@@ -4,6 +4,12 @@ import RedSocket.*
 public class TCPClient extends ScriptableService {  
     private let socketService: ref<APRedSocketTCPService>;
 
+    public func SendSyncCheckRequest() -> Void {
+        if IsDefined(this.socketService){
+            this.socketService.SendSyncCheckRequest();
+        }
+    }
+
     public func SendDeathLink() -> Void {
 
         if IsDefined(this.socketService) && this.socketService.isConnected {
@@ -172,6 +178,9 @@ public class APRedSocketTCPService extends IScriptable {
         if StrContains(command, "SYNC_ITEMS:") {
             this.HandleSyncItemsResponse(command);
         }
+        if StrContains(command, "SYNC_CHECKS:"){
+            this.HandleSyncCheck(command);
+        }
         if StrContains(command, "OK_READY:") {
             this.HandleReadyResponse(command);
         }
@@ -189,8 +198,27 @@ public class APRedSocketTCPService extends IScriptable {
         }
     }
 /*
+Below are methods for sendings specific commands to the server
+*/
+
+    public func SendSyncCheckRequest() -> Void {
+        this.SendMessage("SYNC_CHECKS");
+    } 
+
+/*
 Below is handler methods for processing incoming commands from the server.
 */
+    private func HandleSyncCheck(command: String) -> Void {
+        APLogger.LogInfo(s"Sync Check:\(command)");
+        let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        let parts: array<String> = StrSplit(command, ":");
+        let locations: array<String> = StrSplit(parts[2], ",");
+
+        if ArraySize(locations) > 0 {
+            APGameSystem.HandleSyncCheck(locations);
+        }
+    }
+
     private func HandleCheckRequestResponse(command: String) -> Void {
         
     }
@@ -234,8 +262,8 @@ Below is handler methods for processing incoming commands from the server.
                 let itemDisplayName: String = parts[3];
                 // Here you would add code to actually grant the item to the player in-game
                 APLogger.LogInfo( s"Received \(itemDisplayName) from \(senderName)");
-                let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-                APGameState.HandleItemReceived(itemName);
+                let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+                gameSystem.HandleItemReceived(itemName);
                 this.SendMessage(s"ITEM_RECEIVED:OK\r\n");
             } else {
                 APLogger.LogError( "TCPClient: Received Error: " + command);
@@ -323,7 +351,7 @@ Below is the full handshake process
                 totalItemCount = totalItemCount + item.totalFromAP;
             }
         }
-        else {
+        else { 
             totalItemCount = 0;
         }
 
@@ -345,18 +373,14 @@ Below is the full handshake process
                 if StrCmp(itemsHeader, "ITEMS") == 0 {
                     //APLogger.LogInfo( "TCPClient: SYNC_ITEMS response contains item list.");
                     let items: array<String> = StrSplit(itemsString, ",");
-                    let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-                    APGameState.FeedItemsList(items);
+                    let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
 
-                    // Send SYNC_COMPLETE to tell server we've processed the sync
-                    // This synchronizes server's items_sent_count with our totalItemsReceived
-                    let currentCount: Int32 = 0;
-                    if IsDefined(APGameState) {
-                        currentCount = ArraySize(APGameState.items.Items);
+                    if IsDefined(gameSystem) {
+                        gameSystem.FeedItemsList(items);
+                        // FeedItemsList already sends SYNC_COMPLETE response internally
+                    } else {
+                        APLogger.LogError("TCPClient: APGameSystem not available for item sync");
                     }
-
-                    let payload: String = s"SYNC_ITEMS:CURRENT_COUNT:\(currentCount)\r\n";
-                    this.SendMessage(payload);
 
                     // After sync complete, request config
                     this.SendSyncConfigRequest();
@@ -419,6 +443,11 @@ Below is the full handshake process
                 }
             }
         }
+
+        //Request a Sync
+        let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        gameSystem.SendSyncChecks();
+
     }
 
     private func HandleReadyResponse(response: String) -> Void {

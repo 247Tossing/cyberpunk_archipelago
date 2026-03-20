@@ -1,11 +1,21 @@
 module Archipelago
 
-public class APDistrictEnforcer extends IScriptable {
+public class APDistrictEnforcer extends ScriptableSystem {
     // Your master list of safe drop zones
     private let safePoints: array<ref<APSafePosition>>;
 
-    public func InitializeSafePoints() {
-        // Pre-allocate array because this language is weird
+    // ===== SCRIPTABLE SYSTEM LIFECYCLE =====
+
+    public func OnAttach() -> Void {
+        this.InitializeSafePoints();
+        APLogger.LogInfo("APDistrictEnforcer initialized");
+    }
+
+    // ===== INITIALIZATION =====
+
+    private func InitializeSafePoints() -> Void {
+
+        // Pre-allocate array and create instances
         ArrayResize(this.safePoints, 14);
         let i: Int32 = 0;
         while i < 14 {
@@ -43,13 +53,18 @@ public class APDistrictEnforcer extends IScriptable {
     }
 
     public func GetNearestSafePoint(currentLocation: Vector4) -> Vector4 {
-        let decidedPosition: Vector4;
+        let decidedPosition: Vector4 = Vector4(-1639.7678, 994.1771, 23.814354, 1.0); // Default position incase the calculation fails.
         let bestDistance: Float = -1.0; // -1 means no valid point found yet
-        let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        let gameSystem: ref<APGameSystem> = this.GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+
+        if !IsDefined(gameSystem) {
+            APLogger.LogError("APDistrictEnforcer: Cannot get nearest safe point - game system not available");
+            return decidedPosition;
+        }
 
         for point in this.safePoints {
             // Only consider unlocked districts
-            if APGameSystem.GetDistrictUnlockStatus(this.ParseEnumToDistrictID(point.District)) {
+            if gameSystem.GetDistrictUnlockStatus(this.ParseEnumToDistrictID(point.District)) {
                 let distance: Float = Vector4.Distance(currentLocation, point.Position);
 
                 // If this is the first valid point, or closer than current best
@@ -63,6 +78,9 @@ public class APDistrictEnforcer extends IScriptable {
         return decidedPosition;
     }
 
+    // ===== DISTRICT DETECTION =====
+
+    // Get major district from game's district string
     public func GetMajorDistrict(subdistrictID: String) -> APDistrict {
         switch subdistrictID {
             

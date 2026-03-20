@@ -652,6 +652,33 @@ class CyberpunkContext(CommonContext):
 
                     return "SYNC_CONFIG:CONFIG:"
 
+            # ===== SYNC_CHECKS =====
+            elif cmd == "SYNC_CHECKS":
+                # SYNC_CHECKS
+                # Game requests ALL possible locations (called when save file loads)
+                # Returns: LOCATIONS:<loc1>,<loc2>,<loc3>... with ALL locations from location_table
+                # Game will verify each against FactsDB and respond with CHECK for ones it has completed
+                if not self.archipelago_connected:
+                    return "SYNC_CHECKS:FAIL:Not connected to Archipelago server"
+
+                # Send ALL possible locations from the location table
+                # location_internal_id_to_display_name contains all internal IDs from location_table
+                if not self.location_internal_id_to_display_name:
+                    # Mapping not loaded yet (shouldn't happen if Connected packet received)
+                    logger.warning("SYNC_CHECKS: location mapping not available")
+                    return "SYNC_CHECKS:LOCATIONS:"
+
+                # Get all internal location IDs (keys of the mapping dict)
+                all_location_ids = list(self.location_internal_id_to_display_name.keys())
+                all_location_ids.extend(["q000_street_kid", "q000_corpo", "q000_nomad", "q201_heir", "q202_nomads", "q203_legend", "q204_reborn", "q307_tomorrow"])
+
+                if all_location_ids:
+                    location_list = ','.join(all_location_ids)
+                    logger.info(f"SYNC_CHECKS: Sending {len(all_location_ids)} total location(s) to game for verification")
+                    return f"SYNC_CHECKS:LOCATIONS:{location_list}"
+                else:
+                    return "SYNC_CHECKS:LOCATIONS:"
+
             # ===== SYNC_COMPLETE =====
             elif cmd == "SYNC_COMPLETE":
                 # SYNC_COMPLETE:CURRENT_COUNT:<count>

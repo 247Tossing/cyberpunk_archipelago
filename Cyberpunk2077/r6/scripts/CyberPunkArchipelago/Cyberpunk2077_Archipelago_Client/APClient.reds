@@ -3,98 +3,118 @@ module Archipelago
 public class APGameSystem extends ScriptableSystem {
     let listenerID: Uint32;
 
+    // Cached handler references (initialized in OnAttach)
+    private let inventoryHandler: ref<APInventoryHandler>;
+    private let questHandler: ref<APQuestHandler>;
+    private let districtManager: ref<APDistrictManager>;
+
     public func OnAttach() -> Void {
-        APLogger.LogInfo( "Cyberpunk 2077 System Ready");
+        // Cache handler references to avoid repeated container lookups
+        let container: ref<ScriptableSystemsContainer> = this.GetGameInstance().GetScriptableSystemsContainer();
+        this.inventoryHandler = container.Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
+        this.questHandler = container.Get(n"Archipelago.APQuestHandler") as APQuestHandler;
+        this.districtManager = container.Get(n"Archipelago.APDistrictManager") as APDistrictManager;
+
+        APLogger.LogInfo("Cyberpunk 2077 Archipelago System Ready");
+    }
+
+    public func SendSyncChecks() -> Void {
+        APLogger.LogInfo("Starting Check Sync With AP Server");
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if !IsDefined(tcpClient){
+            APLogger.LogError("Failed to get TCP client");
+            return;
+        }
+        tcpClient.SendSyncCheckRequest();
+    }
+
+    public func HandleSyncCheck(locations: array<String>) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        APLogger.LogInfo("Starting Check Sync");
+        for loc in locations {
+            //APLogger.LogInfo(s"Checking: \(loc)");
+            if questSystem.GetFact(StringToName(s"ap_\(loc)")) >= 1 {
+               tcpClient.SendCheck(loc);
+            }
+        }
+        APLogger.LogInfo("Check Sync Complete");
     }
 
     public func SyncData() -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
         let gameStateItems: ref<APItemList> = APGameState.GetItems();
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        APLogger.LogInfo( "Starting Sync");
-        //APLogger.LogInfo( s"Game State Item List has \(ArraySize(gameStateItems.Items)) Items");
-        for item in gameStateItems.Items {
-            // Try to get the item from the FactsDB.
-            let itemCountFromFact: Int32 = questSystem.GetFact(StringToName(item.itemID));
-            let stateCount = item.totalFromAP;
+        APLogger.LogInfo("Starting Item Sync");
 
-            //APLogger.LogInfo( s"Processing Item: \(item.itemID)");
-            //APLogger.LogInfo( s"Local Item Count Is: \(itemCountFromFact) State Count is: \(stateCount)");
+        for item in gameStateItems.Items { 
+            // Try to get the item from the FactsDB
+            let itemCountFromFact: Int32 = this.inventoryHandler.GetItemFactCount(item.itemID);
+            let stateCount: Int32 = item.totalFromAP;
 
             // If state has more than local, give the difference to player
             if itemCountFromFact < stateCount {
                 let difference: Int32 = stateCount - itemCountFromFact;
-                //APLogger.LogInfo( s"Syncing \(difference)x \(item.itemID) to player");
 
-                if StrCmp(item.itemID, "Items.money") == 0
-                {
-                    // For money, add the difference and update persistent list
-                    this.AddEddies(difference);
-                    let totalWithDifference: Int32 = itemCountFromFact + difference;
-                    questSystem.SetFact(StringToName(item.itemID), totalWithDifference);
+                // Route to appropriate handler based on item type
+                if StrCmp(item.itemID, APConstants.GetMoneyItemId()) == 0 {
+                    // Money/Eddies
+                    this.inventoryHandler.GiveEddies(difference);
+                    this.inventoryHandler.IncrementItemFact(item.itemID, difference);
                 }
-                else
-                {
-                    // For regular items, give each one to player
+                else if APItemParser.IsQuestKey(item.itemID) {
+                    // Quest keys (binary - just set to 1)
+                    this.AddQuestKey(item.itemID);
+                }
+                else if APItemParser.IsProgressiveItem(item.itemID) {
+                    // Progressive items (need special handling)
                     let i: Int32 = 0;
                     while i < difference {
-                        this.AddInventoryItem(item.itemID);
+                        this.HandleProgressiveItem(item.itemID);
                         i += 1;
                     }
-                    let totalWithDifference: Int32 = itemCountFromFact + difference;
-                    questSystem.SetFact(StringToName(item.itemID), totalWithDifference);
                 }
-                //APLogger.LogInfo( s"Sync complete for \(item.itemID)");
+                else if APItemParser.IsDistrictToken(item.itemID) {
+                    // District unlock tokens (binary - just unlock)
+                    this.HandleDistrictUnlock(item.itemID);
+                }
+                else {
+                    // Regular inventory items
+                    this.inventoryHandler.GiveInventoryItem(item.itemID, difference);
+                    this.inventoryHandler.IncrementItemFact(item.itemID, difference);
+                }
             }
         }
-        questSystem.SetFact(n"ap_dat_watson", 1);
-        APLogger.LogInfo( "Sync Complete");
+
+        // Always ensure Watson is unlocked as starting district
+        this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
+        APLogger.LogInfo("Item Sync Complete");
     }
 
     public func HandleDistrictRestriction(district: String) -> Void {
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        let districtEnforcer: ref<APDistrictEnforcer> = new APDistrictEnforcer();
-        //Dont do any enforcement if the lifepath intro is active
-
-        if questSystem.GetFact(n"q000_done") == 0 || questSystem.GetFact(n"q001_done") == 0 {
-            return;
+        if IsDefined(this.districtManager) {
+            this.districtManager.HandleDistrictRestriction(district);
+        } else {
+            APLogger.LogWarning("APGameSystem: District manager not available");
         }
- 
-        if this.GetDistrictUnlockStatus(districtEnforcer.ParseEnumToDistrictID(districtEnforcer.GetMajorDistrict(district))) {
-            return;
-        }
-
-        let player = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
-        let currentPos: Vector4 = player.GetWorldPosition();
-        let targetRotation: EulerAngles = EulerAngles();
-        targetRotation.Pitch = 0.0;
-        targetRotation.Roll = 0.0;
-        targetRotation.Yaw = 180.0;
-
-        districtEnforcer.InitializeSafePoints();
-        let nearestSafePoint: Vector4 = districtEnforcer.GetNearestSafePoint(currentPos);
-        let teleportFacility = GameInstance.GetTeleportationFacility(this.GetGameInstance());
-        teleportFacility.Teleport(player, nearestSafePoint, targetRotation);
-    }    
-
+    }
 
     public func HandleDistrictUnlock(district: String) -> Void {
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        questSystem.SetFact(StringToName(district), 1);
+        if IsDefined(this.districtManager) {
+            this.districtManager.UnlockDistrict(district);
+        } else {
+            APLogger.LogWarning("APGameSystem: District manager not available");
+        }
     }
 
     public func GetDistrictUnlockStatus(district: String) -> Bool {
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        if questSystem.GetFact(StringToName(district)) >= 1 {
-            return true;
+        if IsDefined(this.districtManager) {
+            return this.districtManager.IsDistrictUnlocked(district);
         }
         return false;
-
     }
 
     public func HandleTarotCollected(value: Int32) -> Void {
-        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState; //Not a fan of this implementation, but it works...
-        APGameState.SendTarotFound(value);
+        this.SendTarotFound(value);
     }
 
     //Progressive Items
@@ -129,10 +149,10 @@ public class APGameSystem extends ScriptableSystem {
 
     // For when the player receives a quest item from the Archipelago server.
     public func AddQuestKey(questKey: String) -> Void {
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        if IsDefined(questSystem) {
-            //APLogger.LogInfo( "Adding Quest Key: " + questKey);
-            questSystem.SetFact(StringToName(questKey), 1);
+        if IsDefined(this.questHandler) {
+            this.questHandler.SetQuestKey(questKey);
+        } else {
+            APLogger.LogWarning("APGameSystem: Quest handler not available");
         }
     }
 
@@ -145,39 +165,24 @@ public class APGameSystem extends ScriptableSystem {
          
     }
 
+    // Delegate to inventory handler
     public func AddInventoryItem(item: String) -> Void {
-        let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        if !IsDefined(player) {
-            return; 
+        if IsDefined(this.inventoryHandler) {
+            this.inventoryHandler.GiveInventoryItem(item, 1);
+            this.inventoryHandler.IncrementItemFact(item, 1);
+        } else {
+            APLogger.LogWarning("APGameSystem: Inventory handler not available");
         }
-
-        let totalWithDifference: Int32 = questSystem.GetFact(StringToName(item)) + 1;
-        questSystem.SetFact(StringToName(item), totalWithDifference);
-        let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
-        let tdbid: TweakDBID = TDBID.Create(item);
-        let invItem: ItemID = ItemID.FromTDBID(tdbid);
-
-        transactionSystem.GiveItem(player, invItem, 1);
-
-        //APLogger.LogInfo( s"Gave Item \(item)");
     }
 
+    // Delegate to inventory handler
     public func AddEddies(amount: Int32) -> Void {
-        let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-
-        if !IsDefined(player) {
-            return; 
+        if IsDefined(this.inventoryHandler) {
+            this.inventoryHandler.GiveEddies(amount);
+            this.inventoryHandler.IncrementItemFact(APConstants.GetMoneyItemId(), amount);
+        } else {
+            APLogger.LogWarning("APGameSystem: Inventory handler not available");
         }
-
-        let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
-        let moneyId: ItemID = ItemID.FromTDBID(t"Items.money");
-        let totalWithDifference: Int32 = questSystem.GetFact(StringToName("Items.money")) + amount;
-        questSystem.SetFact(StringToName("Items.money"), totalWithDifference);
-        transactionSystem.GiveItem(player, moneyId, amount);
-
-        //APLogger.LogInfo( "Gave Player Eddies");
     }
 
     public func HasItem(itemID: String) -> Bool {
@@ -189,7 +194,124 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func DoTrap(trapName: String) {
-        
+        // To be implemented
+    }
+
+    // ===== METHODS MOVED FROM APGameState =====
+    // These were business logic that should be in APGameSystem, not the data class
+
+    public func FeedItemsList(itemList: array<String>) -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
+        if !IsDefined(APGameState) || !IsDefined(APGameState.items) {
+            APGameState.items = new APItemList();
+        }
+
+        for item in itemList {
+            if StrLen(item) > 0 {
+                this.HandleItemSync(item, APGameState);
+            }
+        }
+
+        APLogger.LogInfo(s"Synced \(ArraySize(itemList)) Items from AP Server");
+
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if IsDefined(tcpClient) {
+            // Send total NetworkItems count (not unique item types) to match Python's len(received_items)
+            tcpClient.SendSyncCompleteResponse(APGameState.totalNetworkItemsReceived);
+        }
+    }
+
+    private func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+        if !APItemParser.IsValidAPItem(item) {
+            return;
+        }
+
+        // Increment NetworkItem counter for each item processed (matches Python's len(received_items))
+        gameState.totalNetworkItemsReceived += 1;
+
+        // Always add to persistent storage first so items can be re-synced on save load
+        if APItemParser.IsQuestKey(item) {
+            // Quest keys are tracked even though they're binary (0 or 1)
+            gameState.items.AddItem(item, 1);
+            this.AddQuestKey(item);
+        }
+        else if APItemParser.IsEddies(item) {
+            let amount: Int32 = APItemParser.ParseEddiesAmount(item);
+            gameState.items.AddItem(APConstants.GetMoneyItemId(), amount);
+        }
+        else if APItemParser.IsInventoryItem(item) {
+            let itemId: String = APItemParser.ParseInventoryItemId(item);
+            gameState.items.AddItem(itemId, 1);
+        }
+        else if APItemParser.IsProgressiveItem(item) {
+            // Track progressive items so they can be re-synced on save load
+            gameState.items.AddItem(item, 1);
+        }
+        else if APItemParser.IsDistrictToken(item) {
+            // Track district tokens so they can be re-synced on save load
+            gameState.items.AddItem(item, 1);
+        }
+        // Note: Skill points and traps not added as they're not fully implemented
+    }
+
+    public func HandleItemReceived(item: String) -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
+        if !APItemParser.IsValidAPItem(item) {
+            return;
+        }
+
+        // Increment NetworkItem counter for real-time items from queue worker
+        if IsDefined(APGameState) {
+            APGameState.totalNetworkItemsReceived += 1;
+        }
+
+        if APItemParser.IsQuestKey(item) {
+            if IsDefined(APGameState.items) {
+                APGameState.items.AddItem(item, 1);
+            }
+            this.AddQuestKey(item);
+        }
+        else if APItemParser.IsSkillPoint(item) {
+            // Not implemented
+        }
+        else if APItemParser.IsTrap(item) {
+            this.DoTrap(item);
+        }
+        else if APItemParser.IsEddies(item) {
+            let amount: Int32 = APItemParser.ParseEddiesAmount(item);
+            if IsDefined(APGameState.items) {
+                APGameState.items.AddItem(APConstants.GetMoneyItemId(), amount);
+            }
+            this.AddEddies(amount);
+        }
+        else if APItemParser.IsInventoryItem(item) {
+            let itemId: String = APItemParser.ParseInventoryItemId(item);
+            if IsDefined(APGameState.items) {
+                APGameState.items.AddItem(itemId, 1);
+            }
+            this.AddInventoryItem(itemId);
+        }
+        else if APItemParser.IsProgressiveItem(item) {
+            if IsDefined(APGameState.items) {
+                APGameState.items.AddItem(item, 1);
+            }
+            this.HandleProgressiveItem(item);
+        }
+        else if APItemParser.IsDistrictToken(item) {
+            if IsDefined(APGameState.items) {
+                APGameState.items.AddItem(item, 1);
+            }
+            this.HandleDistrictUnlock(item);
+        }
+    }
+
+    public func SendTarotFound(tarotNumber: Int32) -> Void {
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if IsDefined(tcpClient) {
+            tcpClient.SendCheck(s"\(APConstants.GetTarotCheckPrefix())\(tarotNumber)");
+        }
     }
 }
 
@@ -212,6 +334,8 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
         //APLogger.LogInfo( "AP Game State Defined");
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
+        APGameSystem.SendSyncChecks();
+
     }
 
     let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
@@ -261,10 +385,12 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
             // Extract the string ID
             let questStringId: String = questEntry.GetId();
             //APLogger.LogInfo( "Quest Completed: " + questStringId);
-            
+            let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+
             // send to the archipelago server
             let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
             if IsDefined(tcpService) {
+                questSystem.SetFact(StringToName(s"ap_\(questStringId)"), 1);
                 tcpService.SendCheck(questStringId);
             }
         }
