@@ -209,7 +209,7 @@ Below are methods for sendings specific commands to the server
 Below is handler methods for processing incoming commands from the server.
 */
     private func HandleSyncCheck(command: String) -> Void {
-        APLogger.LogInfo(s"Sync Check:\(command)");
+        APLogger.LogDebug(s"Sync Check:\(command)");
         let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
         let parts: array<String> = StrSplit(command, ":");
         let locations: array<String> = StrSplit(parts[2], ",");
@@ -265,6 +265,7 @@ Below is handler methods for processing incoming commands from the server.
                 APLogger.LogInfo( s"Received \(itemDisplayName) from \(senderName)");
                 let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
                 gameSystem.HandleItemReceived(itemName);
+                gameSystem.HandleItemReceivedNotification(senderName, itemDisplayName);
                 this.SendMessage(s"ITEM_RECEIVED:OK\r\n");
             } else {
                 APLogger.LogError( "TCPClient: Received Error: " + command);
@@ -460,7 +461,7 @@ Below is the full handshake process
                 if (StrCmp(parts[1], "OK") == 0) {
                     APLogger.LogInfo( "Client TCP Handshake Complete");
                 } else {
-                    APLogger.LogWarning( "TCPClient: Server did not accept ready signal: " + response);
+                    APLogger.LogDebug( "TCPClient: Server did not accept ready signal: " + response);
                 }
             } else {
                 APLogger.LogError("TCPClient: Received unexpected response to ready signal: " + response);

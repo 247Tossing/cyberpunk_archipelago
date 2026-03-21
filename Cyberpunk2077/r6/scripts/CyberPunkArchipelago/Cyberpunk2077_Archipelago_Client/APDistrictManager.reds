@@ -13,13 +13,13 @@ public class APDistrictManager extends ScriptableSystem {
         this.districtEnforcer = container.Get(n"Archipelago.APDistrictEnforcer") as APDistrictEnforcer;
         this.questHandler = container.Get(n"Archipelago.APQuestHandler") as APQuestHandler;
 
-        APLogger.LogInfo("APDistrictManager initialized");
+        APLogger.LogDebug("APDistrictManager initialized");
     }
 
     // Check if a district is unlocked 
     public func IsDistrictUnlocked(districtId: String) -> Bool {
         if !IsDefined(this.questHandler) {
-            APLogger.LogWarning("APDistrictManager: Quest handler not initialized");
+            APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return false;
         }
         if StrCmp(districtId, "unknown") == 0 {
@@ -31,7 +31,7 @@ public class APDistrictManager extends ScriptableSystem {
     // Unlock a district
     public func UnlockDistrict(districtId: String) -> Void {
         if !IsDefined(this.questHandler) {
-            APLogger.LogWarning("APDistrictManager: Quest handler not initialized");
+            APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return;
         }
         this.questHandler.SetQuestKey(districtId);
@@ -41,12 +41,12 @@ public class APDistrictManager extends ScriptableSystem {
     // Handle district restriction (called when player enters locked district)
     public func HandleDistrictRestriction(districtString: String) -> Void {
         if !IsDefined(this.districtEnforcer) {
-            APLogger.LogWarning("APDistrictManager: District enforcer not initialized");
+            APLogger.LogDebug("APDistrictManager: District enforcer not initialized");
             return;
         }
 
         if !IsDefined(this.questHandler) {
-            APLogger.LogWarning("APDistrictManager: Quest handler not initialized");
+            APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return;
         }
 
@@ -74,7 +74,7 @@ public class APDistrictManager extends ScriptableSystem {
         let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
 
         if !IsDefined(player) {
-            APLogger.LogWarning("APDistrictManager: Cannot teleport - player not available");
+            APLogger.LogDebug("APDistrictManager: Cannot teleport - player not available");
             return;
         }
 
@@ -92,7 +92,7 @@ public class APDistrictManager extends ScriptableSystem {
             teleportFacility.Teleport(player, nearestSafePoint, targetRotation);
             APLogger.LogInfo("Player teleported to unlocked district");
         } else {
-            APLogger.LogWarning("APDistrictManager: Cannot teleport - teleportation facility not available");
+            APLogger.LogDebug("APDistrictManager: Cannot teleport - teleportation facility not available");
         }
     }
 

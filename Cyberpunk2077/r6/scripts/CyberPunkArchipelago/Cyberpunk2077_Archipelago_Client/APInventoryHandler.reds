@@ -6,7 +6,7 @@ module Archipelago
 public class APInventoryHandler extends ScriptableSystem {
 
     public func OnAttach() -> Void {
-        APLogger.LogInfo("APInventoryHandler initialized");
+        APLogger.LogDebug("APInventoryHandler initialized");
     }
 
     // Give an item to the player's inventory
@@ -14,13 +14,13 @@ public class APInventoryHandler extends ScriptableSystem {
         let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
 
         if !IsDefined(player) {
-            APLogger.LogWarning("APInventoryHandler: Cannot give item - player not available");
+            APLogger.LogDebug("APInventoryHandler: Cannot give item - player not available");
             return false;
         }
 
         let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
         if !IsDefined(transactionSystem) {
-            APLogger.LogWarning("APInventoryHandler: Cannot give item - transaction system not available");
+            APLogger.LogDebug("APInventoryHandler: Cannot give item - transaction system not available");
             return false;
         }
 
@@ -37,13 +37,13 @@ public class APInventoryHandler extends ScriptableSystem {
         let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
 
         if !IsDefined(player) {
-            APLogger.LogWarning("APInventoryHandler: Cannot give eddies - player not available");
+            APLogger.LogDebug("APInventoryHandler: Cannot give eddies - player not available");
             return false;
         }
 
         let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(this.GetGameInstance());
         if !IsDefined(transactionSystem) {
-            APLogger.LogWarning("APInventoryHandler: Cannot give eddies - transaction system not available");
+            APLogger.LogDebug("APInventoryHandler: Cannot give eddies - transaction system not available");
             return false;
         }
 

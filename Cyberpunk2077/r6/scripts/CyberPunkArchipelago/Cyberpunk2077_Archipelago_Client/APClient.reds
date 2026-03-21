@@ -94,7 +94,7 @@ public class APGameSystem extends ScriptableSystem {
         if IsDefined(this.districtManager) {
             this.districtManager.HandleDistrictRestriction(district);
         } else {
-            APLogger.LogWarning("APGameSystem: District manager not available");
+            APLogger.LogDebug("APGameSystem: District manager not available");
         }
     }
 
@@ -102,7 +102,7 @@ public class APGameSystem extends ScriptableSystem {
         if IsDefined(this.districtManager) {
             this.districtManager.UnlockDistrict(district);
         } else {
-            APLogger.LogWarning("APGameSystem: District manager not available");
+            APLogger.LogDebug("APGameSystem: District manager not available");
         }
     }
 
@@ -152,14 +152,10 @@ public class APGameSystem extends ScriptableSystem {
         if IsDefined(this.questHandler) {
             this.questHandler.SetQuestKey(questKey);
         } else {
-            APLogger.LogWarning("APGameSystem: Quest handler not available");
+            APLogger.LogDebug("APGameSystem: Quest handler not available");
         }
     }
-
-    public func AddCyberware(cyberware: String) -> Void {
-        //to be implemented
-    }
-
+    
     public func AddSkillPoint(skillPoint: String) -> Void {
         //let pds: ref<PlayerDevelopmentSystem> = PlayerDevelopmentSystem.GetInstance(GameInstance.GetPlayerSystem(this.GetGameInstance()) as GameObject);
          
@@ -171,7 +167,7 @@ public class APGameSystem extends ScriptableSystem {
             this.inventoryHandler.GiveInventoryItem(item, 1);
             this.inventoryHandler.IncrementItemFact(item, 1);
         } else {
-            APLogger.LogWarning("APGameSystem: Inventory handler not available");
+            APLogger.LogDebug("APGameSystem: Inventory handler not available");
         }
     }
 
@@ -181,7 +177,7 @@ public class APGameSystem extends ScriptableSystem {
             this.inventoryHandler.GiveEddies(amount);
             this.inventoryHandler.IncrementItemFact(APConstants.GetMoneyItemId(), amount);
         } else {
-            APLogger.LogWarning("APGameSystem: Inventory handler not available");
+            APLogger.LogDebug("APGameSystem: Inventory handler not available");
         }
     }
 
@@ -313,6 +309,23 @@ public class APGameSystem extends ScriptableSystem {
             tcpClient.SendCheck(s"\(APConstants.GetTarotCheckPrefix())\(tarotNumber)");
         }
     }
+
+    public func HandleItemReceivedNotification(senderName: String, itemDisplayName: String) -> Void {
+        APLogger.LogDebug(s"APGameSystem: HandleItemReceivedNotification called - sender: \(senderName), item: \(itemDisplayName)");
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(APGameState) {
+            APLogger.LogError("APGameSystem: APGameState is null");
+            return;
+        }
+        let phoneSystem: ref<APPhoneSystem> = APGameState.GetPhoneSystem();
+        if !IsDefined(phoneSystem) {
+            APLogger.LogError("APGameSystem: GetPhoneSystem() returned null");
+            return;
+        }
+        let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+        APLogger.LogDebug(s"APGameSystem: Player defined: \(IsDefined(player))");
+        phoneSystem.SendItemNotification(player, senderName, itemDisplayName);
+    }
 }
 
 @wrapMethod(DistrictManager)
@@ -336,6 +349,14 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
         APGameSystem.SyncData();
         APGameSystem.SendSyncChecks();
 
+        // Register the Archipelago phone contact on every spawn
+        APLogger.LogDebug("OnSpawn: Attempting to register phone contact");
+        let player: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerMainGameObject();
+        let phoneSystem: ref<APPhoneSystem> = APGameState.GetPhoneSystem();
+        APLogger.LogDebug(s"OnSpawn: Player defined: \(IsDefined(player)), phoneSystem defined: \(IsDefined(phoneSystem))");
+        if IsDefined(player) && IsDefined(phoneSystem) {
+            phoneSystem.RegisterContact(player);
+        }
     }
 
     let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;

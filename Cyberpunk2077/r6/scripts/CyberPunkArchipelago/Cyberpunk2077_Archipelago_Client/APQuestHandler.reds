@@ -6,7 +6,7 @@ module Archipelago
 public class APQuestHandler extends ScriptableSystem {
 
     public func OnAttach() -> Void {
-        APLogger.LogInfo("APQuestHandler initialized");
+        APLogger.LogDebug("APQuestHandler initialized");
     }
 
     // Set a quest key (unlock item)
@@ -14,7 +14,7 @@ public class APQuestHandler extends ScriptableSystem {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance());
 
         if !IsDefined(questSystem) {
-            APLogger.LogWarning("APQuestHandler: Cannot set quest key - quest system not available");
+            APLogger.LogDebug("APQuestHandler: Cannot set quest key - quest system not available");
             return false;
         }
 
@@ -47,7 +47,7 @@ public class APQuestHandler extends ScriptableSystem {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance());
 
         if !IsDefined(questSystem) {
-            APLogger.LogWarning("APQuestHandler: Cannot set quest fact - quest system not available");
+            APLogger.LogDebug("APQuestHandler: Cannot set quest fact - quest system not available");
             return false;
         }
 
@@ -60,7 +60,7 @@ public class APQuestHandler extends ScriptableSystem {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance());
 
         if !IsDefined(questSystem) {
-            APLogger.LogWarning("APQuestHandler: Cannot register listener - quest system not available");
+            APLogger.LogDebug("APQuestHandler: Cannot register listener - quest system not available");
             return false;
         }
 
@@ -86,7 +86,7 @@ public class APQuestHandler extends ScriptableSystem {
             // Send to server
             tcpClient.SendCheck(locationId);
         } else {
-            APLogger.LogWarning("APQuestHandler: Cannot send check - TCP client not available");
+            APLogger.LogDebug("APQuestHandler: Cannot send check - TCP client not available");
         }
     }
 }

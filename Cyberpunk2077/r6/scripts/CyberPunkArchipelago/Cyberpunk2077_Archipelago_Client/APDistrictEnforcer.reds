@@ -8,7 +8,7 @@ public class APDistrictEnforcer extends ScriptableSystem {
 
     public func OnAttach() -> Void {
         this.InitializeSafePoints();
-        APLogger.LogInfo("APDistrictEnforcer initialized");
+        APLogger.LogDebug("APDistrictEnforcer initialized");
     }
 
     // ===== INITIALIZATION =====

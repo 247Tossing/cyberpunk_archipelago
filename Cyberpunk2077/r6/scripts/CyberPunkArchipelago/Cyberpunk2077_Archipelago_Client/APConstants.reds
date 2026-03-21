@@ -1,16 +1,16 @@
 module Archipelago
 
 // Central constants file to eliminate magic strings throughout the codebase
-public class APConstants {
+public class APConstants { 
 
     // ===== VERSION INFORMATION =====
     public static func GetClientVersion() -> String {
-        return "0.1.0";
+        return "0.1.0"; 
     }
 
     public static func GetRequiredServerVersion() -> String {
         return "0.1.0";
-    }
+    } 
 
     // ===== ITEM TYPE PREFIXES =====
     // Used for parsing item IDs from the Archipelago server
@@ -81,4 +81,11 @@ public class APConstants {
 
     // ===== TAROT PREFIX =====
     public static func GetTarotCheckPrefix() -> String { return "ap_tarot_"; }
+
+    // ===== PHONE EXTENSION =====
+    public static func GetArchipelagoContactHash() -> Int32 { return 20777702; }
+
+    // ===== DEBUG LOGGING =====
+    // Set quest fact "ap_enable_debug_logs" to 1 in CET console to enable verbose logging
+    public static func GetDebugLogFact() -> CName { return n"ap_enable_debug_logs"; }
 }

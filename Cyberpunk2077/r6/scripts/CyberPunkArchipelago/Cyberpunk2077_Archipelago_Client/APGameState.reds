@@ -11,6 +11,9 @@ public class APGameState extends ScriptableService {
     // Item tracking
     public let items: ref<APItemList>;
 
+    // Phone notification system
+    public let phoneSystem: ref<APPhoneSystem>;
+
     // Track total NetworkItems received from Python (not unique item types)
     // This matches Python's len(received_items) counting for SYNC_COMPLETE
     public let totalNetworkItemsReceived: Int32;
@@ -18,6 +21,15 @@ public class APGameState extends ScriptableService {
     private func OnAttach() -> Void {
         this.items = new APItemList();
         APLogger.LogInfo("Cyberpunk 2077 Archipelago Game State Ready");
+    }
+
+    public func GetPhoneSystem() -> ref<APPhoneSystem> {
+        if !IsDefined(this.phoneSystem) {
+            APLogger.LogDebug("APGameState: Lazy-creating APPhoneSystem");
+            this.phoneSystem = new APPhoneSystem();
+            this.phoneSystem.Initialize();
+        }
+        return this.phoneSystem;
     }
 
     // ===== SIMPLE GETTERS/SETTERS ONLY =====
