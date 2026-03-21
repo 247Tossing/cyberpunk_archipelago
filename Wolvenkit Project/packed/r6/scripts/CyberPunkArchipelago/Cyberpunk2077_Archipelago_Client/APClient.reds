@@ -358,9 +358,12 @@ protected cb func OnShowDeathMenu() -> Bool {
         APLogger.LogInfo( "Death caused by Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
         return wrappedMethod();
     }
+
     if IsDefined(tcpService) {
+        //APLogger.LogInfo( "Sending DeathLink");
         tcpService.SendDeathLink();
     }
+
     return wrappedMethod();
 }
 

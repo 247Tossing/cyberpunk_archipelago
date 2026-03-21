@@ -13,7 +13,7 @@ public class TCPClient extends ScriptableService {
     public func SendDeathLink() -> Void {
 
         if IsDefined(this.socketService) && this.socketService.isConnected {
-            //APLogger.LogInfo( "TCPClient: Sending DeathLink message to server.");
+            //APLogger.LogInfo( "Sending DeathLink message to server.");
             let payload: String = "DEATHLINK_SEND";
             this.socketService.SendMessage(payload);
         } else {
@@ -30,7 +30,7 @@ public class TCPClient extends ScriptableService {
             APLogger.LogInfo( "TCPClient: ERROR - Cannot send Check, socket is closed!");
         }
     }
-
+ 
     public func ConnectFromCET(ip: String, port: Int32, slotName: String) -> Void {
         //APLogger.LogInfo( s"TCPClient: ConnectFromCET called with IP: \(ip), Port: \(port), SlotName: \(slotName)");
 
@@ -225,7 +225,8 @@ Below is handler methods for processing incoming commands from the server.
 
     private func HandleDeathLinkCommand(command: String) -> Void {
         //APLogger.LogInfo( "TCPClient: Received DeathLink command from server. Triggering player death.");
-        if StrCmp(command, "DEATHLINK_RECEIVED") == 0 {
+        let parts: array<String> = StrSplit(command, ":");
+        if ArraySize(parts) >= 1 && StrCmp(parts[0], "DEATHLINK_RECEIVED") == 0 {
             //APLogger.LogInfo( "DeathLink command is valid");
             let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
             APGameSystem.HandleDeathLink();
@@ -241,7 +242,7 @@ Below is handler methods for processing incoming commands from the server.
         // Change this to >= 2 since we access parts[1]
         if ArraySize(parts) >= 2 { 
             if StrCmp(parts[0], "DEATHLINK_SEND") == 0 {
-                if StrCmp(parts[1], "OK") == 0 {
+                if StrContains(parts[1], "OK") {
                     //APLogger.LogInfo( "TCPClient: Server acknowledged DeathLink send.");
                 } else {
                     APLogger.LogError( "TCPClient: Server did not acknowledge DeathLink send: " + command);

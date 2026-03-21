@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/20/2026 9:38:11 AM">
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/20/2026 10:12:39 PM">
   <Files>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64">
@@ -17,10 +17,6 @@
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts">
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago">
-          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\BUGFIX_SAVE_LOAD_SYNC.md</file>
-          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\MIGRATION_EXAMPLES.md</file>
-          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\PHASE_2_COMPLETE.md</file>
-          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\REFACTOR_GUIDE.md</file>
           <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client">
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APClient.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APConstants.reds</file>

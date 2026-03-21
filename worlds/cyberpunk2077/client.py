@@ -207,6 +207,18 @@ class CyberpunkContext(CommonContext):
         print("Connection to Archipelago server closed.")
 
 
+    def on_deathlink(self, data: Dict[str, Any]) -> None:
+        """
+        Called when a DeathLink bounce arrives from the Archipelago server.
+        Forwards the kill command to the Cyberpunk game.
+        """
+        super().on_deathlink(data)
+        if self.game_connected:
+            source = data.get("source", "Unknown")
+            #logger.info(f"💀 DeathLink received from {source} — killing V in Cyberpunk 2077.")
+            async_start(self.send_to_game_raw("DEATHLINK_RECEIVED\r\n"))
+
+
     def on_package(self, cmd: str, args: Dict[str, Any]) -> None:
         """
         Handle packets received from the Archipelago server
@@ -222,6 +234,10 @@ class CyberpunkContext(CommonContext):
 
             # Load location mapping for translating internal game IDs to display names
             self.location_internal_id_to_display_name = self.slot_data.get("location_internal_id_to_display_name", {})
+
+            # Register DeathLink tag with the Archipelago server based on slot data
+            death_link_enabled = bool(self.slot_data.get("death_link", False))
+            async_start(self.update_death_link(death_link_enabled))
 
             # Inform user about game connection
             if self.game_connected:
@@ -353,7 +369,7 @@ class CyberpunkContext(CommonContext):
                 # Get display name for logging
                 item_display_name = get_item_name_by_id(item_id) or item_game_id
 
-                # Get sender from NetworkItem (not from searching items_received)
+                # Get sender from NetworkItem
                 sender = self.player_names.get(network_item.player, f"Player {network_item.player}")
 
                 # Send to game: ITEM_RECEIVED:<internal_game_id>:<sender>:<display_name>
@@ -569,7 +585,7 @@ class CyberpunkContext(CommonContext):
             # ===== CONNECT_REQ =====
             elif cmd == "CONNECT_REQ":
                 # Simple handshake - game is checking if client is ready
-                #logger.info("✓ Game sent CONNECT_REQ handshake")
+                #logger.info("Game sent CONNECT_REQ handshake")
                 return "CONNECT_REQ:OK"
 
 
@@ -674,7 +690,7 @@ class CyberpunkContext(CommonContext):
 
                 if all_location_ids:
                     location_list = ','.join(all_location_ids)
-                    logger.info(f"SYNC_CHECKS: Sending {len(all_location_ids)} total location(s) to game for verification")
+                    #logger.info(f"SYNC_CHECKS: Sending {len(all_location_ids)} total location(s) to game for verification")
                     return f"SYNC_CHECKS:LOCATIONS:{location_list}"
                 else:
                     return "SYNC_CHECKS:LOCATIONS:"
@@ -797,12 +813,11 @@ class CyberpunkContext(CommonContext):
             elif cmd == "DEATHLINK_SEND":
                 # DEATHLINK_SEND
                 # Player died in Cyberpunk, notify other players
-
-                # TODO: Implement Death Link sending to Archipelago
-                # For now, just acknowledge
-                #logger.info("💀 Player died in Cyberpunk (sending Death Link to others)")
+                if "DeathLink" in self.tags:
+                    player_name = self.player_names.get(self.slot, "V")
+                    #logger.info(f"💀 DeathLink: {player_name} was killed in Cyberpunk 2077. Notifying other players...")
+                    await self.send_death(f"{player_name} was killed in Cyberpunk 2077.")
                 return "DEATHLINK_SEND:OK"
-
 
             # ===== DISCONNECT =====
             elif cmd == "DISCONNECT":
@@ -811,7 +826,6 @@ class CyberpunkContext(CommonContext):
 
                 logger.info("Game requested disconnect")
                 return "DISCONNECT:OK"
-
 
             # ===== UNKNOWN COMMAND =====
             else:
