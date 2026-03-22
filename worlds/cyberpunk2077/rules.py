@@ -152,8 +152,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         "Phantom Liberty - The Last Stand"
     ]
 
-
-
     # ===== VICTORY CONDITION =====
     # Victory requires reaching any ending (consolidated into "Ending Reached" location)
     set_rule(

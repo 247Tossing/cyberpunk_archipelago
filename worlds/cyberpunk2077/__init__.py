@@ -15,7 +15,7 @@ from typing import Dict, List, Set, Any
 from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
 from worlds.AutoWorld import World, WebWorld
 from worlds.LauncherComponents import Component, components, Type, launch
-from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups
+from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups, ItemCategory
 from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups, location_internal_id_to_display_name
 from .options import Cyberpunk2077Options, cyberpunk_option_groups
 from .regions import create_regions
@@ -207,6 +207,18 @@ class Cyberpunk2077World(World):
             if item_data.dlc_only and not self.options.include_phantom_liberty_dlc:
                 continue
 
+            # Skip subdistrict tokens if sub-district restriction is disabled
+            # These tokens serve no purpose without the corresponding regions/rules
+            if item_data.category == ItemCategory.SUBDISTRICT_TOKEN and not self.options.restrict_by_sub_district:
+                continue
+
+            # Skip district tokens if major district restriction is disabled
+            if item_data.category == ItemCategory.DISTRICT_TOKEN and not self.options.restrict_by_major_district:
+                continue
+
+            # Skip quickhack items if quick hacks as items is disabled
+            if item_data.category == ItemCategory.QUICKHACK and not self.options.quick_hacks_as_items:
+                continue
 
             item_pool.extend([self.create_item(item_name) for _ in range(item_data.quantity)])
 

@@ -14,7 +14,6 @@ public class APGameSystem extends ScriptableSystem {
         this.inventoryHandler = container.Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
         this.questHandler = container.Get(n"Archipelago.APQuestHandler") as APQuestHandler;
         this.districtManager = container.Get(n"Archipelago.APDistrictManager") as APDistrictManager;
-
         APLogger.LogInfo("Cyberpunk 2077 Archipelago System Ready");
     }
 
