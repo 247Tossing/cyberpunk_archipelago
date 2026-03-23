@@ -72,7 +72,8 @@ public class APQuestHandler extends ScriptableSystem {
     public func IsPassedPrologue() -> Bool {
         return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 && 
         this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0 && 
-        this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone()) > 0;
+        this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone()) > 0 &&
+        this.GetQuestFact(APConstants.GetVPillsFact()) > 0;
     }
 
     // Send a location check to the server
