@@ -1,7 +1,7 @@
 module Archipelago
 
 public class APGameSystem extends ScriptableSystem {
-    let listenerID: Uint32;
+    let listenerID: Uint32; 
 
     // Cached handler references (initialized in OnAttach)
     private let inventoryHandler: ref<APInventoryHandler>;
@@ -128,7 +128,7 @@ public class APGameSystem extends ScriptableSystem {
         {
             let progressionLevel: Int32 = questSystem.GetFact(StringToName(item)) + 1;
             this.AddInventoryItem(APItemProgression.GetProgressiveItem(item, progressionLevel));
-            APGameState.items.AddItem(APItemProgression.GetProgressiveItem(item, 1), 1);
+            APGameState.items.AddItem(APItemProgression.GetProgressiveItem(item, progressionLevel), 1);
         }
     }
 
@@ -182,23 +182,16 @@ public class APGameSystem extends ScriptableSystem {
 
     public func HasItem(itemID: String) -> Bool {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
-        if questSystem.GetFact(n"itemID") >= 1 {
+        if questSystem.GetFact(StringToName(itemID)) >= 1 {
             return true;
         }
         return false;
     }
 
-    public func DoTrap(trapName: String) {
-        // To be implemented
-    }
-
-    // ===== METHODS MOVED FROM APGameState =====
-    // These were business logic that should be in APGameSystem, not the data class
-
     public func FeedItemsList(itemList: array<String>) -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
 
-        if !IsDefined(APGameState) || !IsDefined(APGameState.items) {
+        if IsDefined(APGameState) {
             APGameState.items = new APItemList();
         }
 
@@ -272,7 +265,11 @@ public class APGameSystem extends ScriptableSystem {
             // Not implemented
         }
         else if APItemParser.IsTrap(item) {
-            this.DoTrap(item);
+            APLogger.LogDebug(s"APGameSystem: HandleItemReceived called - trap: \(item)");
+            let APTrapSystem: ref<APTrapSystem> = GameInstance.GetScriptableSystemsContainer(GetGameInstance()).Get(n"Archipelago.APTrapSystem") as APTrapSystem;
+            if IsDefined(APTrapSystem) {
+                APTrapSystem.DoTrap(item);
+            }
         }
         else if APItemParser.IsEddies(item) {
             let amount: Int32 = APItemParser.ParseEddiesAmount(item);

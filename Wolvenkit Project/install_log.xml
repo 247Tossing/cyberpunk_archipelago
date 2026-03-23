@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/21/2026 3:14:41 AM">
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="3/22/2026 8:46:07 PM">
   <Files>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64">
@@ -30,6 +30,7 @@
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APModLogger.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APPhoneSystem.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APQuestHandler.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APTrapSystem.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\TCPClient.reds</file>
           </Directory>
         </Directory>

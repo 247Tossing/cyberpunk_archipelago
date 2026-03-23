@@ -3,7 +3,7 @@ Cyberpunk 2077 Region Definitions
 """
 
 from typing import Dict, TYPE_CHECKING
-from BaseClasses import Region, Entrance
+from BaseClasses import Region, Entrance, LocationProgressType
 from .locations import Cyberpunk2077Location, location_table, LocationCategory
 from worlds.generic.Rules import set_rule
 
@@ -559,6 +559,9 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
                 world.base_id + location_data.code,  # Convert offset to full ID
                 region
             )
+
+            # Apply the progress type from LocationData (DEFAULT, PRIORITY, or EXCLUDED)
+            location.progress_type = location_data.progress_type
 
             # Add the regular location to the region
             region.locations.append(location)

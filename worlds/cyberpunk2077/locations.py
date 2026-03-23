@@ -10,7 +10,7 @@ organized by region for easier management.
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional
-from BaseClasses import Location
+from BaseClasses import Location, LocationProgressType
 
 # Base ID for Cyberpunk 2077 location/item IDs
 # Must match the base_id in __init__.py
@@ -50,6 +50,7 @@ class LocationData:
     region: str  # Which region this location is in
     category: str = "misc"  # Location category (use LocationCategory constants)
     dlc_only: bool = False  # True for Phantom Liberty DLC locations
+    progress_type: LocationProgressType = LocationProgressType.DEFAULT  # Controls fill priority (DEFAULT, PRIORITY, EXCLUDED)
 
 
 # ===== LOCATION CATEGORY TYPES =====
@@ -114,8 +115,8 @@ location_table: Dict[str, LocationData] = {
     # =================================
     # Post-Heist Main Story
     # =================================
-    "q101_01_firestorm": LocationData(display_name="Act 1 - Love Like Fire", code=1010, region="Watson", category=LocationCategory.MAIN_QUEST),
-    "q101_resurrection": LocationData(display_name="Act 1 - Playing for Time", code=1011, region="Watson", category=LocationCategory.MAIN_QUEST),
+    "q101_01_firestorm": LocationData(display_name="Main - Love Like Fire", code=1010, region="Watson", category=LocationCategory.MAIN_QUEST),
+    "q101_resurrection": LocationData(display_name="Main - Playing for Time", code=1011, region="Watson", category=LocationCategory.MAIN_QUEST),
     "q103_warhead": LocationData(display_name="Main - Ghost Town", code=1012, region="Badlands", category=LocationCategory.MAIN_QUEST),
     "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", code=1013, region="Badlands", category=LocationCategory.MAIN_QUEST),
     "q104_02_av_chase": LocationData(display_name="Main - Life During Wartime", code=1014, region="Badlands", category=LocationCategory.MAIN_QUEST),
@@ -131,7 +132,7 @@ location_table: Dict[str, LocationData] = {
     "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", code=1024, region="Santo Domingo", category=LocationCategory.MAIN_QUEST),
     "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", code=1025, region="Westbrook", category=LocationCategory.MAIN_QUEST),
     "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", code=1026, region="Heywood", category=LocationCategory.MAIN_QUEST),
-    "02_sickness": LocationData(display_name="Endgame - Nocturne Op55N1", code=1027, region="Heywood", category=LocationCategory.MAIN_QUEST),
+    "02_sickness": LocationData(display_name="Point of No Return - Nocturne Op55N1", code=1027, region="Heywood", category=LocationCategory.MAIN_QUEST),
 
     # =====================================
     # Endings
@@ -227,7 +228,7 @@ location_table: Dict[str, LocationData] = {
     # =================================
     # Gigs
     # =================================
-    "badlands_reward": LocationData(display_name="Every Grain of Sand", code=1115, region="Badlands", category=LocationCategory.GIG),
+    "badlands_reward": LocationData(display_name="Gig: Every Grain of Sand", code=1115, region="Badlands", category=LocationCategory.GIG),
     "sts_bls_ina_02": LocationData(display_name="Gig: Big Pete's Got Big Problems", code=1116, region="Badlands", category=LocationCategory.GIG),
     "sts_bls_ina_03": LocationData(display_name="Gig: Flying Drugs", code=1117, region="Badlands", category=LocationCategory.GIG),
     "sts_bls_ina_04": LocationData(display_name="Gig: Radar Love", code=1118, region="Badlands", category=LocationCategory.GIG),
@@ -237,13 +238,12 @@ location_table: Dict[str, LocationData] = {
     "sts_bls_ina_08": LocationData(display_name="Gig: Trevor's Last Ride", code=1122, region="Badlands", category=LocationCategory.GIG),
     "sts_bls_ina_09": LocationData(display_name="Gig: MIA", code=1123, region="Badlands", category=LocationCategory.GIG),
     "sts_bls_ina_11": LocationData(display_name="Gig: Sparring Partner", code=1124, region="Badlands", category=LocationCategory.GIG),
-    "city_center_reward": LocationData(display_name="Gas Gas Gas", code=1125, region="City Center", category=LocationCategory.GIG),
+    "city_center_reward": LocationData(display_name="Gig: Gas Gas Gas", code=1125, region="City Center", category=LocationCategory.GIG),
     "sts_cct_cpz_01": LocationData(display_name="Gig: Serial Suicide", code=1126, region="City Center", category=LocationCategory.GIG),
     "sts_cct_dtn_02": LocationData(display_name="Gig: An Inconvenient Killer", code=1127, region="City Center", category=LocationCategory.GIG),
     "sts_cct_dtn_03": LocationData(display_name="Gig: A Lack of Empathy", code=1128, region="City Center", category=LocationCategory.GIG),
     "sts_cct_dtn_04": LocationData(display_name="Gig: Guinea Pigs", code=1129, region="City Center", category=LocationCategory.GIG),
     "sts_cct_dtn_05": LocationData(display_name="Gig: The Frolics of Councilwoman Cole", code=1130,region="City Center", category=LocationCategory.GIG),
-    "generic_sts_quest": LocationData(display_name="Undiscovered", code=1131, region="Night City", category=LocationCategory.GIG),
     "sts_hey_gle_01": LocationData(display_name="Gig: Eye for an Eye", code=1132, region="Heywood", category=LocationCategory.GIG),
     "sts_hey_gle_03": LocationData(display_name="Gig: Psychofan", code=1133, region="Heywood", category=LocationCategory.GIG),
     "sts_hey_gle_04": LocationData(display_name="Gig: Fifth Column", code=1134, region="Heywood", category=LocationCategory.GIG),
@@ -315,9 +315,7 @@ location_table: Dict[str, LocationData] = {
     "ma_bls_ina_se1_03": LocationData(display_name="Reported Crime: Blood in the Air", code=1197, region="Badlands", category=LocationCategory.NCPD_HUSTLE),
     "ma_bls_ina_se1_06": LocationData(display_name="Reported Crime: Extremely Loud and Incredibly Close", code=1198, region="Badlands", category=LocationCategory.NCPD_HUSTLE),
     "ma_bls_ina_se1_18": LocationData(display_name="Reported Crime: I Don't Like Sand", code=1199, region="Badlands", category=LocationCategory.NCPD_HUSTLE),
-    "ma_bls_ina_se1_22": LocationData(display_name="Cyberpsycho Sighting: Second Chances", code=1200, region="Badlands", category=LocationCategory.CYBERPSYCHO),
     "ma_bls_ina_se5_33": LocationData(display_name="Reported Crime: Delivery From Above", code=1201, region="Badlands", category=LocationCategory.NCPD_HUSTLE),
-    "ma_cct_dtn_03": LocationData(display_name="Cyberpsycho Sighting: On Deaf Ears", code=1202, region="City Center", category=LocationCategory.CYBERPSYCHO),
     "ma_cct_dtn_12": LocationData(display_name="Reported Crime: Turn Off the Tap", code=1203, region="City Center", category=LocationCategory.NCPD_HUSTLE),
     "ma_hey_gle_02": LocationData(display_name="Suspected Organized Crime Activity: Chapel", code=1204, region="Heywood", category=LocationCategory.NCPD_HUSTLE),
     "ma_hey_gle_07": LocationData(display_name="Reported Crime: Smoking Kills", code=1205, region="Heywood", category=LocationCategory.NCPD_HUSTLE),
@@ -344,7 +342,6 @@ location_table: Dict[str, LocationData] = {
     "ma_wat_lch_15": LocationData(display_name="Reported Crime: Dangerous Currents", code=1226, region="Watson", category=LocationCategory.NCPD_HUSTLE),
     "ma_wat_nid_01": LocationData(display_name="Suspected Organized Crime Activity: Vice Control", code=1227, region="Watson", category=LocationCategory.NCPD_HUSTLE),
     "ma_wat_nid_02": LocationData(display_name="Suspected Organized Crime Activity: Just Say No", code=1228, region="Watson", category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_03": LocationData(display_name="Cyberpsycho Sighting: Where the Bodies Hit the Floor", code=1229, region="Watson", category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_06": LocationData(display_name="Suspected Organized Crime Activity: No License, No Problem", code=1230, region="Watson", category=LocationCategory.NCPD_HUSTLE),
     "ma_wat_nid_10": LocationData(display_name="Reported Crime: Dredged Up", code=1231, region="Watson", category=LocationCategory.NCPD_HUSTLE),
     "ma_wat_nid_12": LocationData(display_name="Reported Crime: Needle in a Haystack", code=1232, region="Watson", category=LocationCategory.NCPD_HUSTLE),
@@ -353,7 +350,6 @@ location_table: Dict[str, LocationData] = {
     "ma_wbr_hil_05": LocationData(display_name="Reported Crime: You Play with Fire...", code=1235, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
     "ma_wbr_jpn_07": LocationData(display_name="Reported Crime: Lost and Found", code=1236, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
     "ma_wbr_jpn_09": LocationData(display_name="Reported Crime: Another Circle of Hell", code=1237, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_jpn_20": LocationData(display_name="!DUPLICATE", code=1238, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
     "ma_wbr_nok_01": LocationData(display_name="Reported Crime: Crash Test", code=1239, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
     "ma_wbr_nok_03": LocationData(display_name="Reported Crime: Table Scraps", code=1240, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
     "ma_wbr_nok_05": LocationData(display_name="Suspected Organized Crime Activity: Privacy Policy Violation", code=1241, region="Westbrook", category=LocationCategory.NCPD_HUSTLE),
@@ -400,7 +396,6 @@ location_table: Dict[str, LocationData] = {
     "mq006_rollercoaster": LocationData(display_name="Love Rollercoaster", code=1299, region="Pacifica", category=LocationCategory.MINOR_QUEST),
     "mq007_smartgun": LocationData(display_name="Machine Gun", code=1300, region="Heywood", category=LocationCategory.MINOR_QUEST),
     "mq008_party": LocationData(display_name="Stadium Love", code=1301, region="Santo Domingo", category=LocationCategory.MINOR_QUEST),
-    "mq009_loser": LocationData(display_name="NO_TITLE", code=1302, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq010_barry": LocationData(display_name="Happy Together", code=1303, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq011_wilson": LocationData(display_name="Shoot To Thrill", code=1304, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq012_stud": LocationData(display_name="Burning Desire", code=1305, region="Watson", category=LocationCategory.MINOR_QUEST),
@@ -440,7 +435,6 @@ location_table: Dict[str, LocationData] = {
     "mq040_biosculpt": LocationData(display_name="Raymond Chandler Evening", code=1339, region="Heywood", category=LocationCategory.MINOR_QUEST),
     "mq041_corpo": LocationData(display_name="War Pigs", code=1340, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq042_nomad": LocationData(display_name="These Boots Are Made for Walkin'", code=1341, region="Badlands", category=LocationCategory.MINOR_QUEST),
-    "mq043_cyberpsychos": LocationData(display_name="Psycho Killer", code=1342, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq044_jakes_vehicle": LocationData(display_name="Sex On Wheels", code=1343, region="Heywood", category=LocationCategory.MINOR_QUEST),
     "mq045_victor_debt": LocationData(display_name="Paid in Full", code=1344, region="Watson", category=LocationCategory.MINOR_QUEST),
     "mq046_cave_vehicle": LocationData(display_name="Murk Man Returns Again Once More Forever", code=1345, region="Badlands", category=LocationCategory.MINOR_QUEST),
@@ -457,7 +451,6 @@ location_table: Dict[str, LocationData] = {
     "mws_se5_07": LocationData(display_name="Shape of a Pony", code=1356, region="Badlands", category=LocationCategory.MINOR_QUEST),
     "mws_wat_08_trauma_drama": LocationData(display_name="Career Opportunities", code=1357, region="Watson", category=LocationCategory.MINOR_QUEST),
     "ue_metro_start": LocationData(display_name="Don't Sleep on the Subway", code=1358, region="Night City", category=LocationCategory.MINOR_QUEST),
-    "sq_cyberpsychos_regina": LocationData(display_name="Cyberpsychosis", code=1359, region="Watson", category=LocationCategory.MINOR_QUEST),
     "archer_bandit": LocationData(display_name="Quartz 'Bandit'", code=1360, region="Badlands", category=LocationCategory.MINOR_QUEST),
 
     #=====================================
@@ -467,7 +460,7 @@ location_table: Dict[str, LocationData] = {
     "wst_ep1_11_bill_meeting": LocationData(display_name="New Person, Same Old Mistakes", code=1059, region="Dogtown", category=LocationCategory.DLC_SIDE, dlc_only=True),
 
     # --- Phantom Liberty: Gigs (Mr. Hands) ---
-    "combat_zone_reward": LocationData(display_name="Hi Ho Silver Lining", code=1105, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
+    "combat_zone_reward": LocationData(display_name="Gig: Hi Ho Silver Lining", code=1105, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_01": LocationData(display_name="Gig: Dogtown Saints", code=1106, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_03": LocationData(display_name="Gig: The Man Who Killed Jason Foreman", code=1107, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_04": LocationData(display_name="Gig: Prototype in the Scraper", code=1108, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
@@ -477,10 +470,6 @@ location_table: Dict[str, LocationData] = {
     "sts_ep1_10": LocationData(display_name="Gig: Waiting for Dodger", code=1112, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_12": LocationData(display_name="Gig: Treating Symptoms", code=1113, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_13": LocationData(display_name="Gig: Talent Academy", code=1114, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
-
-    # --- Phantom Liberty: Contracts & Vehicle Meta ---
-    "sa_ep1_15": LocationData(display_name="sa_ep1_15", code=1195, region="Dogtown", category=LocationCategory.NCPD_HUSTLE, dlc_only=True),
-    "courier_outro": LocationData(display_name="Courier outro", code=1243, region="Dogtown", category=LocationCategory.MINOR_QUEST, dlc_only=True),
 
     # --- Phantom Liberty: Minor Quests ---
     "mq033_ep1": LocationData(display_name="Tomorrow Never Knows", code=1279, region="Dogtown", category=LocationCategory.MINOR_QUEST, dlc_only=True),
@@ -507,38 +496,40 @@ location_table: Dict[str, LocationData] = {
     # Tarot
     # =================================
     # --- Phantom Liberty Tarot Counter (Dogtown) ---
-    "ap_tarot_26": LocationData(display_name="Collected 1 Phantom Liberty Tarot", code=1294, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True),
-    "ap_tarot_25": LocationData(display_name="Collected 2 Phantom Liberty Tarot", code=1295, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True),
-    "ap_tarot_24": LocationData(display_name="Collected 3 Phantom Liberty Tarot", code=1296, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True),
-    "ap_tarot_23": LocationData(display_name="Collected 4 Phantom Liberty Tarot", code=1297, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True),
+    "ap_tarot_26": LocationData(display_name="Collected 1 Phantom Liberty Tarot", code=1294, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_25": LocationData(display_name="Collected 2 Phantom Liberty Tarot", code=1295, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_24": LocationData(display_name="Collected 3 Phantom Liberty Tarot", code=1296, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_23": LocationData(display_name="Collected 4 Phantom Liberty Tarot", code=1297, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
 
     # --- Base Game Tarot Counter (Night City) ---
-    "ap_tarot_1": LocationData(display_name="Collected 1 Tarot", code=1361, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_2": LocationData(display_name="Collected 2 Tarot", code=1362, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_3": LocationData(display_name="Collected 3 Tarot", code=1363, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_4": LocationData(display_name="Collected 4 Tarot", code=1364, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_5": LocationData(display_name="Collected 5 Tarot", code=1365, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_6": LocationData(display_name="Collected 6 Tarot", code=1366, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_7": LocationData(display_name="Collected 7 Tarot", code=1367, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_8": LocationData(display_name="Collected 8 Tarot", code=1368, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_9": LocationData(display_name="Collected 9 Tarot", code=1369, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_10": LocationData(display_name="Collected 10 Tarot", code=1370, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_11": LocationData(display_name="Collected 11 Tarot", code=1371, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_12": LocationData(display_name="Collected 12 Tarot", code=1372, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_13": LocationData(display_name="Collected 13 Tarot", code=1373, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_14": LocationData(display_name="Collected 14 Tarot", code=1374, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_15": LocationData(display_name="Collected 15 Tarot", code=1375, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_16": LocationData(display_name="Collected 16 Tarot", code=1376, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_17": LocationData(display_name="Collected 17 Tarot", code=1377, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_18": LocationData(display_name="Collected 18 Tarot", code=1378, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_19": LocationData(display_name="Collected 19 Tarot", code=1379, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_20": LocationData(display_name="Collected 20 Tarot", code=1380, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_21": LocationData(display_name="Collected 21 Tarot", code=1381, region="Watson", category=LocationCategory.TAROT),
-    "ap_tarot_22": LocationData(display_name="Collected 22 Tarot", code=1382, region="Watson", category=LocationCategory.TAROT),
+    "ap_tarot_1": LocationData(display_name="Collected 1 Tarot", code=1361, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_2": LocationData(display_name="Collected 2 Tarot", code=1362, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_3": LocationData(display_name="Collected 3 Tarot", code=1363, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_4": LocationData(display_name="Collected 4 Tarot", code=1364, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_5": LocationData(display_name="Collected 5 Tarot", code=1365, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_6": LocationData(display_name="Collected 6 Tarot", code=1366, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_7": LocationData(display_name="Collected 7 Tarot", code=1367, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_8": LocationData(display_name="Collected 8 Tarot", code=1368, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_9": LocationData(display_name="Collected 9 Tarot", code=1369, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_10": LocationData(display_name="Collected 10 Tarot", code=1370, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_11": LocationData(display_name="Collected 11 Tarot", code=1371, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_12": LocationData(display_name="Collected 12 Tarot", code=1372, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_13": LocationData(display_name="Collected 13 Tarot", code=1373, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_14": LocationData(display_name="Collected 14 Tarot", code=1374, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_15": LocationData(display_name="Collected 15 Tarot", code=1375, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_16": LocationData(display_name="Collected 16 Tarot", code=1376, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_17": LocationData(display_name="Collected 17 Tarot", code=1377, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_18": LocationData(display_name="Collected 18 Tarot", code=1378, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_19": LocationData(display_name="Collected 19 Tarot", code=1379, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_20": LocationData(display_name="Collected 20 Tarot", code=1380, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_21": LocationData(display_name="Collected 21 Tarot", code=1381, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_22": LocationData(display_name="Collected 22 Tarot", code=1382, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    # =================================
 
     # =================================
     # Cyber Psycho Sighting Locations
     # ==================================
+    "mq043_cyberpsychos": LocationData(display_name="Psycho Killer", code=1342, region="Watson",category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_22": LocationData(display_name="Cyberpsycho Sighting: Six Feet Under", code=3000, region="Watson", category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_15": LocationData(display_name="Cyberpsycho Sighting: Bloody Ritual", code=3001, region="Watson", category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_03": LocationData(display_name="Cyberpsycho Sighting: Where the Bodies Hit the Floor", code=3002, region="Watson", category=LocationCategory.CYBERPSYCHO),

@@ -80,6 +80,7 @@ class ItemCategory:
     CYBERWARE = "cyberware"              # Cyberware upgrades (future)
     WEAPON = "weapon"                    # Unique weapons (future)
     MISC = "misc"                        # Uncategorized/miscellaneous items
+    TRAP = "trap"
 
 
 # ===== ITEM CLASSIFICATION TYPES =====
@@ -522,44 +523,46 @@ item_table: Dict[str, ItemData] = {
     "500 Eddies": ItemData(
         name="ap_ed_Items.money_500",  # In-game currency
         code=6000,
-        classification=ItemClassification.filler | ItemClassification.deprioritized,
+        classification=ItemClassification.filler,
         category=ItemCategory.CURRENCY
     ),
 
     "1000 Eddies" : ItemData(
         name = "ap_ed_Items.money_1000",
         code = 6001,
-        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        classification = ItemClassification.filler,
         category = ItemCategory.CURRENCY
     ),
 
     "2500 Eddies" : ItemData(
         name = "ap_ed_Items.money_2500",
         code = 6002,
-        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        classification = ItemClassification.filler,
         category = ItemCategory.CURRENCY
     ),
 
     "Ram Nugs" : ItemData(
         name = "ap_inv_Items.Blackmarket_MemoryBooster",
         code = 6003,
-        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
 
     "RAM Jolt" : ItemData(
         name = "ap_inv_Items.MemoryBooster",
         code = 6004,
-        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
 
     "Burrito XXXL" : ItemData(
         name = "ap_inv_Items.MediumQualityFood4",
         code = 6005,
-        classification = ItemClassification.filler | ItemClassification.deprioritized,
+        classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
+
+
 
     # ===== TRAP ITEMS =====
     # These items have negative effects
@@ -571,6 +574,29 @@ item_table: Dict[str, ItemData] = {
     #     classification=ItemClassification.trap
     # ),
 
+    "Night City's Most Wanted Trap": ItemData(
+        name = "ap_trp_mostWanted",
+        code = 7000,
+        classification = ItemClassification.trap,
+        category = ItemCategory.TRAP,
+        quantity= 5
+    ),
+
+    "Netrunner Virus": ItemData(
+        name = "ap_trp_randomDebuff",
+        code = 7001,
+        classification = ItemClassification.trap,
+        category = ItemCategory.TRAP,
+        quantity= 5
+    ),
+
+    "Direct Alcohol Injection": ItemData(
+        name = "ap_trp_drunk",
+        code = 7002,
+        classification = ItemClassification.trap,
+        category = ItemCategory.TRAP,
+        quantity= 5
+    ),
 
     # ===== EVENT ITEMS =====
     # Event items don't have codes (code=None) and are used for internal logic

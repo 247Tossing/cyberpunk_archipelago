@@ -68,7 +68,7 @@ public class APQuestHandler extends ScriptableSystem {
         return true;
     }
 
-    // Check if lifepath intro is complete (used for district enforcement)
+    // Check if heist intro is complete (used for district enforcement)
     public func IsPassedPrologue() -> Bool {
         return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 && 
         this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0 && 
