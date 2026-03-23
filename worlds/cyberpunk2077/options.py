@@ -93,6 +93,16 @@ class QuickHacksAsItems(Toggle):
     default = 1
 
 
+class EnableTraps(Toggle):
+    display_name = "Enable Traps"
+    default = 1
+
+class TrapItemsPerTrap(Range):
+    display_name = "Trap Items per Trap"
+    range_start = 1
+    range_end = 5
+    default = 3
+
 class IncludePhantomLibertyDLC(Toggle):
     display_name = "Include Phantom Liberty DLC"
     default = 0
@@ -142,6 +152,8 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     include_ncpd_hustles: IncludeNCPDHustles
     include_minor_quests: IncludeMinorQuests
     include_all_endings: IncludeAllEndings
+    enable_traps: EnableTraps
+    trap_amount: TrapItemsPerTrap
 
     #starting_path: StartingPath
     #include_cyberware: IncludeCyberware
@@ -165,6 +177,10 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("DLC Options", [
         IncludePhantomLibertyDLC,
+    ]),
+    OptionGroup("Trap Options", [
+        EnableTraps,
+        TrapItemsPerTrap,
     ]),
     OptionGroup("Restriction Options", [
         RestrictByMajorDistrict,

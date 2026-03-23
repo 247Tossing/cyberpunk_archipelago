@@ -111,11 +111,11 @@ location_table: Dict[str, LocationData] = {
     "q003_maelstrom": LocationData(display_name="Prologue - The Pickup", code=1007, region="Watson", category=LocationCategory.MAIN_QUEST),
     "q004_braindance": LocationData(display_name="Prologue - The Information", code=1008, region="Watson", category=LocationCategory.MAIN_QUEST),
     "q005_heist": LocationData(display_name="Prologue - The Heist", code=1009, region="Watson", category=LocationCategory.MAIN_QUEST),
+    "q101_01_firestorm": LocationData(display_name="Prologue - Love Like Fire", code=1010, region="Watson", category=LocationCategory.MAIN_QUEST),
 
     # =================================
     # Post-Heist Main Story
     # =================================
-    "q101_01_firestorm": LocationData(display_name="Main - Love Like Fire", code=1010, region="Watson", category=LocationCategory.MAIN_QUEST),
     "q101_resurrection": LocationData(display_name="Main - Playing for Time", code=1011, region="Watson", category=LocationCategory.MAIN_QUEST),
     "q103_warhead": LocationData(display_name="Main - Ghost Town", code=1012, region="Badlands", category=LocationCategory.MAIN_QUEST),
     "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", code=1013, region="Badlands", category=LocationCategory.MAIN_QUEST),
@@ -496,34 +496,34 @@ location_table: Dict[str, LocationData] = {
     # Tarot
     # =================================
     # --- Phantom Liberty Tarot Counter (Dogtown) ---
-    "ap_tarot_26": LocationData(display_name="Collected 1 Phantom Liberty Tarot", code=1294, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_25": LocationData(display_name="Collected 2 Phantom Liberty Tarot", code=1295, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_24": LocationData(display_name="Collected 3 Phantom Liberty Tarot", code=1296, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_23": LocationData(display_name="Collected 4 Phantom Liberty Tarot", code=1297, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_26": LocationData(display_name="Collected 23 Tarot", code=1294, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_25": LocationData(display_name="Collected 24 Tarot", code=1295, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_24": LocationData(display_name="Collected 25 Tarot", code=1296, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_23": LocationData(display_name="Collected 26 Tarot", code=1297, region="Dogtown", category=LocationCategory.TAROT, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
 
     # --- Base Game Tarot Counter (Night City) ---
-    "ap_tarot_1": LocationData(display_name="Collected 1 Tarot", code=1361, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_2": LocationData(display_name="Collected 2 Tarot", code=1362, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_3": LocationData(display_name="Collected 3 Tarot", code=1363, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_4": LocationData(display_name="Collected 4 Tarot", code=1364, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_5": LocationData(display_name="Collected 5 Tarot", code=1365, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_6": LocationData(display_name="Collected 6 Tarot", code=1366, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_7": LocationData(display_name="Collected 7 Tarot", code=1367, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_8": LocationData(display_name="Collected 8 Tarot", code=1368, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_9": LocationData(display_name="Collected 9 Tarot", code=1369, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_10": LocationData(display_name="Collected 10 Tarot", code=1370, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_11": LocationData(display_name="Collected 11 Tarot", code=1371, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_12": LocationData(display_name="Collected 12 Tarot", code=1372, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_13": LocationData(display_name="Collected 13 Tarot", code=1373, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_14": LocationData(display_name="Collected 14 Tarot", code=1374, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_15": LocationData(display_name="Collected 15 Tarot", code=1375, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_16": LocationData(display_name="Collected 16 Tarot", code=1376, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_17": LocationData(display_name="Collected 17 Tarot", code=1377, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_18": LocationData(display_name="Collected 18 Tarot", code=1378, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_19": LocationData(display_name="Collected 19 Tarot", code=1379, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_20": LocationData(display_name="Collected 20 Tarot", code=1380, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_21": LocationData(display_name="Collected 21 Tarot", code=1381, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
-    "ap_tarot_22": LocationData(display_name="Collected 22 Tarot", code=1382, region="Watson", category=LocationCategory.TAROT, LocationProgressType=LocationProgressType.EXCLUDED),
+    "ap_tarot_1": LocationData(display_name="Collected 1 Tarot", code=1361, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_2": LocationData(display_name="Collected 2 Tarot", code=1362, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_3": LocationData(display_name="Collected 3 Tarot", code=1363, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_4": LocationData(display_name="Collected 4 Tarot", code=1364, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_5": LocationData(display_name="Collected 5 Tarot", code=1365, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_6": LocationData(display_name="Collected 6 Tarot", code=1366, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_7": LocationData(display_name="Collected 7 Tarot", code=1367, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_8": LocationData(display_name="Collected 8 Tarot", code=1368, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_9": LocationData(display_name="Collected 9 Tarot", code=1369, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_10": LocationData(display_name="Collected 10 Tarot", code=1370, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_11": LocationData(display_name="Collected 11 Tarot", code=1371, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_12": LocationData(display_name="Collected 12 Tarot", code=1372, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_13": LocationData(display_name="Collected 13 Tarot", code=1373, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_14": LocationData(display_name="Collected 14 Tarot", code=1374, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_15": LocationData(display_name="Collected 15 Tarot", code=1375, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_16": LocationData(display_name="Collected 16 Tarot", code=1376, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_17": LocationData(display_name="Collected 17 Tarot", code=1377, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_18": LocationData(display_name="Collected 18 Tarot", code=1378, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_19": LocationData(display_name="Collected 19 Tarot", code=1379, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_20": LocationData(display_name="Collected 20 Tarot", code=1380, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_21": LocationData(display_name="Collected 21 Tarot", code=1381, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
+    "ap_tarot_22": LocationData(display_name="Collected 22 Tarot", code=1382, region="Watson", category=LocationCategory.TAROT, progress_type=LocationProgressType.EXCLUDED),
     # =================================
 
     # =================================

@@ -220,7 +220,10 @@ class Cyberpunk2077World(World):
             if item_data.category == ItemCategory.QUICKHACK and not self.options.quick_hacks_as_items:
                 continue
 
-            item_pool.extend([self.create_item(item_name) for _ in range(item_data.quantity)])
+            quantity = (self.options.trap_amount
+                        if item_data.category == ItemCategory.TRAP and self.options.enable_traps
+                        else item_data.quantity)
+            item_pool.extend([self.create_item(item_name) for _ in range(quantity)])
 
         # Fill remaining slots with filler items if needed
         # This ensures we have exactly enough items for all locations

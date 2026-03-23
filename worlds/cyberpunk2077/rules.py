@@ -55,13 +55,13 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     )
 
     set_rule(
-        world.multiworld.get_location("Act 1 - Love Like Fire", player),
+        world.multiworld.get_location("Prologue - Love Like Fire", player),
         lambda state: state.can_reach_location("Prologue - The Heist", player)
     )
 
     set_rule(
-        world.multiworld.get_location("Act 1 - Playing for Time", player),
-        lambda state: state.can_reach_location("Act 1 - Love Like Fire", player)
+        world.multiworld.get_location("Main - Playing for Time", player),
+        lambda state: state.can_reach_location("Prologue - Love Like Fire", player)
     )
 
     # NOTE: Prologue milestone event access rules removed - these events were orphaned
@@ -81,21 +81,21 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # Only need to put the FIRST and LAST quest of a given chain for the generator to understand whats going on theoretically
     # Vodoo Boys
     set_rule(world.multiworld.get_location("Main - Automatic Love", player),
-             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
+             lambda state: state.can_reach_location("Main - Playing for Time", player))
 
     set_rule(world.multiworld.get_location("Main - Transmission", player),
              lambda state: state.can_reach_location("Main - Automatic Love", player))
 
     # Hellman
     set_rule(world.multiworld.get_location("Main - Ghost Town", player),
-             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
+             lambda state: state.can_reach_location("Main - Playing for Time", player))
 
     set_rule(world.multiworld.get_location("Main - Life During Wartime", player),
              lambda state: state.can_reach_location("Main - Ghost Town", player))
 
     # Takemura
     set_rule(world.multiworld.get_location("Main - Down on the Street", player),
-             lambda state: state.can_reach_location("Act 1 - Playing for Time", player))
+             lambda state: state.can_reach_location("Main - Playing for Time", player))
 
     set_rule(world.multiworld.get_location("Main - Search and Destroy", player),
              lambda state: state.can_reach_location("Main - Down on the Street", player))
@@ -104,7 +104,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # Requires ALL THREE Act 2 branches to be completed
     # Check quest locations directly instead of using event items to avoid circular dependencies
 
-    set_rule(world.multiworld.get_location("Endgame - Nocturne Op55N1", player), lambda state: (
+    set_rule(world.multiworld.get_location("Point of No Return - Nocturne Op55N1", player), lambda state: (
             state.can_reach_location("Main - Transmission", player) and
             state.can_reach_location("Main - Life During Wartime", player) and
             state.can_reach_location("Main - Search and Destroy", player)
@@ -114,7 +114,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # The epilogue quests (q201_heir, q202_nomads, q203_legend, q204_reborn, q307_tomorrow)
     # all map to this single location, so completing ANY ending triggers this check
     set_rule(world.multiworld.get_location("Ending Reached", player), lambda state: (
-        state.can_reach_location("Endgame - Nocturne Op55N1", player)
+        state.can_reach_location("Point of No Return - Nocturne Op55N1", player)
     ))
 
     # ==========================================

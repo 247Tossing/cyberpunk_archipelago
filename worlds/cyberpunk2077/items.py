@@ -496,13 +496,6 @@ item_table: Dict[str, ItemData] = {
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
-    "Progressive Blackwall Gateway Quickhack": ItemData(
-        name="ap_prog_blackwallGateway",
-        code=5016,
-        classification=ItemClassification.useful,
-        category=ItemCategory.QUICKHACK,
-        quantity=3
-    ),
     "Progressive Reboot Optics Quickhack": ItemData(
         name="ap_prog_rebootOptics",
         code=5017,
@@ -574,7 +567,7 @@ item_table: Dict[str, ItemData] = {
     #     classification=ItemClassification.trap
     # ),
 
-    "Night City's Most Wanted Trap": ItemData(
+    "NCPD False Cyberpsycho Report": ItemData(
         name = "ap_trp_mostWanted",
         code = 7000,
         classification = ItemClassification.trap,
