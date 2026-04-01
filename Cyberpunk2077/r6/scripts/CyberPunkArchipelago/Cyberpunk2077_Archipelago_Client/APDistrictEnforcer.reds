@@ -152,7 +152,7 @@ public class APDistrictEnforcer extends ScriptableSystem {
             case "ap_dat_westbrookAccessToken": 
                 return APDistrict.Westbrook;
                 
-            case "ap_dat_city_centerAccessToken": 
+            case "ap_dat_cityCenterAccessToken": 
                 return APDistrict.CityCenter;
                 
             case "ap_dat_heywoodAccessToken": 
@@ -184,7 +184,7 @@ public class APDistrictEnforcer extends ScriptableSystem {
                 return "ap_dat_westbrookAccessToken";
                 
             case APDistrict.CityCenter: 
-                return "ap_dat_city_centerAccessToken";
+                return "ap_dat_cityCenterAccessToken";
                 
             case APDistrict.Heywood: 
                 return "ap_dat_heywoodAccessToken";

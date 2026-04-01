@@ -131,10 +131,6 @@ class ItemCategory:
 #   if item.classification & ItemClassification.progression:
 #       # This item has the progression flag (possibly among others)
 #
-# EXCEPTION - Checking for filler:
-#   Since filler = 0, you cannot use bitwise AND! Instead check for absence of type flags:
-#   if not (item.classification & (progression | useful | trap)):
-#       # This item is filler (has no type flags, may have modifier flags)
 
 
 # ===== ITEM TABLE =====
@@ -154,28 +150,6 @@ class ItemCategory:
 # 8000-9999: Reserved for future content
 
 item_table: Dict[str, ItemData] = {
-    # ===== PROGRESSION ITEMS =====
-    # These items are required to progress through the game
-    # They unlock new areas, allow access to quests, or enable critical gameplay
-
-    #====================================
-    # Prologue Items
-    #====================================
-
-    # NOTE: Lifepath Chosen event removed - region access rules check the quest location
-    # directly instead of using an event item
-
-    # NOTE: Prologue milestone events removed - these were orphaned progression items
-    # not used by any rules. Quest completion tracked via location access directly.
-
-    # NOTE: Branch completion events removed - Nocturne Op55N1 checks quest locations
-    # directly instead of using event items to avoid circular dependencies
-
-    # NOTE: Side quest events removed - include_all_endings option handles this
-    # by checking quest locations directly instead of using event items
-
-    # NOTE: Phantom Liberty events removed - DLC progression tracked directly via
-    # quest location access rules, not through event items
 
     # ===================================
     # District Access Items
