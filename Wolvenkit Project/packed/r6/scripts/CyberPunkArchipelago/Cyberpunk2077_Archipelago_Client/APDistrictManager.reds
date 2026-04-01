@@ -18,6 +18,12 @@ public class APDistrictManager extends ScriptableSystem {
 
     // Check if a district is unlocked 
     public func IsDistrictUnlocked(districtId: String) -> Bool {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !APGameState.restrictByMajorDistrict {
+            APLogger.LogDebug("District Restriction Disabled: All districts are considered unlocked");
+            return true;
+        }
+
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return false;

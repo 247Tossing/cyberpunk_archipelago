@@ -103,8 +103,6 @@ public class APRedSocketTCPService extends IScriptable {
     private let port: Uint16;
     public let isConnected: Bool = false;
     private let slotName: String = "";
-    private let APClientVersion: String = "0.1.0";
-    private let CyberpunkTCPServerRequiredVersion: String = "0.1.0";
 
 
     public final func Initialize(targetIp: String, targetPort: Uint16, slotName: String) -> Void {
@@ -211,16 +209,19 @@ Below is handler methods for processing incoming commands from the server.
     private func HandleSyncCheck(command: String) -> Void {
         APLogger.LogDebug(s"Sync Check:\(command)");
         let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        if !IsDefined(APGameSystem) {
+            APLogger.LogError("TCPClient: HandleSyncCheck - APGameSystem is null, cannot process sync.");
+            return;
+        }
         let parts: array<String> = StrSplit(command, ":");
+        if ArraySize(parts) < 3 { //If we dont have 3 parts then the server didn't have anything to send, so just bail.
+            return;
+        }
         let locations: array<String> = StrSplit(parts[2], ",");
 
         if ArraySize(locations) > 0 {
             APGameSystem.HandleSyncCheck(locations);
         }
-    }
-
-    private func HandleCheckRequestResponse(command: String) -> Void {
-        
     }
 
     private func HandleDeathLinkCommand(command: String) -> Void {
@@ -243,7 +244,7 @@ Below is handler methods for processing incoming commands from the server.
         if ArraySize(parts) >= 2 { 
             if StrCmp(parts[0], "DEATHLINK_SEND") == 0 {
                 if StrContains(parts[1], "OK") {
-                    //APLogger.LogInfo( "TCPClient: Server acknowledged DeathLink send.");
+                    APLogger.LogDebug( "TCPClient: Server acknowledged DeathLink send.");
                 } else {
                     APLogger.LogError( "TCPClient: Server did not acknowledge DeathLink send: " + command);
                 }
@@ -254,7 +255,7 @@ Below is handler methods for processing incoming commands from the server.
     }
 
     private func HandleItemReceivedCommand(command: String) -> Void {
-        //APLogger.LogInfo( "TCPClient: Received Item Received command from server.");
+        APLogger.LogDebug( "TCPClient: Received Item Received command from server.");
         let parts: array<String> = StrSplit(command, ":");
         if ArraySize(parts) >= 2 {
             if StrCmp(parts[0], "ITEM_RECEIVED") == 0 {
@@ -279,7 +280,7 @@ Below is the full handshake process
     private func SendHello() -> Void {
         if IsDefined(this.socket) && this.isConnected {
             //APLogger.LogInfo( "TCPClient: Sending HELLO to server with client version " + this.APClientVersion);
-            this.socket.SendCommand("HELLO:" + this.APClientVersion);
+            this.socket.SendCommand("HELLO:" + APConstants.GetClientVersion());
         }
     }
 
@@ -290,7 +291,7 @@ Below is the full handshake process
         // Safety check: ensure we have exactly 3 parts (HELLO, Version, Status)
         if ArraySize(parts) == 3 {
             let command: String = parts[0];
-            //let serverVersion: String = parts[1];
+            let serverVersion: String = parts[1];
             let status: String = parts[2];
             
             // StrCmp returns 0 if the strings are identical
@@ -298,13 +299,13 @@ Below is the full handshake process
                 
                 if StrCmp(status, "OK") == 0 {
                     // Handshake successful! 
-                    //APLogger.LogInfo( "TCPClient: Connected to server version " + serverVersion);
+                    APLogger.LogDebug( "TCPClient: Connected to server version " + serverVersion);
                     // Now that we've successfully completed the handshake, we can proceed to send our connection request with the slot name
                     this.SendAPConnectRequest();
                     
                 } else if StrCmp(status, "FAIL") == 0 {
                     // Handshake failed! Alert the user.
-                    APLogger.LogError( "TCPClient: Version mismatch! The server requires version " + this.CyberpunkTCPServerRequiredVersion + ". Please update from GitHub.");
+                    APLogger.LogError( "TCPClient: Version mismatch! The server requires version " + APConstants.GetRequiredServerVersion() + ". Please update from GitHub.");
                 }
             }
         } else {
@@ -313,14 +314,14 @@ Below is the full handshake process
     }
 
     private func SendAPConnectRequest() -> Void {
-        //APLogger.LogInfo( "TCPClient: Sending AP Connect Request for slot " + this.slotName);
+        APLogger.LogDebug( "TCPClient: Sending AP Connect Request for slot " + this.slotName);
         let payload: String = s"CONNECT_REQ:archipelago.gg:\(this.port):\(this.slotName)";
         this.SendMessage(payload);
     }
 
     private func HandleAPConnectResponse(response: String) -> Void {
         // Handle the server's response to the connection request
-        //APLogger.LogInfo( "TCPClient: Received AP Connect Response: " + response);
+        APLogger.LogDebug( "TCPClient: Received AP Connect Response: " + response);
         let parts: array<String> = StrSplit(response, ":");
         if ArraySize(parts) >= 2 {
             let command: String = parts[0];
@@ -328,7 +329,7 @@ Below is the full handshake process
             
             if StrCmp(command, "CONNECT_REQ") == 0 {
                 if StrCmp(status, "OK") == 0 {
-                    //APLogger.LogInfo( "TCPClient: Successfully connected to Archipelago server with slot " + this.slotName);
+                    APLogger.LogDebug( "TCPClient: Successfully connected to Archipelago server with slot " + this.slotName);
                     // Now that we're connected and authenticated, we can start sending/receiving game state updates
                     this.SendSyncItemsRequest();
                 } else {
@@ -342,7 +343,7 @@ Below is the full handshake process
     }
 
     private func SendSyncItemsRequest() -> Void {
-        //APLogger.LogInfo( "TCPClient: Sending SYNC_ITEMS request");
+        APLogger.LogDebug( "TCPClient: Sending SYNC_ITEMS request");
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
         let totalItemCount: Int32;
 
@@ -362,14 +363,14 @@ Below is the full handshake process
     }
 
     private func HandleSyncItemsResponse(response: String) -> Void {
-        //APLogger.LogInfo( "TCPClient: Received SYNC_ITEMS response: " + response);
+        APLogger.LogDebug( "TCPClient: Received SYNC_ITEMS response: " + response);
         let parts: array<String> = StrSplit(response, ":");
         if ArraySize(parts) >= 2 {
             let command: String = parts[0];
             let itemsHeader: String = parts[1];
             let itemsString: String = parts[2];
 
-            //APLogger.LogInfo( s"Command: \(command) itemsHeader: \(itemsHeader) itemsString: \(itemsString)");
+            APLogger.LogDebug( s"Command: \(command) itemsHeader: \(itemsHeader) itemsString: \(itemsString)");
 
             if StrCmp(command, "SYNC_ITEMS") == 0 {
                 if StrCmp(itemsHeader, "ITEMS") == 0 {
@@ -396,13 +397,13 @@ Below is the full handshake process
     }
 
     private func SendSyncConfigRequest() -> Void {
-        //APLogger.LogInfo( "TCPClient: Sending SYNC_CONFIG request");
+        APLogger.LogDebug( "TCPClient: Sending SYNC_CONFIG request");
         let payload: String = "SYNC_CONFIG";
         this.SendMessage(payload);
     }
 
     private func HandleSyncConfigCommand(command: String) -> Void {
-        //APLogger.LogInfo( "TCPClient: Received SYNC_CONFIG command: " + command);
+        APLogger.LogDebug( "TCPClient: Received SYNC_CONFIG command: " + command);
         let parts: array<String> = StrSplit(command, ":");
         if ArraySize(parts) >= 3 {
             //let commandType: String = parts[0];
@@ -423,7 +424,7 @@ Below is the full handshake process
 
             
             for option in configOptions {
-                //APLogger.LogInfo( s"Option: \(option)");
+                APLogger.LogDebug( s"Option: \(option)");
                 if StrContains(option, "death_link") {
                     if StrContains(option, "true") {
                         APGameState.enableDeathLink = true;
@@ -443,12 +444,71 @@ Below is the full handshake process
                     }
                     
                 }
+                if StrContains(option, "restrict_by_major_district") {
+                    if StrContains(option, "true") {
+                        APGameState.restrictByMajorDistrict = true;
+                        APLogger.LogInfo( "Restrict by Major District: Enabled");
+                    }
+                    else {
+                        APLogger.LogInfo( "Restrict by Major District: Disabled");
+                        APGameState.restrictByMajorDistrict = false;
+                    }
+                }
+                if StrContains(option, "weapon_restriction_type") {
+                    if StrContains(option, "1") {
+                        APGameState.weaponRestrictionType = 1;
+                        APLogger.LogInfo("Weapon Restriction Type: Require Multiworld Item");
+                    } else {
+                        APGameState.weaponRestrictionType = 0;
+                        APLogger.LogInfo("Weapon Restriction Type: Cannot Equip");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_pistol") {
+                    APGameState.weaponRestrictPistol = StrContains(option, "true");
+                    if APGameState.weaponRestrictPistol {
+                        APLogger.LogInfo("Weapon Restriction: Pistols restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_melee") {
+                    APGameState.weaponRestrictMelee = StrContains(option, "true");
+                    if APGameState.weaponRestrictMelee {
+                        APLogger.LogInfo("Weapon Restriction: Melee restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_rifle") {
+                    APGameState.weaponRestrictRifle = StrContains(option, "true");
+                    if APGameState.weaponRestrictRifle {
+                        APLogger.LogInfo("Weapon Restriction: Rifles restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_sniper") {
+                    APGameState.weaponRestrictSniper = StrContains(option, "true");
+                    if APGameState.weaponRestrictSniper {
+                        APLogger.LogInfo("Weapon Restriction: Snipers restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_lmg") {
+                    APGameState.weaponRestrictLmg = StrContains(option, "true");
+                    if APGameState.weaponRestrictLmg {
+                        APLogger.LogInfo("Weapon Restriction: LMGs restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_shotgun") {
+                    APGameState.weaponRestrictShotgun = StrContains(option, "true");
+                    if APGameState.weaponRestrictShotgun {
+                        APLogger.LogInfo("Weapon Restriction: Shotguns restricted");
+                    }
+                }
             }
         }
 
         //Request a Sync
         let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-        gameSystem.SendSyncChecks();
+        if IsDefined(gameSystem) {
+            gameSystem.SendSyncChecks();
+        } else {
+            APLogger.LogError("TCPClient: HandleSyncConfigCommand - APGameSystem is null, cannot request sync.");
+        }
 
     }
 

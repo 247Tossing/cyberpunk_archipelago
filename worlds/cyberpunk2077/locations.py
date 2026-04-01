@@ -460,7 +460,6 @@ location_table: Dict[str, LocationData] = {
     "wst_ep1_11_bill_meeting": LocationData(display_name="New Person, Same Old Mistakes", code=1059, region="Dogtown", category=LocationCategory.DLC_SIDE, dlc_only=True),
 
     # --- Phantom Liberty: Gigs (Mr. Hands) ---
-    "combat_zone_reward": LocationData(display_name="Gig: Hi Ho Silver Lining", code=1105, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_01": LocationData(display_name="Gig: Dogtown Saints", code=1106, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_03": LocationData(display_name="Gig: The Man Who Killed Jason Foreman", code=1107, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),
     "sts_ep1_04": LocationData(display_name="Gig: Prototype in the Scraper", code=1108, region="Dogtown", category=LocationCategory.GIG, dlc_only=True),

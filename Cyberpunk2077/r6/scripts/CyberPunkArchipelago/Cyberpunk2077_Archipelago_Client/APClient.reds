@@ -30,6 +30,14 @@ public class APGameSystem extends ScriptableSystem {
     public func HandleSyncCheck(locations: array<String>) -> Void {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
         let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if !IsDefined(questSystem) {
+            APLogger.LogError("HandleSyncCheck: QuestsSystem is null - game world may not be fully loaded yet.");
+            return;
+        }
+        if !IsDefined(tcpClient) {
+            APLogger.LogError("HandleSyncCheck: TCPClient is null.");
+            return;
+        }
         APLogger.LogInfo("Starting Check Sync");
         for loc in locations {
             //APLogger.LogInfo(s"Checking: \(loc)");
@@ -326,7 +334,9 @@ public class APGameSystem extends ScriptableSystem {
 public final func Update(evt: ref<DistrictEnteredEvent>) -> Void {
     let districtString: String = TDBID.ToStringDEBUG(evt.district);
     let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-    APGameSystem.HandleDistrictRestriction(districtString);
+    if IsDefined(APGameSystem) {
+        APGameSystem.HandleDistrictRestriction(districtString);
+    }
     //APLogger.LogInfo(districtString);
 }
 

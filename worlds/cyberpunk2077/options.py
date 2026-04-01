@@ -36,6 +36,44 @@ from Options import (
 #    option_corpo_rat = 1
 #    option_nomad = 2
 
+class WeaponRestrictionType(Choice):
+    """Choose What the options below do
+        Cannot Equip - Nothing will allow you to use the selected weapon types during this run
+        Require Multiworld Item - You will need to acquire an item from the multiworld to use the selected weapon types during this run
+    """
+    display_name = "Weapon Restriction Type"
+    option_cannotEquip = 0
+    option_requireMultiworldItem = 1
+    visibility = Visibility.none # Temporary
+
+
+class RestrictPistols(Toggle):
+    display_name = "Restrict Pistols"
+    default = 0
+    visibility = Visibility.none # Temporary
+
+class RestrictMelee(Toggle):
+    display_name = "Restrict Melee"
+    default = 0
+    visibility = Visibility.none # Temporary
+class RestrictShotgun(Toggle):
+    display_name = "Restrict Shotgun"
+    default = 0
+    visibility = Visibility.none # Temporary
+
+class RestrictSniper(Toggle):
+    display_name = "Restrict Sniper Rifles"
+    default = 0
+    visibility = Visibility.none # Temporary
+class RestrictRifle(Toggle):
+    display_name = "Restrict Rifle"
+    default = 0
+    visibility = Visibility.none # Temporary
+class RestrictLMG(Toggle):
+    display_name = "Restrict LMG"
+    default = 0
+    visibility = Visibility.none # Temporary
+
 class IncludeGigs(Toggle):
     display_name = "Include Gigs"
     default = 1
@@ -111,6 +149,11 @@ class EnableDeathLink(Toggle):
     display_name = "Death Link"
     default = 0
 
+class OopsAllTraps(Toggle):
+    """Replaces all Useful and Filler items with traps"""
+    display_name = "Oops! All Traps!"
+    default = 0
+
 
 # TODO: Add more options as needed for your implementation
 # Examples:
@@ -139,6 +182,13 @@ class Cyberpunk2077Options(PerGameCommonOptions):
         Example: if self.options.include_cyberware: add_cyberware_items()
     """
 
+    weapon_restriction_type: WeaponRestrictionType
+    weapon_restrict_pistol: RestrictPistols
+    weapon_restrict_melee: RestrictMelee
+    weapon_restrict_rifle: RestrictRifle
+    weapon_restrict_sniper: RestrictSniper
+    weapon_restrict_lmg: RestrictLMG
+    weapon_restrict_shotgun: RestrictShotgun
     restrict_by_major_district: RestrictByMajorDistrict
     restrict_by_sub_district: RestrictBySubDistrict
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
@@ -154,6 +204,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     include_all_endings: IncludeAllEndings
     enable_traps: EnableTraps
     trap_amount: TrapItemsPerTrap
+    oops_all_traps: OopsAllTraps
 
     #starting_path: StartingPath
     #include_cyberware: IncludeCyberware
@@ -182,15 +233,25 @@ cyberpunk_option_groups = [
         EnableTraps,
         TrapItemsPerTrap,
     ]),
-    OptionGroup("Restriction Options", [
+    OptionGroup("District Restriction Options", [
         RestrictByMajorDistrict,
         RestrictBySubDistrict,
+    ]),
+    OptionGroup("Weapon Restriction Options", [
+        WeaponRestrictionType,
+        RestrictSniper,
+        RestrictLMG,
+        RestrictMelee,
+        RestrictRifle,
+        RestrictPistols,
+        RestrictShotgun
     ]),
     OptionGroup("Item Options", [
         QuickHacksAsItems,
     ]),
     OptionGroup("Extra Challenge", [
         EnableDeathLink,
+        OopsAllTraps
     ], start_collapsed=True),
 ]
 

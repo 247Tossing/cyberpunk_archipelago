@@ -5,12 +5,16 @@ public class APConstants {
 
     // ===== VERSION INFORMATION =====
     public static func GetClientVersion() -> String {
-        return "0.1.0"; 
+        return "0.5"; 
     }
 
     public static func GetRequiredServerVersion() -> String {
-        return "0.1.0";
+        return "0.5";
     } 
+
+    // ===== Weapon Types =====
+    // The weapon types in Cyberpunk are pretty granular, so we simplify them a bit
+
 
     // ===== ITEM TYPE PREFIXES =====
     // Used for parsing item IDs from the Archipelago server

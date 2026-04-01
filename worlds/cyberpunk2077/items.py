@@ -81,6 +81,7 @@ class ItemCategory:
     WEAPON = "weapon"                    # Unique weapons (future)
     MISC = "misc"                        # Uncategorized/miscellaneous items
     TRAP = "trap"
+    WEAPON_PASS = "weapon_pass"
 
 
 # ===== ITEM CLASSIFICATION TYPES =====
@@ -510,6 +511,51 @@ item_table: Dict[str, ItemData] = {
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
+
+    # ===== Weapon Passes =====
+    # Only used when Restrict Weapons is enabled
+    "Pistol Weapon Pass": ItemData(
+        name="ap_wep_pistolPass",
+        code=5019,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
+    "Shotgun Weapon Pass" : ItemData(
+        name="ap_wep_shotgunPass",
+        code=5020,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
+    "Sniper Weapon Pass" : ItemData(
+        name="ap_wep_sniperPass",
+        code=5021,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
+    "LMG Weapon Pass" : ItemData(
+        name="ap_wep_lmgPass",
+        code=5022,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
+    "Rifle Weapon Pass" : ItemData(
+        name="ap_wep_riflePass",
+        code=5023,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
+    "Melee Weapon Pass" : ItemData(
+        name="ap_wep_meleePass",
+        code=5024,
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS
+    ),
+
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
 

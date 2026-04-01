@@ -7,6 +7,17 @@ public class APGameState extends ScriptableService {
     public let diedFromDeathLink: Bool;
     public let skillPointsAsItems: Bool;
     public let enableDeathLink: Bool;
+    public let restrictByMajorDistrict: Bool;
+
+    // Weapon restriction settings (synced from APWorld options via SYNC_CONFIG)
+    // weaponRestrictionType: 0 = cannotEquip (hard ban), 1 = requireMultiworldItem (pass-gated)
+    public let weaponRestrictionType: Int32;
+    public let weaponRestrictPistol: Bool;
+    public let weaponRestrictMelee: Bool;
+    public let weaponRestrictRifle: Bool;
+    public let weaponRestrictSniper: Bool;
+    public let weaponRestrictLmg: Bool;
+    public let weaponRestrictShotgun: Bool;
 
     // Item tracking
     public let items: ref<APItemList>;

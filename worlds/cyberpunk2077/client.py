@@ -26,13 +26,13 @@ import Utils
 # Import item and location lookup functions
 # Bidirectional lookup helpers for translating between names and IDs
 from worlds.cyberpunk2077.items import get_item_name_by_id, get_item_id_by_name, item_id_to_name, item_name_to_id, item_id_to_game_id
-from worlds.cyberpunk2077.locations import get_location_id_by_name, get_location_name_by_id
+from worlds.cyberpunk2077.locations import get_location_id_by_name, get_location_name_by_id, location_internal_id_to_display_name
 
 
 # ===== VERSION INFORMATION =====
 # Version constants for client/server compatibility checking
-SERVER_VERSION = "0.0.1"  # Python server version
-MIN_CLIENT_VERSION = "0.0.1"  # Minimum required RedScript client version
+SERVER_VERSION = "0.5"  # Python server version
+MIN_CLIENT_VERSION = "0.5"  # Minimum required RedScript client version
 
 
 class CyberpunkClientCommandProcessor(ClientCommandProcessor):
@@ -162,7 +162,7 @@ class CyberpunkContext(CommonContext):
 
         # Location mapping: internal game IDs → display names
         # Used to translate location names from the game to Archipelago display names
-        self.location_internal_id_to_display_name: Dict[str, str] = {}
+        self.location_internal_id_to_display_name: Dict[str, str] = location_internal_id_to_display_name
 
         # Item tracking
         # Track ALL items received from the Archipelago server (including duplicates)
@@ -645,8 +645,13 @@ class CyberpunkContext(CommonContext):
                 # Build comma-separated list of config key:value pairs
                 if self.slot_data:
                     # Convert slot_data to key:value pairs
+                    # Only send scalar values (str, int, float, bool) to RedScript
+                    # Complex types (dict, list) are for internal Python client use only
                     config_pairs = []
                     for key, value in self.slot_data.items():
+                        # Skip non-scalar values (dicts, lists, etc.)
+                        if isinstance(value, (dict, list, set)):
+                            continue
                         # Convert boolean values to lowercase strings (true/false)
                         if isinstance(value, bool):
                             value_str = "true" if value else "false"

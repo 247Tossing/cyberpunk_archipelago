@@ -117,6 +117,17 @@ class Cyberpunk2077World(World):
     # These store player-specific state during world generation
 
 
+    # Mapping from weapon pass item name to the corresponding player option attribute
+    WEAPON_PASS_OPTION_MAP: Dict[str, str] = {
+        "Pistol Weapon Pass": "weapon_restrict_pistol",
+        "Shotgun Weapon Pass": "weapon_restrict_shotgun",
+        "Sniper Weapon Pass": "weapon_restrict_sniper",
+        "LMG Weapon Pass": "weapon_restrict_lmg",
+        "Rifle Weapon Pass": "weapon_restrict_rifle",
+        "Melee Weapon Pass": "weapon_restrict_melee",
+    }
+
+
     def __init__(self, multiworld: MultiWorld, player: int):
         """
         Initialize a new Cyberpunk 2077 world for a player.
@@ -219,6 +230,15 @@ class Cyberpunk2077World(World):
             # Skip quickhack items if quick hacks as items is disabled
             if item_data.category == ItemCategory.QUICKHACK and not self.options.quick_hacks_as_items:
                 continue
+
+            # Skip weapon pass items unless mode is "Require Multiworld Item" AND
+            # the specific weapon type is restricted by the player
+            if item_data.category == ItemCategory.WEAPON_PASS:
+                option_attr = self.WEAPON_PASS_OPTION_MAP.get(item_name)
+                if (self.options.weapon_restriction_type != 1
+                        or not option_attr
+                        or not getattr(self.options, option_attr)):
+                    continue
 
             quantity = (self.options.trap_amount
                         if item_data.category == ItemCategory.TRAP and self.options.enable_traps
@@ -349,9 +369,19 @@ class Cyberpunk2077World(World):
             "world_version": 1,  # Version of your world implementation
             # Configuration options sent to RedScript client via SYNC_CONFIG
             "death_link": bool(self.options.death_link.value),
+            # Weapon restriction settings
+            # 0 = cannotEquip (hard ban), 1 = requireMultiworldItem (pass-gated)
+            "weapon_restriction_type": int(self.options.weapon_restriction_type.value),
+            "weapon_restrict_pistol": bool(self.options.weapon_restrict_pistol.value),
+            "weapon_restrict_melee": bool(self.options.weapon_restrict_melee.value),
+            "weapon_restrict_rifle": bool(self.options.weapon_restrict_rifle.value),
+            "weapon_restrict_sniper": bool(self.options.weapon_restrict_sniper.value),
+            "weapon_restrict_lmg": bool(self.options.weapon_restrict_lmg.value),
+            "weapon_restrict_shotgun": bool(self.options.weapon_restrict_shotgun.value),
+            # District restriction settings
+            "restrict_by_major_district": bool(self.options.restrict_by_major_district.value),
+            "restrict_by_sub_district": bool(self.options.restrict_by_sub_district.value),
             # TODO: Add skill_points_as_items option when implemented
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
-            # Mapping of internal game IDs to display names for UI
-            "location_internal_id_to_display_name": location_internal_id_to_display_name,
         }
         return slot_data
