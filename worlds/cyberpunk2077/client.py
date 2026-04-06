@@ -232,8 +232,8 @@ class CyberpunkContext(CommonContext):
             self.slot_data = args.get("slot_data", {})
             #logger.info(f"Slot data: {self.slot_data}")
 
-            # Load location mapping for translating internal game IDs to display names
-            self.location_internal_id_to_display_name = self.slot_data.get("location_internal_id_to_display_name", {})
+            # Location mapping (location_internal_id_to_display_name) is loaded
+            # statically from locations.py at init time — no need to override from slot_data.
 
             # Register DeathLink tag with the Archipelago server based on slot data
             death_link_enabled = bool(self.slot_data.get("death_link", False))
@@ -690,8 +690,8 @@ class CyberpunkContext(CommonContext):
                     return "SYNC_CHECKS:LOCATIONS:"
 
                 # Get all internal location IDs (keys of the mapping dict)
+                # Includes lifepath/ending aliases added in locations.py
                 all_location_ids = list(self.location_internal_id_to_display_name.keys())
-                all_location_ids.extend(["q000_street_kid", "q000_corpo", "q000_nomad", "q201_heir", "q202_nomads", "q203_legend", "q204_reborn", "q307_tomorrow"])
 
                 if all_location_ids:
                     location_list = ','.join(all_location_ids)
