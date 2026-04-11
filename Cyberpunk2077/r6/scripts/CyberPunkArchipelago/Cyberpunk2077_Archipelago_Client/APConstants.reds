@@ -25,6 +25,7 @@ public class APConstants {
     public static func GetItemTypeInventory() -> String { return "inv"; }
     public static func GetItemTypeProgressive() -> String { return "prog"; }
     public static func GetItemTypeDistrict() -> String { return "dat"; }
+    public static func GetItemTypeWeaponAuthorization() -> String { return "wep"; }
 
     // ===== DISTRICT ACCESS TOKEN IDS =====
     // These are the item IDs for district unlock tokens
@@ -36,6 +37,92 @@ public class APConstants {
     public static func GetPacificaAccessToken() -> String { return "ap_dat_pacificaAccessToken"; }
     public static func GetBadlandsAccessToken() -> String { return "ap_dat_badlandsAccessToken"; }
     public static func GetDogtownAccessToken() -> String { return "ap_dat_dogtownAccessToken"; }
+
+    // ===== Weapon Authorization Item IDs =====
+    // These are the item IDs for weapon authorization items
+    public static func GetPistolPass() -> String { return "ap_wep_pistolPass"; }
+    public static func GetRiflePass() -> String { return "ap_wep_riflePass"; }
+    public static func GetShotgunPass() -> String { return "ap_wep_shotgunPass"; }
+    public static func GetSniperPass() -> String { return "ap_wep_sniperPass"; }
+    public static func GetSMGPass() -> String { return "ap_wep_smgPass"; }
+    public static func GetMeleePass() -> String { return "ap_wep_meleePass"; }
+    public static func GetLMGPass() -> String { return "ap_wep_lmgPass"; }
+    // These are utility functions that categorize all the in-game weapon types:
+    // --- PISTOLS ---
+    public static func IsPistol(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_Handgun) 
+            || Equals(itemType, gamedataItemType.Wea_Revolver);
+    }
+
+    // --- RIFLES ---
+    public static func IsRifle(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_AssaultRifle) 
+            || Equals(itemType, gamedataItemType.Wea_PrecisionRifle) 
+            || Equals(itemType, gamedataItemType.Wea_Rifle);
+    }
+
+    // --- SHOTGUNS ---
+    public static func IsShotgun(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_Shotgun) 
+            || Equals(itemType, gamedataItemType.Wea_ShotgunDual);
+    }
+
+    // --- SNIPERS ---
+    public static func IsSniper(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_SniperRifle);
+    }
+
+    // --- SMGs ---
+    public static func IsSMG(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_SubmachineGun);
+    }
+
+    // --- LMGs ---
+    public static func IsLMG(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_LightMachineGun) 
+            || Equals(itemType, gamedataItemType.Wea_HeavyMachineGun);
+    }
+
+    // --- MELEE ---
+    public static func IsMelee(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_Axe)
+            || Equals(itemType, gamedataItemType.Wea_Chainsword)
+            || Equals(itemType, gamedataItemType.Wea_Fists)
+            || Equals(itemType, gamedataItemType.Wea_Hammer)
+            || Equals(itemType, gamedataItemType.Wea_Katana)
+            || Equals(itemType, gamedataItemType.Wea_Knife)
+            || Equals(itemType, gamedataItemType.Wea_LongBlade)
+            || Equals(itemType, gamedataItemType.Wea_Machete)
+            || Equals(itemType, gamedataItemType.Wea_Melee)
+            || Equals(itemType, gamedataItemType.Wea_OneHandedClub)
+            || Equals(itemType, gamedataItemType.Wea_ShortBlade)
+            || Equals(itemType, gamedataItemType.Wea_Sword)
+            || Equals(itemType, gamedataItemType.Wea_TwoHandedClub);
+    }
+
+    // --- VEHICLE BYPASS ---
+    public static func IsVehicleWeapon(itemType: gamedataItemType) -> Bool {
+        return Equals(itemType, gamedataItemType.Wea_VehicleMissileLauncher)
+            || Equals(itemType, gamedataItemType.Wea_VehiclePowerWeapon);
+    }
+
+    public static func GetRequiredWeaponPassStr(itemType: gamedataItemType) -> String {
+        
+        // 1. Instantly bypass vehicle weapons (returns an empty string)
+        if APConstants.IsVehicleWeapon(itemType) { return ""; }
+        
+        // 2. Route to the correct string
+        if APConstants.IsPistol(itemType)  { return APConstants.GetPistolPass(); }
+        if APConstants.IsRifle(itemType)   { return APConstants.GetRiflePass(); }
+        if APConstants.IsShotgun(itemType) { return APConstants.GetShotgunPass(); }
+        if APConstants.IsSniper(itemType)  { return APConstants.GetSniperPass(); }
+        if APConstants.IsSMG(itemType)     { return APConstants.GetSMGPass(); }
+        if APConstants.IsLMG(itemType)     { return APConstants.GetLMGPass(); }
+        if APConstants.IsMelee(itemType)   { return APConstants.GetMeleePass(); }
+        
+        // Fallback for unmapped types (like GrenadeLaunchers, Cyberware, etc.)
+        return ""; 
+    }
 
     // ===== PROTOCOL MESSAGES =====
     // Network protocol command strings

@@ -71,6 +71,7 @@ public class APDistrictManager extends ScriptableSystem {
         }
 
         APLogger.LogInfo(s"District locked. Requires Access Token");
+        APLogger.LogDebug(s"Locked district: \(districtId)");
         // District is locked - teleport player to nearest safe point
         this.TeleportToSafeZone();
     }

@@ -64,18 +64,6 @@ def set_rules(world: "Cyberpunk2077World") -> None:
         lambda state: state.can_reach_location("Prologue - Love Like Fire", player)
     )
 
-    # NOTE: Prologue milestone event access rules removed - these events were orphaned
-    # and not used by any progression logic
-
-    # NOTE: Branch completion event access rules removed - events eliminated to avoid
-    # circular dependencies with region access tokens
-
-    # NOTE: Side quest progression is handled by include_all_endings option (lines ~150-185)
-    # which checks quest locations directly, not via events
-
-    # NOTE: Phantom Liberty progression handled directly via quest location access rules
-    # DLC quests gated by region access and quest chain, not through event items
-
     # ========== Act 2 ============
 
     # Only need to put the FIRST and LAST quest of a given chain for the generator to understand whats going on theoretically
@@ -122,7 +110,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     # ==========================================
     # Set ending side quest chain rules when either include_all_endings OR include_side_quests is enabled
     # These quests have ENDING_SIDE_QUEST category and are included automatically when either option is true
-    if (world.options.include_all_endings or world.options.include_side_quests):
+    if world.options.include_all_endings or world.options.include_side_quests:
         # --- PANAM'S BRANCH (For The Star Ending) ---
         # Unlocked after finishing Branch B (Hellman)
         set_rule(world.multiworld.get_location("Riders on the Storm", player),
@@ -227,121 +215,3 @@ def has_item_count(state: CollectionState, item_name: str, count: int, player: i
         True if the player has at least 'count' of the item, False otherwise
     """
     return state.count(item_name, player) >= count
-
-
-# ===== LAMBDA FUNCTIONS EXPLAINED =====
-#
-# Lambda syntax in Python:
-#   lambda arguments: expression
-#
-# Lambdas are anonymous functions used for simple, single-expression functions.
-# They're commonly used in Archipelago for access rules.
-#
-# Example comparisons:
-#
-# 1. Simple check:
-#    lambda state: state.has("Key", player)
-#
-# 2. Multiple conditions (AND):
-#    lambda state: state.has("Key1", player) and state.has("Key2", player)
-#
-# 3. Alternative conditions (OR):
-#    lambda state: state.has("Key1", player) or state.has("Key2", player)
-#
-# 4. Complex logic:
-#    lambda state: (state.has("Key1", player) or state.has("Key2", player)) and state.has("Key3", player)
-#
-# Using the helper functions:
-#    lambda state: has_all_items(state, ["Key1", "Key2", "Key3"], world.player)
-#    lambda state: has_any_items(state, ["Key1", "Key2"], world.player)
-#    lambda state: has_item_count(state, "Key Fragment", 3, world.player)
-
-
-# ===== COMMON RULE PATTERNS =====
-
-# Pattern 1: Simple item requirement
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: state.has("Required Item", world.player)
-# )
-
-# Pattern 2: Multiple items required (AND)
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: (
-#         state.has("Item 1", world.player) and
-#         state.has("Item 2", world.player) and
-#         state.has("Item 3", world.player)
-#     )
-# )
-# Or use the helper:
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: has_all_items(state, ["Item 1", "Item 2", "Item 3"], world.player)
-# )
-
-# Pattern 3: Any item from a list (OR)
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: (
-#         state.has("Item 1", world.player) or
-#         state.has("Item 2", world.player)
-#     )
-# )
-# Or use the helper:
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: has_any_items(state, ["Item 1", "Item 2"], world.player)
-# )
-
-# Pattern 4: Item count requirement
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: has_item_count(state, "Key Fragment", 3, world.player)
-# )
-
-# Pattern 5: Progressive items
-# (Items that you get multiple copies of, each unlocking more access)
-# set_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: state.count("Progressive Item", world.player) >= 2
-# )
-
-# Pattern 6: Adding to existing rules (not replacing)
-# If you want to add an additional requirement without removing the existing rule:
-# add_rule(
-#     world.multiworld.get_location("Some Location", world.player),
-#     lambda state: state.has("Additional Item", world.player)
-# )
-
-
-# ===== RULE API REFERENCE =====
-#
-# set_rule(target, rule):
-#   - Sets the access rule for a location or entrance
-#   - Replaces any existing rule
-#   - rule is a lambda function that returns True/False
-#
-# add_rule(target, rule):
-#   - Adds an additional requirement to existing rules
-#   - Combines with AND logic (both rules must be true)
-#   - Useful for adding extra requirements without replacing existing logic
-#
-# state.has(item_name, player):
-#   - Returns True if player has at least one of the item
-#
-# state.has_all(item_list, player):
-#   - Returns True if player has all items in the list
-#
-# state.has_any(item_list, player):
-#   - Returns True if player has any item from the list
-#
-# state.count(item_name, player):
-#   - Returns the number of that item the player has
-#   - Useful for progressive items or items that stack
-#
-# state.can_reach_region(region_name, player):
-#   - Returns True if player can reach the specified region
-#
-# state.can_reach_location(location_name, player):
-#   - Returns True if player can reach the specified location

@@ -91,6 +91,10 @@ public class APItemParser {
         return StrCmp(APItemParser.GetItemType(itemId), APConstants.GetItemTypeDistrict()) == 0;
     }
 
+    public static func IsWeaponAuthorization(itemId: String) -> Bool {
+        return StrCmp(APItemParser.GetItemType(itemId), APConstants.GetItemTypeWeaponAuthorization()) == 0;
+    }
+
     // Check if item is a trap
     public static func IsTrap(itemId: String) -> Bool {
         return StrCmp(APItemParser.GetItemType(itemId), APConstants.GetItemTypeTrap()) == 0;

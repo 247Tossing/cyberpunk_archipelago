@@ -10,7 +10,7 @@ public class APGameState extends ScriptableService {
     public let restrictByMajorDistrict: Bool;
 
     // Weapon restriction settings (synced from APWorld options via SYNC_CONFIG)
-    // weaponRestrictionType: 0 = cannotEquip (hard ban), 1 = requireMultiworldItem (pass-gated)
+    // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
     public let weaponRestrictionType: Int32;
     public let weaponRestrictPistol: Bool;
     public let weaponRestrictMelee: Bool;
@@ -18,6 +18,7 @@ public class APGameState extends ScriptableService {
     public let weaponRestrictSniper: Bool;
     public let weaponRestrictLmg: Bool;
     public let weaponRestrictShotgun: Bool;
+    public let weaponRestrictSmg: Bool;
 
     // Item tracking
     public let items: ref<APItemList>;

@@ -37,42 +37,43 @@ from Options import (
 #    option_nomad = 2
 
 class WeaponRestrictionType(Choice):
-    """Choose What the options below do
+    """
+        Choose the restriction behavior:
         Cannot Equip - Nothing will allow you to use the selected weapon types during this run
         Require Multiworld Item - You will need to acquire an item from the multiworld to use the selected weapon types during this run
     """
     display_name = "Weapon Restriction Type"
-    option_cannotEquip = 0
-    option_requireMultiworldItem = 1
-    visibility = Visibility.none # Temporary
-
+    option_none = 0
+    option_cannotEquip = 1
+    option_requireMultiworldItem = 2
 
 class RestrictPistols(Toggle):
     display_name = "Restrict Pistols"
     default = 0
-    visibility = Visibility.none # Temporary
 
 class RestrictMelee(Toggle):
     display_name = "Restrict Melee"
     default = 0
-    visibility = Visibility.none # Temporary
+
 class RestrictShotgun(Toggle):
     display_name = "Restrict Shotgun"
     default = 0
-    visibility = Visibility.none # Temporary
 
 class RestrictSniper(Toggle):
     display_name = "Restrict Sniper Rifles"
     default = 0
-    visibility = Visibility.none # Temporary
+
 class RestrictRifle(Toggle):
     display_name = "Restrict Rifle"
     default = 0
-    visibility = Visibility.none # Temporary
+
 class RestrictLMG(Toggle):
     display_name = "Restrict LMG"
     default = 0
-    visibility = Visibility.none # Temporary
+
+class RestrictSMG(Toggle):
+    display_name = "Restrict SMG"
+    default = 0
 
 class IncludeGigs(Toggle):
     display_name = "Include Gigs"
@@ -189,6 +190,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     weapon_restrict_sniper: RestrictSniper
     weapon_restrict_lmg: RestrictLMG
     weapon_restrict_shotgun: RestrictShotgun
+    weapon_restrict_smg: RestrictSMG
     restrict_by_major_district: RestrictByMajorDistrict
     restrict_by_sub_district: RestrictBySubDistrict
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
@@ -244,7 +246,8 @@ cyberpunk_option_groups = [
         RestrictMelee,
         RestrictRifle,
         RestrictPistols,
-        RestrictShotgun
+        RestrictShotgun,
+        RestrictSMG,
     ]),
     OptionGroup("Item Options", [
         QuickHacksAsItems,

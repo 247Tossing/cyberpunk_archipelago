@@ -333,13 +333,14 @@ Below is the full handshake process
                     // Now that we're connected and authenticated, we can start sending/receiving game state updates
                     this.SendSyncItemsRequest();
                 } else {
-                    APLogger.LogError("TCPClient: Failed to connect to Archipelago server with slot " + this.slotName);
+                    // Archipelago server not ready yet — Python will push CONNECT_REQ:OK
+                    // when the server connection completes, so no retry needed here.
+                    APLogger.LogInfo("TCPClient: Archipelago server not ready yet. Waiting for server signal...");
                 }
             }
         } else {
             APLogger.LogError("TCPClient: Malformed CONNECT_RESP from server.");
         }
-        // You can parse the response and take appropriate actions here
     }
 
     private func SendSyncItemsRequest() -> Void {
@@ -455,12 +456,15 @@ Below is the full handshake process
                     }
                 }
                 if StrContains(option, "weapon_restriction_type") {
-                    if StrContains(option, "1") {
-                        APGameState.weaponRestrictionType = 1;
+                    if StrContains(option, "2") {
+                        APGameState.weaponRestrictionType = 2;
                         APLogger.LogInfo("Weapon Restriction Type: Require Multiworld Item");
+                    } else if StrContains(option, "1") {
+                        APGameState.weaponRestrictionType = 1;
+                        APLogger.LogInfo("Weapon Restriction Type: Cannot Equip");
                     } else {
                         APGameState.weaponRestrictionType = 0;
-                        APLogger.LogInfo("Weapon Restriction Type: Cannot Equip");
+                        APLogger.LogInfo("Weapon Restriction Type: None (no restrictions)");
                     }
                 }
                 if StrContains(option, "weapon_restrict_pistol") {
@@ -497,6 +501,12 @@ Below is the full handshake process
                     APGameState.weaponRestrictShotgun = StrContains(option, "true");
                     if APGameState.weaponRestrictShotgun {
                         APLogger.LogInfo("Weapon Restriction: Shotguns restricted");
+                    }
+                }
+                if StrContains(option, "weapon_restrict_smg") {
+                    APGameState.weaponRestrictSmg = StrContains(option, "true");
+                    if APGameState.weaponRestrictSmg {
+                        APLogger.LogInfo("Weapon Restriction: SMGs restricted");
                     }
                 }
             }

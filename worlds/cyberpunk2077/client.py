@@ -241,9 +241,13 @@ class CyberpunkContext(CommonContext):
 
             # Inform user about game connection
             if self.game_connected:
-                # Game already connected - sync immediately
-                #logger.info("Syncing items and configuration with game...")
-                async_start(self.send_to_game("CONNECTED"))
+                # Game already connected but stalled because Archipelago wasn't ready.
+                # Push CONNECT_REQ:OK to resume the handshake — the game's
+                # HandleAPConnectResponse will call SendSyncItemsRequest().
+                # Use send_to_game_raw (write-only) to avoid competing with
+                # the handle_game_client read loop.
+                self.is_syncing = True
+                async_start(self.send_to_game_raw("CONNECT_REQ:OK"))
             else:
                 # Game not connected yet - this is normal, just inform user
                 logger.info("")
@@ -324,7 +328,7 @@ class CyberpunkContext(CommonContext):
 
         This worker runs continuously while the game is connected, popping items from the
         queue one at a time and sending them to the game with a configurable delay between
-        each item. This prevents overwhelming the RedSocket client with rapid-fire commands.
+        each item. This prevents overwhelming the RedSocket client with rapid-fire item commands.
 
         The worker will:
         - Pop items from the queue (with timeout to check connection status)
@@ -584,9 +588,14 @@ class CyberpunkContext(CommonContext):
 
             # ===== CONNECT_REQ =====
             elif cmd == "CONNECT_REQ":
-                # Simple handshake - game is checking if client is ready
-                #logger.info("Game sent CONNECT_REQ handshake")
-                return "CONNECT_REQ:OK"
+                # Game is checking if client is ready to proceed with sync.
+                # Only allow if we're already connected to the Archipelago server,
+                # otherwise the game will race into SYNC_ITEMS and fail.
+                if self.archipelago_connected:
+                    return "CONNECT_REQ:OK"
+                else:
+                    logger.info("Game connected, waiting for Archipelago server connection...")
+                    return "CONNECT_REQ:FAIL:Not connected to Archipelago server"
 
 
             # ===== SYNC_ITEMS =====

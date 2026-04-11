@@ -37,13 +37,14 @@ class ItemData:
 
     Attributes:
         name: Human-readable item name (e.g., "Mantis Blades")
-        code: Unique numeric ID for network communication (e.g., 77_2077_001)
-              Set to None for "event" items that don't appear in the item pool
         classification: How the item behaves in the randomizer (can be combined)
                        ItemClassification is an IntFlag that supports bitwise operations.
                        Multiple flags can be combined using the | (OR) operator:
                        - progression | useful: An especially useful progression item
                        - progression | skip_balancing: Progression that won't be moved by balancing
+        code: Unique numeric ID for network communication.
+              Auto-assigned sequentially at module load by _assign_item_codes().
+              Set to None for "event" items that don't appear in the item pool.
         dlc_only: Whether this item requires Phantom Liberty DLC (default: False)
                  Items marked dlc_only=True are excluded from the item pool when
                  include_phantom_liberty_dlc option is disabled
@@ -52,8 +53,8 @@ class ItemData:
                  Makes it easier to filter items in options and generation logic
     """
     name: str
-    code: Optional[int]  # None for event items
     classification: ItemClassification
+    code: Optional[int] = None  # Auto-assigned at module load; None for event items
     dlc_only: bool = False  # True for Phantom Liberty DLC items
     category: str = "misc"  # Item category (use ItemCategory constants)
     quantity: int = 1
@@ -137,17 +138,14 @@ class ItemCategory:
 # This dictionary maps item names to their definitions
 # The item table is the single source of truth for all items in the game
 
-# Item codes are OFFSETS that get added to base_id (2077000) when creating items
-# Codes stored here: 4000-9999 (offsets)
-# Actual Archipelago IDs: 2081000-2086999 (base_id + offset)
-# This range is separate from locations to avoid conflicts
-
-# Offset ranges by category:
-# 4000-4999: Progression items (keys, access items, story progression)
-# 5000-5999: Useful items (quickhacks, cyberware, weapons)
-# 6000-6999: Filler items (common items, money, consumables)
-# 7000-7999: Trap items (debuffs, penalties)
-# 8000-9999: Reserved for future content
+# Item codes are AUTO-ASSIGNED sequentially (0, 1, 2, ...) at module load
+# by _assign_item_codes() below the table. Event items (category=EVENT) are
+# skipped and keep code=None. The full Archipelago ID for each item is
+# BASE_ID + code (e.g., 2077000 + 0 = 2077000).
+#
+# WARNING: Codes are assigned by insertion order. Appending new entries at the
+# end of a section is safe. Inserting in the middle or reordering will shift all
+# subsequent codes and invalidate any previously generated seeds/games.
 
 item_table: Dict[str, ItemData] = {
 
@@ -157,49 +155,42 @@ item_table: Dict[str, ItemData] = {
 
     "Westbrook Access Token" : ItemData(
         name = "ap_dat_westbrookAccessToken",
-        code = 4001,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "City Center Access Token" : ItemData(
         name = "ap_dat_cityCenterAccessToken",
-        code = 4002,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "Heywood Access Token" : ItemData(
         name = "ap_dat_heywoodAccessToken",
-        code = 4003,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "Santo Domingo Access Token" : ItemData(
         name = "ap_dat_santoDomingoAccessToken",
-        code = 4004,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "Pacifica Access Token" : ItemData(
         name = "ap_dat_pacificaAccessToken",
-        code = 4005,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "Dogtown Acccess Token" : ItemData(
         name = "ap_dat_dogtownAccessToken",
-        code = 4006,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
     "Badlands Access Token" : ItemData(
         name = "ap_dat_badlandsAccessToken",
-        code = 4007,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN
     ),
@@ -207,7 +198,6 @@ item_table: Dict[str, ItemData] = {
     # ===== Subdistrict Access Tokens =====
     "Westbrook Japantown Access Token" : ItemData(
         name = "ap_dat_westbrookJapantownAccessToken",
-        code = 4008,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -215,14 +205,12 @@ item_table: Dict[str, ItemData] = {
     # ===== Westbrook Subdistricts =====
     "Westbrook Charter Hill Access Token" : ItemData(
         name = "ap_dat_westbrookCharterHillAccessToken",
-        code = 4009,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Westbrook North Oak Access Token" : ItemData(
         name = "ap_dat_westbrookNorthOakAccessToken",
-        code = 4010,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -230,14 +218,12 @@ item_table: Dict[str, ItemData] = {
     # ===== City Center Subdistricts =====
     "City Center Corpo Plaza Access Token" : ItemData(
         name = "ap_dat_cityCenterCorpoPlazaAccessToken",
-        code = 4011,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "City Center Downtown Access Token" : ItemData(
         name = "ap_dat_cityCenterDowntownAccessToken",
-        code = 4012,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -245,21 +231,18 @@ item_table: Dict[str, ItemData] = {
     # ===== Heywood Subdistricts =====
     "Heywood Wellsprings Access Token" : ItemData(
         name = "ap_dat_heywoodWellspringsAccessToken",
-        code = 4013,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Heywood The Glen Access Token" : ItemData(
         name = "ap_dat_heywoodTheGlenAccessToken",
-        code = 4014,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Heywood Vista Del Rey Access Token" : ItemData(
         name = "ap_dat_heywoodVistaDelReyAccessToken",
-        code = 4015,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -267,14 +250,12 @@ item_table: Dict[str, ItemData] = {
     # ===== Santo Domingo Subdistricts =====
     "Santo Domingo Arroyo Access Token" : ItemData(
         name = "ap_dat_santoDomingoArroyoAccessToken",
-        code = 4016,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Santo Domingo Rancho Coronado Access Token" : ItemData(
         name = "ap_dat_santoDomingoRanchoCoronadoAccessToken",
-        code = 4017,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -282,14 +263,12 @@ item_table: Dict[str, ItemData] = {
     # ===== Pacifica Subdistricts =====
     "Pacifica Coastview Access Token" : ItemData(
         name = "ap_dat_pacificaCoastviewAccessToken",
-        code = 4018,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Pacifica West Wind Estate Access Token" : ItemData(
         name = "ap_dat_pacificaWestWindEstateAccessToken",
-        code = 4019,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -297,63 +276,54 @@ item_table: Dict[str, ItemData] = {
     # ===== Badlands Subdistricts =====
     "Badlands Biotechnica Flats Access Token" : ItemData(
         name = "ap_dat_badlandsBiotechnicaFlatsAccessToken",
-        code = 4020,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Jackson Plains Access Token" : ItemData(
         name = "ap_dat_badlandsJacksonPlainsAccessToken",
-        code = 4021,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Laguna Bend Access Token" : ItemData(
         name = "ap_dat_badlandsLagunaBendAccessToken",
-        code = 4022,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Red Peaks Access Token" : ItemData(
         name = "ap_dat_badlandsRedPeaksAccessToken",
-        code = 4023,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Rocky Ridge Access Token" : ItemData(
         name = "ap_dat_badlandsRockyRidgeAccessToken",
-        code = 4024,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Sierra Sonora Access Token" : ItemData(
         name = "ap_dat_badlandsSierraSonoraAccessToken",
-        code = 4025,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands SoCal Badlands Access Token" : ItemData(
         name = "ap_dat_badlandsSoCalBadlandsAccessToken",
-        code = 4026,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Yucca Access Token" : ItemData(
         name = "ap_dat_badlandsYuccaAccessToken",
-        code = 4027,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
 
     "Badlands Morro Rock Access Token" : ItemData(
         name = "ap_dat_badlandsMorroRockAccessToken",
-        code = 4028,
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.SUBDISTRICT_TOKEN
     ),
@@ -362,125 +332,107 @@ item_table: Dict[str, ItemData] = {
     # These items are helpful but not required
     "5000 Eddies": ItemData(
         name="ap_ed_Items.money_5000",
-        code=5000,
         classification=ItemClassification.useful,
         category=ItemCategory.CURRENCY
     ),
     "Progressive Overheat Quickhack": ItemData(
         name="ap_prog_overheat",
-        code=5001,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Short Circuit Quickhack": ItemData(
         name="ap_prog_shortCircuit",
-        code=5002,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Contagion Quickhack": ItemData(
         name="ap_prog_contagion",
-        code=5003,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Synapse Burnout Quickhack": ItemData(
         name="ap_prog_synapseBurnout",
-        code=5004,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Cripple Movement Quickhack": ItemData(
         name="ap_prog_crippleMovement",
-        code=5005,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Weapon Glitch Quickhack": ItemData(
         name="ap_prog_weaponGlitch",
-        code=5006,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Ping Quickhack": ItemData(
         name="ap_prog_ping",
-        code=5007,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 4
     ),
     "Progressive Bait Quickhack": ItemData(
         name="ap_prog_bait",
-        code=5008,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity= 6
     ),
     "Progressive Request Backup Quickhack": ItemData(
         name="ap_prog_requestBackup",
-        code=5009,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Memory Wipe Quickhack": ItemData(
         name="ap_prog_memoryWipe",
-        code=5010,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=4
     ),
     "Progressive Sonic Shock Quickhack": ItemData(
         name="ap_prog_sonicShock",
-        code=5011,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Cyberpsychosis Quickhack": ItemData(
         name="ap_prog_madness",
-        code=5012,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Suicide Quickhack": ItemData(
         name="ap_prog_suicide",
-        code=5013,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive System Collapse Quickhack": ItemData(
         name="ap_prog_systemCollapse",
-        code=5014,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Detonate Grenade Quickhack": ItemData(
         name="ap_prog_grenadeExplode",
-        code=5015,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Reboot Optics Quickhack": ItemData(
         name="ap_prog_rebootOptics",
-        code=5017,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Cyberware Malfunction Quickhack": ItemData(
         name="ap_prog_cyberwareMalfunction",
-        code=5018,
         classification=ItemClassification.useful,
         category=ItemCategory.QUICKHACK,
         quantity=5
@@ -490,42 +442,42 @@ item_table: Dict[str, ItemData] = {
     # Only used when Restrict Weapons is enabled
     "Pistol Weapon Pass": ItemData(
         name="ap_wep_pistolPass",
-        code=5019,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
 
+    "SMG Weapon Pass": ItemData(
+        name="ap_wep_smgPass",
+        classification=ItemClassification.useful,
+        category=ItemCategory.WEAPON_PASS,
+    ),
+
     "Shotgun Weapon Pass" : ItemData(
         name="ap_wep_shotgunPass",
-        code=5020,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
 
     "Sniper Weapon Pass" : ItemData(
         name="ap_wep_sniperPass",
-        code=5021,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
 
     "LMG Weapon Pass" : ItemData(
         name="ap_wep_lmgPass",
-        code=5022,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
 
     "Rifle Weapon Pass" : ItemData(
         name="ap_wep_riflePass",
-        code=5023,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
 
     "Melee Weapon Pass" : ItemData(
         name="ap_wep_meleePass",
-        code=5024,
         classification=ItemClassification.useful,
         category=ItemCategory.WEAPON_PASS
     ),
@@ -535,42 +487,36 @@ item_table: Dict[str, ItemData] = {
 
     "500 Eddies": ItemData(
         name="ap_ed_Items.money_500",  # In-game currency
-        code=6000,
         classification=ItemClassification.filler,
         category=ItemCategory.CURRENCY
     ),
 
     "1000 Eddies" : ItemData(
         name = "ap_ed_Items.money_1000",
-        code = 6001,
         classification = ItemClassification.filler,
         category = ItemCategory.CURRENCY
     ),
 
     "2500 Eddies" : ItemData(
         name = "ap_ed_Items.money_2500",
-        code = 6002,
         classification = ItemClassification.filler,
         category = ItemCategory.CURRENCY
     ),
 
     "Ram Nugs" : ItemData(
         name = "ap_inv_Items.Blackmarket_MemoryBooster",
-        code = 6003,
         classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
 
     "RAM Jolt" : ItemData(
         name = "ap_inv_Items.MemoryBooster",
-        code = 6004,
         classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
 
     "Burrito XXXL" : ItemData(
         name = "ap_inv_Items.MediumQualityFood4",
-        code = 6005,
         classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
@@ -589,7 +535,6 @@ item_table: Dict[str, ItemData] = {
 
     "NCPD False Cyberpsycho Report": ItemData(
         name = "ap_trp_mostWanted",
-        code = 7000,
         classification = ItemClassification.trap,
         category = ItemCategory.TRAP,
         quantity= 5
@@ -597,7 +542,6 @@ item_table: Dict[str, ItemData] = {
 
     "Netrunner Virus": ItemData(
         name = "ap_trp_randomDebuff",
-        code = 7001,
         classification = ItemClassification.trap,
         category = ItemCategory.TRAP,
         quantity= 5
@@ -605,7 +549,6 @@ item_table: Dict[str, ItemData] = {
 
     "Direct Alcohol Injection": ItemData(
         name = "ap_trp_drunk",
-        code = 7002,
         classification = ItemClassification.trap,
         category = ItemCategory.TRAP,
         quantity= 5
@@ -622,11 +565,40 @@ item_table: Dict[str, ItemData] = {
 
     "Victory": ItemData(
         name="Victory",
-        code=None,
         classification=ItemClassification.progression,
         category=ItemCategory.EVENT
     ),
 }
+
+
+# ===== AUTO-ASSIGN ITEM CODES =====
+# Assigns sequential codes (0, 1, 2, ...) to every non-event item in the table.
+# Event items (category=EVENT) are skipped and keep code=None.
+# Must run BEFORE the derived mappings below that depend on data.code.
+
+def _assign_item_codes(table: Dict[str, ItemData]) -> None:
+    """
+    Auto-assign sequential integer codes to all non-event items in the table.
+
+    Each real item receives its zero-based index (among non-event items) as
+    its code. Event items are skipped and retain code=None.
+    The full Archipelago ID is BASE_ID + code.
+
+    This replaces the old scheme of manually hardcoding code values, which
+    was error-prone (duplicate codes, gaps, collisions).
+
+    Args:
+        table: The item_table dict to mutate in-place.
+    """
+    index = 0
+    for name, data in table.items():
+        if data.category == ItemCategory.EVENT:
+            continue  # Skip event items - they intentionally have no code
+        data.code = index
+        index += 1
+
+
+_assign_item_codes(item_table)
 
 
 # ===== DERIVED MAPPINGS =====

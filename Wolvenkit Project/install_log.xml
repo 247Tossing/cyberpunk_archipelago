@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="CyberpunkArchipelagoMod" Build_date="4/6/2026 9:04:21 AM">
+<InstalLog Project="CyberpunkArchipelagoMod" Build_date="4/11/2026 3:12:36 AM">
   <Files>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\bin\x64">
@@ -18,11 +18,11 @@
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts">
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago">
           <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client">
-            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APClient.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APConstants.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APDistrictEnforcer.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APDistrictManager.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APGameState.reds</file>
+            <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APGameSystem.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APInventoryHandler.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APItemList.reds</file>
             <file>E:\CyperPunk2077\Cyberpunk 2077\r6\scripts\CyberPunkArchipelago\Cyberpunk2077_Archipelago_Client\APItemParser.reds</file>
