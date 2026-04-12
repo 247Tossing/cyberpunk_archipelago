@@ -485,6 +485,61 @@ item_table: Dict[str, ItemData] = {
     # ===== FILLER ITEMS =====
     # These items are used to fill extra locations
 
+    "Tier 1 Item Component" : ItemData(
+        name="ap_inv_Items.CommonMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 2 Item Component" : ItemData(
+        name="ap_inv_Items.UncommonMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 3 Item Component" : ItemData(
+        name="ap_inv_Items.RareMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
+    # Anything Tier 4 and up will be considered "useful" instead of filler to make them less likely to be at early locations in the multiworld
+    "Tier 4 Item Component" : ItemData(
+        name="ap_inv_Items.EpicMaterial1",
+        classification=ItemClassification.useful,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 5 Item Component" : ItemData(
+        name="ap_inv_Items.LegendaryMaterial1",
+        classification=ItemClassification.useful,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 2 Quickhack Component" : ItemData(
+        name="ap_inv_Items.UncommonQuickhackMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 3 Quickhack Component" : ItemData(
+        name="ap_inv_Items.RareQuickhackMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 4 Quickhack Component" : ItemData(
+        name="ap_inv_Items.EpicQuickhackMaterial1",
+        classification=ItemClassification.useful,
+        category=ItemCategory.MISC,
+    ),
+
+    "Tier 5 Quickhack Component" : ItemData(
+        name="ap_inv_Items.LegendaryQuickhackMaterial1",
+        classification=ItemClassification.filler,
+        category=ItemCategory.MISC,
+    ),
+
     "500 Eddies": ItemData(
         name="ap_ed_Items.money_500",  # In-game currency
         classification=ItemClassification.filler,
@@ -520,8 +575,6 @@ item_table: Dict[str, ItemData] = {
         classification = ItemClassification.filler,
         category = ItemCategory.CONSUMABLE
     ),
-
-
 
     # ===== TRAP ITEMS =====
     # These items have negative effects
