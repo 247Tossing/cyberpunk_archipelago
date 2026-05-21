@@ -1,0 +1,12 @@
+# CMake build output
+build/
+out/
+cmake-build-*/
+
+# Generated mapping files are committed so the repo is self-contained,
+# but they can be regenerated at any time with:
+#   python3 native/generate_tables.py
+# Uncomment the lines below if you prefer to only generate on demand:
+# src/ItemMapping.hpp
+# src/LocationMapping.hpp
+# src/DisplayNameMapping.hpp

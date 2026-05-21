@@ -172,6 +172,7 @@ public class APConstants {
     public static func GetItemPrefix() -> String { return "ap"; }
 
     // ===== TAROT PREFIX =====
+    // Must match the location table keys: "ap_tarot_1", "ap_tarot_2", etc.
     public static func GetTarotCheckPrefix() -> String { return "ap_tarot_"; }
 
     // ===== PHONE EXTENSION =====

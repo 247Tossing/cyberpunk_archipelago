@@ -362,12 +362,19 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
     //APLogger.LogInfo( s"Character Visible");
     if IsDefined(APGameState) {
-        //APLogger.LogInfo( "AP Game State Defined");
         APGameState.HandlePlayerRespawn();
+
+        // Poll the native AP client: delivers any queued items, applies slot-data
+        // config, and handles any pending DeathLink.
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if IsDefined(tcpClient) {
+            tcpClient.Poll();
+        }
+
+        // After items are delivered, run the inventory sync to apply them.
         APGameSystem.SyncData();
         APGameSystem.SendSyncChecks();
 
-        // Register the Archipelago phone contact on every spawn
         APLogger.LogDebug("OnSpawn: Attempting to register phone contact");
         let player: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerMainGameObject();
         let phoneSystem: ref<APPhoneSystem> = APGameState.GetPhoneSystem();
