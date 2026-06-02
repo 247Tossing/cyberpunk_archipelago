@@ -48,17 +48,17 @@ public class APDistrictManager extends ScriptableSystem {
     public func HandleDistrictRestriction(districtString: String) -> Void {
         if !IsDefined(this.districtEnforcer) {
             APLogger.LogDebug("APDistrictManager: District enforcer not initialized");
-            return;
+            return true;
         }
 
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
-            return;
+            return true;
         }
 
         // Don't enforce during lifepath intro
         if !this.questHandler.IsPassedPrologue() {
-            return;
+            return true;
         }
 
         // Get the major district enum from the game's district string
@@ -67,13 +67,14 @@ public class APDistrictManager extends ScriptableSystem {
 
         // If district is unlocked, no need to teleport
         if this.IsDistrictUnlocked(districtId) {
-            return;
+            return true;
         }
 
         APLogger.LogInfo(s"District locked. Requires Access Token");
         APLogger.LogDebug(s"Locked district: \(districtId)");
         // District is locked - teleport player to nearest safe point
         this.TeleportToSafeZone();
+        return false;
     }
 
     // Teleport player to nearest safe zone in an unlocked district

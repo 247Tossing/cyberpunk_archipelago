@@ -99,7 +99,14 @@ public class APGameSystem extends ScriptableSystem {
 
     public func HandleDistrictRestriction(district: String) -> Void {
         if IsDefined(this.districtManager) {
-            this.districtManager.HandleDistrictRestriction(district);
+            let districtVerdict: Bool = this.districtManager.HandleDistrictRestriction(district);
+            if !districtVerdict {
+              phoneSystem.NotifyNewMessageCustom(
+              APConstants.GetArchipelagoContactHash(),
+              s"System",
+              s"District locked: \(districtString)"
+              )
+            }
         } else {
             APLogger.LogDebug("APGameSystem: District manager not available");
         }
