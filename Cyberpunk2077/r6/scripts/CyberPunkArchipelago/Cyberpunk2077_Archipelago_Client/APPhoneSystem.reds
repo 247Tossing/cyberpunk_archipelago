@@ -152,4 +152,31 @@ public class APPhoneSystem extends IScriptable {
             s"Sent you \(itemDisplayName)"
         );
     }
+
+    public func SendDistrictNotification(player: ref<GameObject>, districtDisplayName: String) -> Void {
+      if !IsDefined(this.contact) {
+        APLogger.LogDebug("APPhoneSystem: Contact not initialized");
+        return;
+      }
+      this.contact.AddMessage(s"Archipelago", districtDisplayName);
+      APLogger.LogDebug(s"APPhoneSystem: Message added, total messages: \(this.contact.GetMessageCount())");
+
+      if !IsDefined(player) {
+        APLogger.LogDebug("APPhoneSystem: Player is null, skipping HUD notification");
+        return;
+      }
+      let phoneSystem: ref<PhoneExtensionSystem> = PhoneExtensionSystem.GetInstance(player);
+      if !IsDefined(phoneSystem) {
+          APLogger.LogDebug("APPhoneSystem: PhoneExtensionSystem is null, skipping HUD notification");
+          return;
+      }
+      APLogger.LogDebug("APPhoneSystem: Pushing HUD notification");
+      phoneSystem.NotifyNewMessageCustom(
+          APConstants.GetArchipelagoContactHash(),
+          s"Archipelago",
+          s"District locked: \(districtDisplayName)"
+      );
+    }
+
+    }
 }
