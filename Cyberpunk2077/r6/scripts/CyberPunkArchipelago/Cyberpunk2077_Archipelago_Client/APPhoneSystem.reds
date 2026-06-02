@@ -177,6 +177,4 @@ public class APPhoneSystem extends IScriptable {
           s"District locked: \(districtDisplayName)"
       );
     }
-
-    }
 }

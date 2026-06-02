@@ -99,8 +99,26 @@ public class APGameSystem extends ScriptableSystem {
 
     public func HandleDistrictRestriction(district: String) -> Void {
         if IsDefined(this.districtManager) {
-            this.districtManager.HandleDistrictRestriction(district);
-            phoneSystem.SendDistrictNotification(player, district);
+            let districtStatus: Bool = this.districtManager.HandleDistrictRestriction(district);
+
+            if !districtStatus {
+              APLogger.LogInfo(s"District locked: \(district), Unlocked: \(districtStatus)");
+
+              let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+              if !IsDefined(APGameState) {
+                APLogger.LogError("APGameSystem: APGameState is null");
+                return;
+              }
+              let phoneSystem: ref<APPhoneSystem> = APGameState.GetPhoneSystem();
+              if !IsDefined(phoneSystem) {
+                  APLogger.LogError("APGameSystem: GetPhoneSystem() returned null");
+                  return;
+              }
+              let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+              phoneSystem.SendDistrictNotification(player, district);
+
+            }
+  
         } else {
             APLogger.LogDebug("APGameSystem: District manager not available");
         }
