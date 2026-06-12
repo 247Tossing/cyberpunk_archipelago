@@ -1,5 +1,65 @@
 # Mod build tooling
 
+## `build_release.py` (full release)
+
+One command produces both end-user artifacts in `build/`:
+
+- `cyberpunk2077.apworld`
+- `CyberpunkArchipelagoMod_(<version>).zip`
+
+```cmd
+python tools\build_release.py --archipelago-root <ARCHIPELAGO>
+```
+
+It runs the whole pipeline in order: fetch native submodules, build the RED4ext
+plugin (`CyberpunkAP.dll`) with CMake in `Release`, link `worlds/cyberpunk2077`
+into the Archipelago checkout, install Archipelago's Python requirements
+non-interactively (`ModuleUpdate.py -y`), build the apworld, then package the
+mod zip.
+
+The Archipelago checkout is resolved from `--archipelago-root`, then
+`$ARCHIPELAGO_ROOT`, then `../Archipelago`.
+
+Useful flags:
+
+- `--skip-submodules` - CI already checked out submodules (`actions/checkout`).
+- `--skip-native` - reuse an already-built `CyberpunkAP.dll`.
+- `--skip-requirements` - Archipelago deps already installed.
+- `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6-rc1`) matches
+  `world_version`; used by tag-triggered CI.
+
+### Versioning (RC then stable)
+
+The single source of truth is `world_version` in
+`worlds/cyberpunk2077/archipelago.json`. It feeds both the apworld manifest and
+the mod zip filename, so all three stay one-to-one.
+
+| Git tag | `world_version` | Mod zip |
+|---------|-----------------|---------|
+| `v0.6-rc1` | `0.6-rc1` | `CyberpunkArchipelagoMod_(0.6-rc1).zip` |
+| `v0.6` | `0.6` | `CyberpunkArchipelagoMod_(0.6).zip` |
+
+Release checklist:
+
+1. Set `world_version` to the upcoming value (e.g. `0.6-rc1`), commit.
+2. Tag `v0.6-rc1` and run the pipeline (or push the tag if CI is tag-triggered).
+3. For stable: bump `world_version` to `0.6`, commit, tag `v0.6`, release again.
+
+## `package_cyberpunk_mod_zip.py`
+
+Packages only the game-install overlay from `Cyberpunk2077/` (whitelisted to
+`r6/`, `bin/`, `red4ext/`) into `CyberpunkArchipelagoMod_(<version>).zip`. The
+zip extracts directly into the Cyberpunk 2077 root. It fails fast if
+`red4ext/plugins/CyberpunkAP/CyberpunkAP.dll` is missing, so build the native
+plugin first.
+
+```cmd
+python tools\package_cyberpunk_mod_zip.py
+```
+
+The version defaults to `archipelago.json` `world_version`; override with
+`--version` for local experiments only.
+
 ## `build_cyberpunk2077_apworld.py`
 
 Single entrypoint for producing a release-ready `cyberpunk2077.apworld` that is

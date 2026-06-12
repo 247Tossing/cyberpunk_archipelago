@@ -1,0 +1,63 @@
+name: Release artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      archipelago_repository:
+        description: "Archipelago repo to build against (owner/name)."
+        default: "ArchipelagoMW/Archipelago"
+        required: true
+      archipelago_ref:
+        description: "Archipelago ref (branch, tag, or SHA)."
+        default: "main"
+        required: true
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout mod
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Checkout Archipelago
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.archipelago_repository || 'ArchipelagoMW/Archipelago' }}
+          ref: ${{ github.event.inputs.archipelago_ref || 'main' }}
+          path: Archipelago
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "~3.12"
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build release artifacts
+        shell: pwsh
+        env:
+          ARCHIPELAGO_ROOT: ${{ github.workspace }}/Archipelago
+        run: |
+          $tagArg = @()
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $tagArg = @("--require-tag-version", "${{ github.ref_name }}")
+          }
+          python tools/build_release.py --skip-submodules @tagArg
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberpunk-archipelago-release
+          path: |
+            build/cyberpunk2077.apworld
+            build/CyberpunkArchipelagoMod_*.zip
+          if-no-files-found: error
