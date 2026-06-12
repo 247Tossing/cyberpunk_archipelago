@@ -17,6 +17,10 @@ into the Archipelago checkout, install Archipelago's Python requirements
 non-interactively (`ModuleUpdate.py -y`), build the apworld, then package the
 mod zip.
 
+The mbedTLS source tarball (`native/APCpp/mbedtls-3.6.4.tar.bz2`) is gitignored;
+`build_release.py` downloads and verifies it automatically when missing (CI and
+fresh clones).
+
 The Archipelago checkout is resolved from `--archipelago-root`, then
 `$ARCHIPELAGO_ROOT`, then `../Archipelago`.
 

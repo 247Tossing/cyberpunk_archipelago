@@ -21,12 +21,24 @@ Final artifacts land in ``<mod-root>/build/``:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 from typing import Iterable
+
+# Matches native/APCpp/CMakeLists.txt (APCPP_MBEDTLS_VER) — archive is gitignored.
+_MBEDTLS_VER = "3.6.4"
+_MBEDTLS_URL = (
+    f"https://github.com/Mbed-TLS/mbedtls/releases/download/"
+    f"mbedtls-{_MBEDTLS_VER}/mbedtls-{_MBEDTLS_VER}.tar.bz2"
+)
+_MBEDTLS_SHA256 = (
+    "ec35b18a6c593cf98c3e30db8b98ff93e8940a8c4e690e66b41dfc011d678110"
+)
 
 MOD_ROOT = Path(__file__).resolve().parent.parent
 NATIVE_DIR = MOD_ROOT / "native"
@@ -87,8 +99,42 @@ def fetch_submodules() -> None:
     run(["git", "submodule", "update", "--init", "--recursive"], cwd=MOD_ROOT)
 
 
+def ensure_mbedtls_tarball() -> None:
+    """mbedTLS source archive is gitignored; download it for CI / fresh clones."""
+    dest = NATIVE_DIR / "APCpp" / f"mbedtls-{_MBEDTLS_VER}.tar.bz2"
+    if dest.is_file():
+        digest = hashlib.sha256(dest.read_bytes()).hexdigest()
+        if digest == _MBEDTLS_SHA256:
+            return
+        print(f"[release] replacing {dest.name} (sha256 mismatch)")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[release] downloading {dest.name}")
+    tmp = dest.with_suffix(dest.suffix + ".tmp")
+    try:
+        req = urllib.request.Request(  # noqa: S310 — fixed HTTPS URL + checksum
+            _MBEDTLS_URL,
+            headers={"User-Agent": "CyberpunkArchipelago-build-release/1.0"},
+        )
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            data = resp.read()
+        digest = hashlib.sha256(data).hexdigest()
+        if digest != _MBEDTLS_SHA256:
+            raise RuntimeError(
+                f"mbedTLS archive sha256 mismatch: got {digest}, expected {_MBEDTLS_SHA256}"
+            )
+        tmp.write_bytes(data)
+        tmp.replace(dest)
+    finally:
+        if tmp.is_file():
+            tmp.unlink(missing_ok=True)
+
+
 def build_native() -> None:
-    run(["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)])
+    ensure_mbedtls_tarball()
+    configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
+    if os.name == "nt" and not os.environ.get("CMAKE_GENERATOR"):
+        configure += ["-G", "Visual Studio 17 2022", "-A", "x64"]
+    run(configure)
     run(["cmake", "--build", str(NATIVE_BUILD_DIR), "--config", "Release"])
 
 
