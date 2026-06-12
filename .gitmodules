@@ -1,0 +1,18 @@
+[submodule "native/APCpp/jsoncpp"]
+	path = native/APCpp/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp
+[submodule "native/APCpp/IXWebSocket"]
+	path = native/APCpp/IXWebSocket
+	url = https://github.com/machinezone/IXWebSocket
+[submodule "native/APCpp/zlib"]
+	path = native/APCpp/zlib
+	url = https://github.com/madler/zlib
+[submodule "native/RED4ext.SDK"]
+	path = native/RED4ext.SDK
+	url = https://github.com/WopsS/RED4ext.SDK.git
+[submodule "native/RED4ext"]
+	path = native/RED4ext
+	url = https://github.com/WopsS/RED4ext.git
+[submodule "native/Red4Ext-template"]
+	path = native/Red4Ext-template
+	url = https://github.com/ssamjoel/Red4Ext-template.git

@@ -2,3 +2,7 @@
 /.venv/*
 /Cyberpunk2077/.redscript
 /native/build/
+# Vendored dependency archives (large binaries, not needed in source control)
+/native/APCpp/mbedtls-*.tar.bz2
+# Python caches
+worlds/**/__pycache__/

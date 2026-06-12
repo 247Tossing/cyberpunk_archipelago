@@ -1,0 +1,100 @@
+name: CI
+
+# Trigger this workflow on push or pull request
+on: [push, pull_request]
+
+jobs:
+  build-win:
+    strategy:
+      matrix:
+          os: [windows-latest]
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: 'recursive'
+    - name: CMake configure
+      run: |
+        mkdir build
+        cd build
+        cmake -G "Visual Studio 17 2022" -A Win32 `
+              -DCMAKE_BUILD_TYPE=Release ..
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config Release
+    - name: Create Artifact Folder
+      run: |
+        mkdir artifact
+        copy build/Release/APCpp.dll artifact
+        copy build/Release/APCpp.lib artifact
+    - name: Create Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        # This uses the specific name defined in the matrix above
+        name: APCpp-${{ matrix.os }}
+        path: |
+          artifact/*
+
+  build-msys:
+    name: Build (MSYS)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake unzip make
+      - name: CMake configure (MSYS)
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DWIN32=1 -DMSYS=1 -G"MSYS Makefiles"
+      - name: Build (MSYS)
+        run: |
+          cd build
+          cmake --build . 
+  
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+      - name: Install Dependencies
+        run: |
+          sudo apt install cmake
+      - name: CMake configure
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+      - name: Build
+        run: |
+          cd build
+          cmake --build .
+  
+  build-mac:
+    name: Build (macOS)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+      - name: CMake configure
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+      - name: Build
+        run: |
+          cd build
+          cmake --build . 

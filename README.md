@@ -71,6 +71,32 @@ Before anything follow this guide: [Cyber Engine Tweaks Linux Instructions](http
 2. Select ```Properties```
 3. Under ```Launch Options```, ```put in WINEDLLOVERRIDES="version,winmm=n,b" %command%```
 
+---
+
+## Credits & Acknowledgements
+
+### Mod Author
+- **247Tossing** — Cyberpunk 2077 Archipelago Mod
+
+### Third-Party Libraries (Native Plugin)
+
+| Library | Author | Purpose |
+|---------|--------|---------|
+| [APCpp](https://github.com/N00byKing/APCpp) | N00byKing | Archipelago C++ client library (vendored + modified) |
+| [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) | WopsS | REDengine 4 plugin SDK headers |
+| [RED4ext](https://github.com/WopsS/RED4ext) | WopsS | RED4ext loader framework (reference) |
+| [Red4Ext-template](https://github.com/ssamjoel/Red4Ext-template) | ssamjoel | Plugin project scaffold |
+| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | open-source-parsers | JSON parsing (APCpp dependency) |
+| [IXWebSocket](https://github.com/machinezone/IXWebSocket) | Machine Zone | WebSocket client (APCpp dependency) |
+| [zlib](https://github.com/madler/zlib) | Mark Adler | Compression (APCpp dependency) |
+
+### Frameworks
+- [Archipelago](https://archipelago.gg/) — multiworld randomizer framework
+- [RedScript](https://github.com/jac3km4/redscript) — Cyberpunk 2077 scripting framework
+- [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) — Cyberpunk 2077 mod engine
+
+---
+
 ## What if something is broken?
 Open an [Issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose)
 
