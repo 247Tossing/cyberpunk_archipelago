@@ -20,16 +20,17 @@ set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 
 # Enable TLS. On Windows, build mbedTLS
 set(USE_TLS ON CACHE BOOL "Enable TLS support" FORCE)
+set(USE_MBED_TLS OFF)
 
 # Fallback to mbedtls if openssl not found
 if (NOT MINGW)
-    find_package(OpenSSL)
+    find_package(OpenSSL QUIET)
     if (NOT OPENSSL_FOUND)
         set(USE_MBED_TLS ON)
     endif(NOT OPENSSL_FOUND)
 endif (NOT MINGW)
 
-if ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
+if (USE_MBED_TLS)
     set(APCPP_MBEDTLS_VER 3.6.4)
     set(MBEDTLS_TARBALL_URL "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-${APCPP_MBEDTLS_VER}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2")
     set(MBEDTLS_TARBALL "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2")
@@ -51,7 +52,7 @@ if ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
     set(MBEDX509_LIBRARY mbedx509)
     set(MBEDCRYPTO_LIBRARY mbedcrypto)
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER} mbedtls_bin)
-endif ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
+endif (USE_MBED_TLS)
 
 # Attempt finding system version of zlib
 if (NOT MINGW)
