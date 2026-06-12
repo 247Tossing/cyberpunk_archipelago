@@ -47,13 +47,12 @@ You ***MUST*** restart the launcher before it will show up.
 # Usage
 
 ## Using the Mod
-1. After you restart the launcher, launch the Cyberpunk 2077 Client.
-2. Connect to the AP Server and enter your save slot.
-3. The client will provide the ```localhost:port``` for the local TCP socket
-4. Start up Cyberpunk 2077
-5. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-6. From the CET overlay, put in either ```locahost``` or ```127.0.0.1``` in the Server IP field, and the Port you got from the AP Client into the ```Port``` field.
-7. Profit. Have Fun.
+## This assumes that you already have an AP world hosted somewhere
+1. Launch the Cyberpunk 2077 Client.
+2. Start up Cyberpunk 2077
+3. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
+4. From the CET overlay, fill out the fields with your ```Archipelago Server IP```, ```Archipelago Server Port```, and ```Save Slot Name```
+5. Profit. Have Fun.
 
 ## Linux Users (like me!)
 
