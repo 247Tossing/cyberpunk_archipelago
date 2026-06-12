@@ -29,8 +29,8 @@ Useful flags:
 - `--skip-submodules` - CI already checked out submodules (`actions/checkout`).
 - `--skip-native` - reuse an already-built `CyberpunkAP.dll`.
 - `--skip-requirements` - Archipelago deps already installed.
-- `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6-rc1`) matches
-  `world_version`; used by tag-triggered CI.
+- `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6.0`) matches
+  `world_version`; used for tag-triggered CI.
 
 On Windows, the script intentionally does **not** hardcode a Visual Studio
 generator. It lets CMake choose the installed default toolset (for example,
@@ -50,23 +50,27 @@ The single source of truth is `world_version` in
 `worlds/cyberpunk2077/archipelago.json`. It feeds both the apworld manifest and
 the mod zip filename, so all three stay one-to-one.
 
+Archipelago parses `world_version` with `Utils.tuplize_version`: it must be
+**exactly three dot-separated non-negative integers** (e.g. `0.6.0`). Semver
+prerelease strings such as `0.6-rc1` or two-part `0.6` will crash world import.
+
 | Git tag | `world_version` | Mod zip |
 |---------|-----------------|---------|
-| `v0.6-rc1` | `0.6-rc1` | `CyberpunkArchipelagoMod_(0.6-rc1).zip` |
-| `v0.6` | `0.6` | `CyberpunkArchipelagoMod_(0.6).zip` |
+| `v0.6.0` | `0.6.0` | `CyberpunkArchipelagoMod_(0.6.0).zip` |
+| `v0.6.1` | `0.6.1` | `CyberpunkArchipelagoMod_(0.6.1).zip` |
 
 Release checklist:
 
-1. Set `world_version` to the upcoming value (e.g. `0.6-rc1`), commit.
-2. Tag `v0.6-rc1` and run the pipeline (or push the tag if CI is tag-triggered).
-3. For stable: bump `world_version` to `0.6`, commit, tag `v0.6`, release again.
+1. Set `world_version` to the upcoming value (e.g. `0.6.0`), commit.
+2. Tag `v0.6.0` and run the pipeline (or push the tag if CI is tag-triggered).
+3. For the next line: bump `world_version` (e.g. to `0.6.1`), commit, tag `v0.6.1`, release again.
 
 ### GitHub Actions
 
 Workflow: [`.github/workflows/release-artifacts.yml`](../.github/workflows/release-artifacts.yml).
 
 - **Manual run:** GitHub → *Actions* → *Release artifacts* → *Run workflow*. Pick the Archipelago fork/ref (defaults: `ArchipelagoMW/Archipelago` @ `main`). Downloads appear under the run as artifact **`cyberpunk-archipelago-release`** (`cyberpunk2077.apworld` + `CyberpunkArchipelagoMod_(…).zip`).
-- **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.6-rc1` requires `world_version` `0.6-rc1`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
+- **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.6.0` requires `world_version` `0.6.0`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
 
 ## `package_cyberpunk_mod_zip.py`
 
