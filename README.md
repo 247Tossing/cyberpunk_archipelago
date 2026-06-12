@@ -31,6 +31,8 @@ You will need the following mods for this to work:
 | Phone Extension | Unknown | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
 
 ## Mod Installation
+Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
 
 ### Native plugin (`CyberpunkAP.dll`) and RedScript
