@@ -134,7 +134,22 @@ def build_native() -> None:
     configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
     if os.name == "nt" and not os.environ.get("CMAKE_GENERATOR"):
         configure += ["-G", "Visual Studio 17 2022", "-A", "x64"]
-    run(configure)
+    try:
+        run(configure)
+    except subprocess.CalledProcessError as exc:
+        print("[release] CMake configure failed. Dumping CMake logs (if present):")
+        cmake_logs = [
+            NATIVE_BUILD_DIR / "CMakeFiles" / "CMakeError.log",
+            NATIVE_BUILD_DIR / "CMakeFiles" / "CMakeOutput.log",
+        ]
+        for log in cmake_logs:
+            if log.is_file():
+                print(f"[release] --- {log} ---")
+                try:
+                    print(log.read_text(encoding="utf-8", errors="replace"))
+                except OSError as log_exc:
+                    print(f"[release] could not read {log}: {log_exc}")
+        raise exc
     run(["cmake", "--build", str(NATIVE_BUILD_DIR), "--config", "Release"])
 
 
