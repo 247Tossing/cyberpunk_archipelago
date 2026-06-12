@@ -1,0 +1,8 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-4.3/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/GNUInstallDirs.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMake/FindMbedTLS.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMakeLists.txt
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/CMakeFiles/pkgRedirects/zlib-config-version.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/CMakeFiles/pkgRedirects/zlib-config.cmake

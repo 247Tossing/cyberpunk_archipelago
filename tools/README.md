@@ -40,6 +40,10 @@ variables before running:
 - `CMAKE_GENERATOR` (example: `Visual Studio 18 2026`)
 - optional `CMAKE_GENERATOR_PLATFORM` (example: `x64`)
 
+Windows release builds also pass `-DUSE_OPEN_SSL=ON -DUSE_MBED_TLS=OFF` to
+native CMake configure so IXWebSocket uses OpenSSL instead of defaulting to
+mbedTLS.
+
 ### Versioning (RC then stable)
 
 The single source of truth is `world_version` in

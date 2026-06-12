@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9E4A04B6-964C-3692-9325-09BCAB09AD4E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>cyberpunk_ap_plugin</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cyberpunk_ap_plugin.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CyberpunkAP</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cyberpunk_ap_plugin.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CyberpunkAP</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">cyberpunk_ap_plugin.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">CyberpunkAP</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">cyberpunk_ap_plugin.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">CyberpunkAP</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR="Debug";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR=\"Debug\";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Debug/CyberpunkAP.dll E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP/CyberpunkAP.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\APCpp\Debug\APCpp.lib;..\APCpp\IXWebSocket\Debug\ixwebsocket.lib;..\APCpp\mbedtls_bin\library\Debug\mbedtls.lib;..\APCpp\mbedtls_bin\library\Debug\mbedx509.lib;..\APCpp\mbedtls_bin\library\Debug\mbedcrypto.lib;bcrypt.lib;..\APCpp\mbedtls_bin\3rdparty\everest\Debug\everest.lib;..\APCpp\mbedtls_bin\3rdparty\p256-m\Debug\p256m.lib;..\_deps\zlib-build\Debug\zsd.lib;wsock32.lib;shlwapi.lib;Crypt32.lib;..\APCpp\jsoncpp\src\lib_json\Debug\jsoncpp.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Debug/CyberpunkAP.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Debug/CyberpunkAP.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR="Release";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR=\"Release\";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Release/CyberpunkAP.dll E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP/CyberpunkAP.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\APCpp\Release\APCpp.lib;..\APCpp\IXWebSocket\Release\ixwebsocket.lib;..\APCpp\mbedtls_bin\library\Release\mbedtls.lib;..\APCpp\mbedtls_bin\library\Release\mbedx509.lib;..\APCpp\mbedtls_bin\library\Release\mbedcrypto.lib;bcrypt.lib;..\APCpp\mbedtls_bin\3rdparty\everest\Release\everest.lib;..\APCpp\mbedtls_bin\3rdparty\p256-m\Release\p256m.lib;..\_deps\zlib-build\Release\zs.lib;wsock32.lib;shlwapi.lib;Crypt32.lib;..\APCpp\jsoncpp\src\lib_json\Release\jsoncpp.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Release/CyberpunkAP.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/Release/CyberpunkAP.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR="MinSizeRel";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR=\"MinSizeRel\";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/MinSizeRel/CyberpunkAP.dll E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP/CyberpunkAP.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\APCpp\MinSizeRel\APCpp.lib;..\APCpp\IXWebSocket\MinSizeRel\ixwebsocket.lib;..\APCpp\mbedtls_bin\library\MinSizeRel\mbedtls.lib;..\APCpp\mbedtls_bin\library\MinSizeRel\mbedx509.lib;..\APCpp\mbedtls_bin\library\MinSizeRel\mbedcrypto.lib;bcrypt.lib;..\APCpp\mbedtls_bin\3rdparty\everest\MinSizeRel\everest.lib;..\APCpp\mbedtls_bin\3rdparty\p256-m\MinSizeRel\p256m.lib;..\_deps\zlib-build\MinSizeRel\zs.lib;wsock32.lib;shlwapi.lib;Crypt32.lib;..\APCpp\jsoncpp\src\lib_json\MinSizeRel\jsoncpp.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/MinSizeRel/CyberpunkAP.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/MinSizeRel/CyberpunkAP.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR="RelWithDebInfo";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_ZLIB;CMAKE_INTDIR=\"RelWithDebInfo\";cyberpunk_ap_plugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\RED4ext.SDK\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\jsoncpp\src\lib_json\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/RelWithDebInfo/CyberpunkAP.dll E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/../Cyberpunk2077/red4ext/plugins/CyberpunkAP/CyberpunkAP.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\APCpp\RelWithDebInfo\APCpp.lib;..\APCpp\IXWebSocket\RelWithDebInfo\ixwebsocket.lib;..\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedtls.lib;..\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedx509.lib;..\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedcrypto.lib;bcrypt.lib;..\APCpp\mbedtls_bin\3rdparty\everest\RelWithDebInfo\everest.lib;..\APCpp\mbedtls_bin\3rdparty\p256-m\RelWithDebInfo\p256m.lib;..\_deps\zlib-build\RelWithDebInfo\zs.lib;wsock32.lib;shlwapi.lib;Crypt32.lib;..\APCpp\jsoncpp\src\lib_json\RelWithDebInfo\jsoncpp.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/RelWithDebInfo/CyberpunkAP.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/RelWithDebInfo/CyberpunkAP.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/cyberpunk_ap_plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/cyberpunk_ap_plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/cyberpunk_ap_plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/cyberpunk_ap_plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\cyberpunk_ap_plugin\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src\plugin.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src\APBridge.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\cyberpunk_ap_plugin\src\RedscriptAPI.cpp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\ZERO_CHECK.vcxproj">
+      <Project>{58779CF1-061D-3065-A47C-46ED02D5CCA0}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\APCpp.vcxproj">
+      <Project>{CF828BC5-59CA-32BC-B514-6AE0E948F010}</Project>
+      <Name>APCpp</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\3rdparty\everest\everest.vcxproj">
+      <Project>{8D34F40B-A3C3-3DED-B88D-FAC79D1AD51A}</Project>
+      <Name>everest</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\ixwebsocket.vcxproj">
+      <Project>{53C5069F-6F9C-310E-A1CB-869242520ABB}</Project>
+      <Name>ixwebsocket</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\jsoncpp\src\lib_json\jsoncpp_static.vcxproj">
+      <Project>{9C5BFB7F-80FF-352C-AE19-C9F438309DBA}</Project>
+      <Name>jsoncpp_static</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedcrypto.vcxproj">
+      <Project>{3E0579A2-3ED6-3702-94FA-1D1E2102A460}</Project>
+      <Name>mbedcrypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedtls.vcxproj">
+      <Project>{9C7FA260-B2F5-3621-98E2-14C0FE4BA996}</Project>
+      <Name>mbedtls</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedx509.vcxproj">
+      <Project>{4AE03B66-D6E4-37AE-9503-FB8F0F89B72E}</Project>
+      <Name>mbedx509</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\3rdparty\p256-m\p256m.vcxproj">
+      <Project>{6A9E6B0E-D115-3B15-913F-137C7FC382A3}</Project>
+      <Name>p256m</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build\zlibstatic.vcxproj">
+      <Project>{35AF6BBC-8159-3B5B-AFDA-1969E3AE10C3}</Project>
+      <Name>zlibstatic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,12 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-4.3/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Program Files/CMake/share/cmake-4.3/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/WriteBasicConfigVersionFile.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/CMakeLists.txt
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/cmake/JoinPaths.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/include/PreventInBuildInstalls.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/include/PreventInSourceBuilds.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/jsoncppConfig.cmake.in
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/pkg-config/jsoncpp.pc.in
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/version.in

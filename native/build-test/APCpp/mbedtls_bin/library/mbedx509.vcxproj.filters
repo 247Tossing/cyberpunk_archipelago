@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pkcs7.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509_create.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509_crl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509_crt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509_csr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509write.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509write_crt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\x509write_csr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A7ADE0D5-B53D-3CF3-9B44-52AA9989207B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

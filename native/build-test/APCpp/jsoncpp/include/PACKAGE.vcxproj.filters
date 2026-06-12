@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\b6725d7f03ab04512ce5605bc0eed5c7\PACKAGE_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{63BD0608-F8C4-3534-A0A8-0338C9856ABA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

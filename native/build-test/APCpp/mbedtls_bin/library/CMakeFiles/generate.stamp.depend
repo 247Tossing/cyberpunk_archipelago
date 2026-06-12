@@ -1,0 +1,6 @@
+# CMake generation dependency list for this directory.
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/CMakeLists.txt
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/error.c
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/psa_crypto_driver_wrappers_no_static.c
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/ssl_debug_helpers_generated.c
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/version_features.c

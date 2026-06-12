@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\aes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\aesni.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\aesce.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\aria.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\asn1parse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\asn1write.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\base64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\bignum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\bignum_core.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\bignum_mod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\bignum_mod_raw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\block_cipher.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\camellia.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ccm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\chacha20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\chachapoly.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\cipher.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\cipher_wrap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\constant_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\cmac.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ctr_drbg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\des.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\dhm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecdh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecdsa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecjpake.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecp_curves.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ecp_curves_new.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\entropy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\entropy_poll.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\gcm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\hkdf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\hmac_drbg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\lmots.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\lms.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\md.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\md5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\memory_buffer_alloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\nist_kw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\oid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\padlock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pk_ecc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pk_wrap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pkcs12.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pkcs5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pkparse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\pkwrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\platform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\platform_util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\poly1305.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_aead.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_cipher.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_driver_wrappers_no_static.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_ecp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_ffdh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_mac.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_pake.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_rsa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_se.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_slot_management.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_storage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_its_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ripemd160.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\rsa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\rsa_alt_helpers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\sha1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\sha256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\sha512.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\sha3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\threading.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\timing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version_features.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A7ADE0D5-B53D-3CF3-9B44-52AA9989207B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

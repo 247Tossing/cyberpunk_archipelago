@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D44C02F4-0BB2-3CC6-BDF7-86319D914613}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>lib</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\8b2de9cb30f267fc3442ee6af19199e4\lib.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Debug\mbedcrypto.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Debug\mbedx509.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Debug\mbedtls.lib;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\lib</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Release\mbedcrypto.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Release\mbedx509.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\Release\mbedtls.lib;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\lib</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\MinSizeRel\mbedcrypto.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\MinSizeRel\mbedx509.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\MinSizeRel\mbedtls.lib;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\lib</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</VerifyInputsAndOutputsExist>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedcrypto.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedx509.lib;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\RelWithDebInfo\mbedtls.lib;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\lib</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/library/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\error.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_driver_wrappers_no_static.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_debug_helpers_generated.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version_features.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/library/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\error.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_driver_wrappers_no_static.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_debug_helpers_generated.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version_features.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/library/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\error.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_driver_wrappers_no_static.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_debug_helpers_generated.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version_features.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls-3.6.4/library/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/library/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\error.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\psa_crypto_driver_wrappers_no_static.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_debug_helpers_generated.c;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\version_features.c;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\CMakeFiles\lib">
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\ZERO_CHECK.vcxproj">
+      <Project>{58779CF1-061D-3065-A47C-46ED02D5CCA0}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedcrypto.vcxproj">
+      <Project>{3E0579A2-3ED6-3702-94FA-1D1E2102A460}</Project>
+      <Name>mbedcrypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedtls.vcxproj">
+      <Project>{9C7FA260-B2F5-3621-98E2-14C0FE4BA996}</Project>
+      <Name>mbedtls</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedx509.vcxproj">
+      <Project>{4AE03B66-D6E4-37AE-9503-FB8F0F89B72E}</Project>
+      <Name>mbedx509</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

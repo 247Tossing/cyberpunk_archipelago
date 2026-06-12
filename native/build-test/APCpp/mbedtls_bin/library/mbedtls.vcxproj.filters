@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\mps_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\mps_trace.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\net_sockets.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_cache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_ciphersuites.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_cookie.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_debug_helpers_generated.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_msg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_ticket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls12_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls12_server.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls13_keys.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls13_server.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls13_client.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\ssl_tls13_generic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\library\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A7ADE0D5-B53D-3CF3-9B44-52AA9989207B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

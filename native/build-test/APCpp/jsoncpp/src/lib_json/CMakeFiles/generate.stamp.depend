@@ -1,0 +1,12 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckCSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckCXXSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckCXXSymbolExists.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckIncludeFile.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckIncludeFileCXX.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckStructHasMember.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckSymbolExists.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/CheckTypeSize.cmake
+C:/Program Files/CMake/share/cmake-4.3/Modules/Internal/CheckSourceCompiles.cmake
+E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/jsoncpp/src/lib_json/CMakeLists.txt

@@ -130,8 +130,14 @@ def ensure_mbedtls_tarball() -> None:
 
 
 def build_native() -> None:
-    ensure_mbedtls_tarball()
     configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
+    if os.name == "nt":
+        # Windows CI images provide OpenSSL; force that backend so IXWebSocket
+        # does not default back to mbedTLS.
+        configure += ["-DUSE_OPEN_SSL=ON", "-DUSE_MBED_TLS=OFF"]
+    else:
+        # Non-Windows builds may rely on the bundled mbedTLS fallback.
+        ensure_mbedtls_tarball()
     # Do not hardcode a VS generator: runners may provide newer toolsets
     # (e.g. Visual Studio 18 2026). Respect CMAKE_GENERATOR if the caller
     # wants to pin one; otherwise let CMake select the available default.

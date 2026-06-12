@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{53C5069F-6F9C-310E-A1CB-869242520ABB}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ixwebsocket</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ixwebsocket.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ixwebsocket</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ixwebsocket.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ixwebsocket</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ixwebsocket.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ixwebsocket</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ixwebsocket.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ixwebsocket</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS;IXWEBSOCKET_USE_MBED_TLS;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3;IXWEBSOCKET_USE_ZLIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\everest\include;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls-3.6.4\3rdparty\p256-m\p256-m;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/IXWebSocket/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\GNUInstallDirs.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\CMake\FindMbedTLS.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config-version.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/IXWebSocket/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\GNUInstallDirs.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\CMake\FindMbedTLS.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config-version.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/IXWebSocket/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\GNUInstallDirs.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\CMake\FindMbedTLS.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config-version.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/APCpp/IXWebSocket/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native -BE:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test --check-stamp-file E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/IXWebSocket/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-4.3\Modules\GNUInstallDirs.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\CMake\FindMbedTLS.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config-version.cmake;E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\CMakeFiles\pkgRedirects\zlib-config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\IXWebSocket\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXBench.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXCancellationRequest.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXConnectionState.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXDNSLookup.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXExponentialBackoff.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXGetFreePort.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXGzipCodec.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttp.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttpClient.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttpServer.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXNetSystem.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterrupt.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptFactory.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptPipe.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptEvent.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSetThreadName.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocket.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketConnect.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketFactory.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketServer.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketTLSOptions.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXStrCaseCompare.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUdpSocket.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUrlParser.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUuid.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUserAgent.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocket.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketCloseConstants.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketHandshake.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketHttpHeaders.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflate.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateCodec.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateOptions.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketProxyServer.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketServer.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketTransport.cpp" />
+    <ClCompile Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketMbedTLS.cpp" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXBase64.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXBench.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXCancellationRequest.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXConnectionState.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXDNSLookup.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXExponentialBackoff.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXGetFreePort.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXGzipCodec.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttp.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttpClient.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXHttpServer.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXNetSystem.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXProgressCallback.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterrupt.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptFactory.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptPipe.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSelectInterruptEvent.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSetThreadName.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocket.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketConnect.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketFactory.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketServer.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketTLSOptions.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXStrCaseCompare.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUdpSocket.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUniquePtr.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUrlParser.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUuid.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUtf8Validator.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXUserAgent.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocket.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketCloseConstants.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketCloseInfo.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketErrorInfo.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketHandshake.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketHandshakeKeyGen.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketHttpHeaders.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketInitResult.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketMessage.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketMessageType.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketOpenInfo.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflate.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateCodec.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketPerMessageDeflateOptions.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketProxyServer.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketSendData.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketSendInfo.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketServer.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketTransport.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXWebSocketVersion.h" />
+    <ClInclude Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\APCpp\IXWebSocket\ixwebsocket\IXSocketMbedTLS.h" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\ZERO_CHECK.vcxproj">
+      <Project>{58779CF1-061D-3065-A47C-46ED02D5CCA0}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\3rdparty\everest\everest.vcxproj">
+      <Project>{8D34F40B-A3C3-3DED-B88D-FAC79D1AD51A}</Project>
+      <Name>everest</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedcrypto.vcxproj">
+      <Project>{3E0579A2-3ED6-3702-94FA-1D1E2102A460}</Project>
+      <Name>mbedcrypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedtls.vcxproj">
+      <Project>{9C7FA260-B2F5-3621-98E2-14C0FE4BA996}</Project>
+      <Name>mbedtls</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\library\mbedx509.vcxproj">
+      <Project>{4AE03B66-D6E4-37AE-9503-FB8F0F89B72E}</Project>
+      <Name>mbedx509</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\APCpp\mbedtls_bin\3rdparty\p256-m\p256m.vcxproj">
+      <Project>{6A9E6B0E-D115-3B15-913F-137C7FC382A3}</Project>
+      <Name>p256m</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\CyperpunkArchipelago\Cyberpunk_Archipelago_Mod\native\build-test\_deps\zlib-build\zlibstatic.vcxproj">
+      <Project>{35AF6BBC-8159-3B5B-AFDA-1969E3AE10C3}</Project>
+      <Name>zlibstatic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

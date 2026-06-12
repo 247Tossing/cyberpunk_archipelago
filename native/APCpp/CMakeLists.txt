@@ -21,12 +21,18 @@ set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 # Enable TLS. On Windows, build mbedTLS
 set(USE_TLS ON CACHE BOOL "Enable TLS support" FORCE)
 set(USE_MBED_TLS OFF)
+set(USE_OPEN_SSL OFF)
 
 # Fallback to mbedtls if openssl not found
 if (NOT MINGW)
     find_package(OpenSSL QUIET)
     if (NOT OPENSSL_FOUND)
         set(USE_MBED_TLS ON)
+        set(USE_OPEN_SSL OFF CACHE BOOL "" FORCE)
+    else()
+        # IXWebSocket defaults to mbedTLS on Windows unless USE_OPEN_SSL is set.
+        set(USE_OPEN_SSL ON CACHE BOOL "" FORCE)
+        set(USE_MBED_TLS OFF CACHE BOOL "" FORCE)
     endif(NOT OPENSSL_FOUND)
 endif (NOT MINGW)
 

@@ -1,0 +1,24 @@
+{
+	"InstallScripts" : 
+	[
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/framework/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/include/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/3rdparty/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/3rdparty/everest/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/3rdparty/p256-m/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/library/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/mbedtls_bin/pkgconfig/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-build/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-build/test/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/IXWebSocket/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/jsoncpp/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/jsoncpp/src/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/jsoncpp/src/lib_json/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/APCpp/jsoncpp/include/cmake_install.cmake",
+		"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/cyberpunk_ap_plugin/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

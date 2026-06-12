@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/zlib-populate"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/6c20776d841c72db1b420310dbf972ee/zlib-populate.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/dba4a9a5a61630ee760c8abe83b93e2b/zlib-populate-complete.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-build.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-configure.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-download.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-install.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-mkdir.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-patch.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-test.rule"
+		},
+		{
+			"file" : "E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/native/build-test/_deps/zlib-subbuild/CMakeFiles/ae154b2cb22beeec3631235160a04bda/zlib-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"zlib-populate"
+		],
+		"name" : "zlib-populate"
+	}
+}
