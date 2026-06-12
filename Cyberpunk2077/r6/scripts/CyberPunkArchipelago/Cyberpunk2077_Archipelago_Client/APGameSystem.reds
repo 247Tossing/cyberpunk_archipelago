@@ -18,13 +18,17 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func SendSyncChecks() -> Void {
-        APLogger.LogInfo("Starting Check Sync With AP Server");
         let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
         if !IsDefined(tcpClient){
             APLogger.LogError("Failed to get TCP client");
             return;
         }
-        tcpClient.SendSyncCheckRequest();
+        if !tcpClient.IsConnected() {
+            return;
+        }
+        APLogger.LogInfo("Starting Check Sync With AP Server");
+        let locations: array<String> = APArchipelagoIdMappings.GetAllLocationIds();
+        this.HandleSyncCheck(locations);
     }
 
     public func HandleSyncCheck(locations: array<String>) -> Void {
@@ -419,24 +423,41 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
     let questEntry: wref<JournalQuest> = entry as JournalQuest; //Cast it to a quest to get access to what we actually want
     
     if IsDefined(questEntry) {
-        // 5. Check if the quest's overall state changed to Completed
         let state: gameJournalEntryState = journalMgr.GetEntryState(questEntry);
-        
-        if Equals(state, gameJournalEntryState.Succeeded) {
-            
-            // Extract the string ID
-            let questStringId: String = questEntry.GetId();
-            //APLogger.LogInfo( "Quest Completed: " + questStringId);
-            let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+        let questStringId: String = questEntry.GetId();
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
 
-            // send to the archipelago server
-            let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-            if IsDefined(tcpService) {
-                questSystem.SetFact(StringToName(s"ap_\(questStringId)"), 1);
-                tcpService.SendCheck(questStringId);
+        if !IsDefined(tcpService) {
+            return result;
+        }
+
+        // Phantom Liberty path split: Songbird path — Killing Moon started -> Split Quest 1.
+        if StrCmp(questStringId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Active) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_1");
+            return result;
+        }
+
+        // Phantom Liberty path split: Songbird path — Killing Moon completed -> Split Quest 2 + 3.
+        if StrCmp(questStringId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Succeeded) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_2");
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_3");
+            return result;
+        }
+
+        if Equals(state, gameJournalEntryState.Succeeded) {
+            // Resolve to a stable location ID using explicit quest lookup aliases.
+            let locationId: String = APQuestLocationLookup.ResolveLocationId(questStringId);
+            //APLogger.LogInfo( "Quest Completed: " + questStringId);
+
+            // Send to the Archipelago server when this quest maps to a tracked location.
+            if StrLen(locationId) > 0 {
+                APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
             }
         }
     }
     
     return result;
 }
+
+

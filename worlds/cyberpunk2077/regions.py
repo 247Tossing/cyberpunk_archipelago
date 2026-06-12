@@ -511,8 +511,8 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
     # Add all locations that belong to this region
     for location_name, location_data in location_table.items():
         # Skip DLC locations if the player didn't enable them
-        # Check both region and dlc_only flag (events may be in Watson to avoid circular deps)
-        if (location_data.region == "Dogtown" or location_data.dlc_only) and not world.options.include_phantom_liberty_dlc:
+        # Check both regions membership and dlc_only flag (events may be in Watson to avoid circular deps)
+        if ("Dogtown" in location_data.regions or location_data.dlc_only) and not world.options.include_phantom_liberty_dlc:
             continue
         # Skip location if the category is not enabled in the options
         if location_data.category in (LocationCategory.SIDE_QUEST, LocationCategory.DLC_SIDE) and not world.options.include_side_quests:
@@ -532,8 +532,11 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
             continue
 
 
-        # Only add locations that belong to this region
-        if location_data.region == region_name:
+        # Only add locations whose graph parent matches this region.
+        # parent_region is placement_region when set, otherwise regions[0] -- this
+        # lets multi-district umbrella quests be parked on a hub (e.g. Watson)
+        # without changing where the player physically completes them.
+        if location_data.parent_region == region_name:
             # Handle event locations - they have code=None
             if location_data.code is None:
                 # Event location - create it and add to region

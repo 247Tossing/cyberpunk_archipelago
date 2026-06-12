@@ -1,0 +1,12 @@
+{
+  "redscript.gameDir": "E:\\CyperPunk2077\\Cyberpunk 2077",
+  "redscript.idePath": "",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/../Archipelago"
+  ],
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../Archipelago"
+  }
+}

@@ -31,7 +31,7 @@ public class APConstants {
     // These are the item IDs for district unlock tokens
     public static func GetWatsonAccessToken() -> String { return "ap_dat_watson"; }
     public static func GetWestbrookAccessToken() -> String { return "ap_dat_westbrookAccessToken"; }
-    public static func GetCityCenterAccessToken() -> String { return "ap_dat_city_centerAccessToken"; }
+    public static func GetCityCenterAccessToken() -> String { return "ap_dat_cityCenterAccessToken"; }
     public static func GetHeywoodAccessToken() -> String { return "ap_dat_heywoodAccessToken"; }
     public static func GetSantoDomingoAccessToken() -> String { return "ap_dat_santoDomingoAccessToken"; }
     public static func GetPacificaAccessToken() -> String { return "ap_dat_pacificaAccessToken"; }

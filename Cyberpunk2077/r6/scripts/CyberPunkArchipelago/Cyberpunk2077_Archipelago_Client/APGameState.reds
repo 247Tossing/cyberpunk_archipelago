@@ -54,6 +54,10 @@ public class APGameState extends ScriptableService {
         this.diedFromDeathLink = true;
     }
 
+    public func SetRestrictByMajorDistrict(value: Bool) -> Void {
+        this.restrictByMajorDistrict = value;
+    }
+
     public func HandlePlayerRespawn() -> Void {
         this.diedFromDeathLink = false;
     }

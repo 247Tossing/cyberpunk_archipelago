@@ -1,3 +1,4 @@
 ﻿/.idea/*
 /.venv/*
 /Cyberpunk2077/.redscript
+/native/build/

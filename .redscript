@@ -1,0 +1,8 @@
+# Loaded by REDscript IDE from each workspace folder root (repo root when you open this mod).
+# Include this mod's sources plus optional paths to other mods whose types you need in-editor.
+source_roots = [
+    "Cyberpunk2077/r6/scripts/CyberPunkArchipelago/Cyberpunk2077_Archipelago_Client",
+    "E:/CyperPunk2077/Cyberpunk 2077/r6/scripts/RedSocket",
+    "E:/CyperPunk2077/Cyberpunk 2077/r6/scripts/PhoneExtension",
+    "E:/CyperPunk2077/Cyberpunk 2077/red4ext",
+]

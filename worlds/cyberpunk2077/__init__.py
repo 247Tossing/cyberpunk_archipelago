@@ -1,4 +1,4 @@
-"""
+﻿"""
 Cyberpunk 2077 Archipelago World Implementation
 
 This file defines the main World class for Cyberpunk 2077, which manages the
@@ -14,29 +14,12 @@ The World class handles:
 from typing import Dict, List, Set, Any
 from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
 from worlds.AutoWorld import World, WebWorld
-from worlds.LauncherComponents import Component, components, Type, launch
 from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups, ItemCategory
 from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups, location_internal_id_to_display_name
 from .options import Cyberpunk2077Options, cyberpunk_option_groups
 from .regions import create_regions
 from .rules import set_rules
 
-
-def launch_client(*args: str):
-    """
-    Launch the Cyberpunk 2077 client.
-
-    Called when the user clicks the client button in the Archipelago launcher.
-    Starts the client in a separate process to handle communication between
-    the Archipelago server and the game.
-    """
-    from .client import launch as client_main
-    launch(client_main, name="Cyberpunk 2077 Client", args=args)
-
-
-# Register the client in the Archipelago Launcher
-# This makes the "Cyberpunk 2077 Client" button appear in the launcher GUI
-components.append(Component("Cyberpunk 2077 Client", func=launch_client, component_type=Type.CLIENT))
 
 
 class Cyberpunk2077Web(WebWorld):
@@ -365,7 +348,7 @@ class Cyberpunk2077World(World):
             Dictionary of data to send to the client
         """
         # Return any data the client needs to know about this player's world
-        # This data is accessible in client.py via self.slot_data
+        # This data is accessible to the game bridge via self.slot_data
         slot_data: Dict[str, Any] = {
             "world_version": 1,  # Version of your world implementation
             # Configuration options sent to RedScript client via SYNC_CONFIG
@@ -387,3 +370,4 @@ class Cyberpunk2077World(World):
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
         }
         return slot_data
+

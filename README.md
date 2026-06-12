@@ -33,6 +33,12 @@ You will need the following mods for this to work:
 ## Mod Installation
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
 
+### Native plugin (`CyberpunkAP.dll`) and RedScript
+
+Archipelago exposes game functions through **native** bindings declared in RedScript (for example `APNativeBindings.reds`). Those declarations must match the **`CyberpunkAP.dll`** shipped under `red4ext/plugins/CyberpunkAP/` in your game root.
+
+If you update **only** `r6/scripts/...` (e.g. from git) but leave an **older** `CyberpunkAP.dll` in place, RED4ext may report **invalid native definitions** and refuse to start. After any change that adds or renames natives in `APNativeBindings.reds`, rebuild the native plugin and copy **`CyberpunkAP.dll`** (and `APCpp.dll` if present next to it) from the mod’s `Cyberpunk2077/red4ext/plugins/CyberpunkAP/` into the same path under your Cyberpunk 2077 install—**always deploy scripts and the RED4ext plugin together**.
+
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.

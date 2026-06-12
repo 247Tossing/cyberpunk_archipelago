@@ -9,16 +9,15 @@ public class APPhoneMessage extends IScriptable {
     public let senderName: String;
     public let itemDisplayName: String;
 }
-
 // ===== CONTACT (PhoneExtension listener) =====
 
 public class APPhoneContact extends PhoneEventsListener {
-
     private let messages: array<ref<APPhoneMessage>>;
     private let lastPreview: String;
 
     public func GetContactHash() -> Int32 {
         return APConstants.GetArchipelagoContactHash();
+    
     }
 
     public func GetContactData(isText: Bool) -> ref<ContactData> {
