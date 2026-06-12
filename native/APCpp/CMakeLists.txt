@@ -31,9 +31,17 @@ endif (NOT MINGW)
 
 if ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
     set(APCPP_MBEDTLS_VER 3.6.4)
+    set(MBEDTLS_TARBALL_URL "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-${APCPP_MBEDTLS_VER}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2")
+    set(MBEDTLS_TARBALL "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2")
+    
+    if(NOT EXISTS "${MBEDTLS_TARBALL}")
+        message(STATUS "Downloading mbedTLS ${APCPP_MBEDTLS_VER}...")
+        file(DOWNLOAD "${MBEDTLS_TARBALL_URL}" "${MBEDTLS_TARBALL}")
+    endif()
+    
     execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f mbedtls-${APCPP_MBEDTLS_VER})
     execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xjf ${CMAKE_CURRENT_SOURCE_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2
+      COMMAND ${CMAKE_COMMAND} -E tar xjf ${MBEDTLS_TARBALL}
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
