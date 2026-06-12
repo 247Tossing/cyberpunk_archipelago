@@ -1,3 +1,6 @@
+# Builds cyberpunk2077.apworld + CyberpunkArchipelagoMod_(version).zip on Windows.
+# See tools/README.md → "GitHub Actions" for how to trigger and download artifacts.
+
 name: Release artifacts
 
 on:
@@ -15,20 +18,26 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 120
     steps:
       - name: Checkout mod
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      # workflow_dispatch inputs are absent on tag pushes — use explicit fallbacks.
       - name: Checkout Archipelago
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.inputs.archipelago_repository || 'ArchipelagoMW/Archipelago' }}
-          ref: ${{ github.event.inputs.archipelago_ref || 'main' }}
+          repository: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.archipelago_repository || 'ArchipelagoMW/Archipelago' }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.archipelago_ref || 'main' }}
           path: Archipelago
 
       - name: Setup Python

@@ -45,6 +45,13 @@ Release checklist:
 2. Tag `v0.6-rc1` and run the pipeline (or push the tag if CI is tag-triggered).
 3. For stable: bump `world_version` to `0.6`, commit, tag `v0.6`, release again.
 
+### GitHub Actions
+
+Workflow: [`.github/workflows/release-artifacts.yml`](../.github/workflows/release-artifacts.yml).
+
+- **Manual run:** GitHub → *Actions* → *Release artifacts* → *Run workflow*. Pick the Archipelago fork/ref (defaults: `ArchipelagoMW/Archipelago` @ `main`). Downloads appear under the run as artifact **`cyberpunk-archipelago-release`** (`cyberpunk2077.apworld` + `CyberpunkArchipelagoMod_(…).zip`).
+- **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.6-rc1` requires `world_version` `0.6-rc1`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
+
 ## `package_cyberpunk_mod_zip.py`
 
 Packages only the game-install overlay from `Cyberpunk2077/` (whitelisted to
