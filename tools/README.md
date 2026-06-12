@@ -32,6 +32,14 @@ Useful flags:
 - `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6-rc1`) matches
   `world_version`; used by tag-triggered CI.
 
+On Windows, the script intentionally does **not** hardcode a Visual Studio
+generator. It lets CMake choose the installed default toolset (for example,
+VS 17/2022 or VS 18/2026). To pin a generator in CI, set environment
+variables before running:
+
+- `CMAKE_GENERATOR` (example: `Visual Studio 18 2026`)
+- optional `CMAKE_GENERATOR_PLATFORM` (example: `x64`)
+
 ### Versioning (RC then stable)
 
 The single source of truth is `world_version` in

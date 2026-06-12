@@ -132,8 +132,15 @@ def ensure_mbedtls_tarball() -> None:
 def build_native() -> None:
     ensure_mbedtls_tarball()
     configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
-    if os.name == "nt" and not os.environ.get("CMAKE_GENERATOR"):
-        configure += ["-G", "Visual Studio 17 2022", "-A", "x64"]
+    # Do not hardcode a VS generator: runners may provide newer toolsets
+    # (e.g. Visual Studio 18 2026). Respect CMAKE_GENERATOR if the caller
+    # wants to pin one; otherwise let CMake select the available default.
+    generator = os.environ.get("CMAKE_GENERATOR")
+    if os.name == "nt" and generator:
+        configure += ["-G", generator]
+        arch = os.environ.get("CMAKE_GENERATOR_PLATFORM")
+        if arch:
+            configure += ["-A", arch]
     try:
         run(configure)
     except subprocess.CalledProcessError as exc:
