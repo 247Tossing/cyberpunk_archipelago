@@ -47,6 +47,15 @@ def chunked(values: list[str], size: int) -> list[list[str]]:
     return [values[index:index + size] for index in range(0, len(values), size)]
 
 
+def tracker_code(item_def: dict[str, Any]) -> str:
+    if "codes" in item_def:
+        return str(item_def["codes"])
+    stages = item_def.get("stages", [])
+    if stages and "codes" in stages[0]:
+        return str(stages[0]["codes"])
+    raise ValueError(f"PopTracker item is missing codes: {item_def.get('name', '<unnamed>')}")
+
+
 def json_item_toggle(name: str, code: str) -> dict[str, Any]:
     return {
         "name": name,
@@ -165,7 +174,7 @@ def build_locations(locations_mod: Any) -> tuple[list[dict[str, Any]], dict[int,
 
 
 def build_layout(item_defs: list[dict[str, Any]], location_groups: dict[str, list[str]]) -> dict[str, Any]:
-    item_codes = [item["codes"] for item in item_defs]
+    item_codes = [tracker_code(item) for item in item_defs]
     item_content = {
         "type": "group",
         "header": "Received Items",
