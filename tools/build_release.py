@@ -50,6 +50,7 @@ TOOLS_DIR = MOD_ROOT / "tools"
 WORLD_FOLDER_NAME = "cyberpunk2077"
 DEBUG_LOG_PATH = MOD_ROOT / "debug-37257d.log"
 DEBUG_SESSION_ID = "37257d"
+TLS_POLICY_VERSION = "force-mbedtls-v1"
 
 
 def debug_log(run_id: str, hypothesis_id: str, location: str, message: str, data: dict) -> None:
@@ -176,6 +177,7 @@ def build_native() -> None:
             "configure": configure,
             "generator": generator or "",
             "generatorPlatform": os.environ.get("CMAKE_GENERATOR_PLATFORM", ""),
+            "tlsPolicyVersion": TLS_POLICY_VERSION,
         },
     )
     # endregion
@@ -334,7 +336,10 @@ def main(argv: Iterable[str] | None = None) -> int:
         {
             "eventName": os.environ.get("GITHUB_EVENT_NAME", ""),
             "githubRef": os.environ.get("GITHUB_REF", ""),
+            "githubSha": os.environ.get("GITHUB_SHA", ""),
             "archipelagoRootEnv": os.environ.get("ARCHIPELAGO_ROOT", ""),
+            "tlsPolicyVersion": TLS_POLICY_VERSION,
+            "scriptSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         },
     )
     # endregion
