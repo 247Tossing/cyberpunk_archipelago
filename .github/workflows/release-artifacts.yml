@@ -70,3 +70,10 @@ jobs:
             build/cyberpunk2077.apworld
             build/CyberpunkArchipelagoMod_*.zip
           if-no-files-found: error
+
+      - name: Upload debug instrumentation log
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberpunk-archipelago-debug-37257d
+          path: debug-37257d.log
+          if-no-files-found: warn
