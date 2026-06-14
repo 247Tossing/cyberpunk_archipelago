@@ -10,8 +10,8 @@ Runs the full pipeline that produces both release artifacts:
     4. Install Archipelago's runtime requirements non-interactively.
     5. Regenerate the RedScript ID mappings and build cyberpunk2077.apworld
        (delegates to build_cyberpunk2077_apworld.py).
-    6. Generate and package cyberpunk2077_poptracker_(version).zip (delegates
-       to build_poptracker_pack.py).
+    6. Generate and package cyberpunk2077_poptracker_(version).zip (delegates to
+       build_poptracker_pack.py).
     7. Package CyberpunkArchipelagoMod_(version).zip (delegates to
        package_cyberpunk_mod_zip.py).
 
