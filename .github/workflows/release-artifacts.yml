@@ -50,6 +50,11 @@ jobs:
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
+        
+      - name: Setup OpenSSL
+        uses: ilammy/setup-openssl@v1
+        with:
+          openssl-version: '3.x'
 
       - name: Build release artifacts
         shell: pwsh
