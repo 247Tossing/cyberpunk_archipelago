@@ -52,9 +52,19 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         
       - name: Setup OpenSSL
-        uses: ilammy/setup-openssl@v1
-        with:
-          openssl-version: '3.x'
+        shell: pwsh
+        run: |
+          choco install openssl --no-progress -y
+          $candidates = @(
+            "C:\Program Files\OpenSSL-Win64",
+            "C:\Program Files\OpenSSL"
+          )
+          $root = $candidates | Where-Object { Test-Path "$_\include\openssl\ssl.h" } | Select-Object -First 1
+          if (-not $root) {
+            throw "OpenSSL headers not found after installation."
+          }
+          "OPENSSL_ROOT_DIR=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "$root\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Build release artifacts
         shell: pwsh
