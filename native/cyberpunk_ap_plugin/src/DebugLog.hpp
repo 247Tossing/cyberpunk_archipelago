@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <fstream>
+#include <initializer_list>
 #include <string>
 
 namespace CyberpunkArchipelago
@@ -48,16 +49,21 @@ inline void DebugLog(const std::string& runId,
                          .time_since_epoch()
                          .count();
 
-    std::ofstream out("E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/debug-37257d.log",
-                      std::ios::app);
-    if (!out.is_open())
-    {
-        return;
-    }
+    const std::string payload = std::string("{\"sessionId\":\"37257d\",\"runId\":\"") +
+        EscapeJson(runId) + "\",\"hypothesisId\":\"" + EscapeJson(hypothesisId) +
+        "\",\"location\":\"" + EscapeJson(location) + "\",\"message\":\"" +
+        EscapeJson(message) + "\",\"data\":" + dataJsonObject + ",\"timestamp\":" +
+        std::to_string(now) + "}\n";
 
-    out << "{\"sessionId\":\"37257d\",\"runId\":\"" << EscapeJson(runId)
-        << "\",\"hypothesisId\":\"" << EscapeJson(hypothesisId) << "\",\"location\":\""
-        << EscapeJson(location) << "\",\"message\":\"" << EscapeJson(message) << "\",\"data\":"
-        << dataJsonObject << ",\"timestamp\":" << now << "}\n";
+    for (const char* path : {"E:/CyperpunkArchipelago/Cyberpunk_Archipelago_Mod/debug-37257d.log",
+                             "debug-37257d.log",
+                             "C:/Users/Public/debug-37257d.log"})
+    {
+        std::ofstream out(path, std::ios::app);
+        if (out.is_open())
+        {
+            out << payload;
+        }
+    }
 }
 } // namespace CyberpunkArchipelago

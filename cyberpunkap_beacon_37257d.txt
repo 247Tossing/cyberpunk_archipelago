@@ -1,0 +1,3 @@
+{"sessionId":"37257d","runId":"startup-check","hypothesisId":"H6","location":"plugin.cpp:Query:beacon","message":"Query beacon written","data":{}}
+{"sessionId":"37257d","runId":"startup-check","hypothesisId":"H6","location":"plugin.cpp:Main:beacon","message":"Main beacon written","data":{"reason":0}}
+{"sessionId":"37257d","runId":"startup-check","hypothesisId":"H6","location":"plugin.cpp:Main:beacon","message":"Main beacon written","data":{"reason":1}}
