@@ -6,6 +6,7 @@
 #include <RED4ext/Scripting/Utils.hpp>
 
 #include "APBridge.hpp"
+#include "DebugLog.hpp"
 
 namespace
 {
@@ -166,6 +167,15 @@ void RegisterTypes()
 void PostRegisterTypes()
 {
     auto rtti = RED4ext::CRTTISystem::Get();
+    // #region agent log
+    CyberpunkArchipelago::DebugLog(
+        "startup-check",
+        "H4",
+        "RedscriptAPI.cpp:PostRegisterTypes:enter",
+        "PostRegisterTypes callback entered",
+        std::string("{\"rttiPresent\":") + (rtti ? "true" : "false") + "}");
+    // #endregion
+
     if (!rtti)
     {
         return;
@@ -189,6 +199,14 @@ void PostRegisterTypes()
     {
         g_sdk->logger->Info(g_pluginHandle, "CyberpunkArchipelago natives registered");
     }
+
+    // #region agent log
+    CyberpunkArchipelago::DebugLog("startup-check",
+                                   "H4",
+                                   "RedscriptAPI.cpp:PostRegisterTypes:done",
+                                   "Native registration complete",
+                                   "{\"registeredNativeCount\":13}");
+    // #endregion
 }
 } // namespace
 
@@ -200,8 +218,26 @@ void RegisterRedscriptAPI(RED4ext::v1::PluginHandle handle, const RED4ext::v1::S
     g_sdk = sdk;
 
     auto rtti = RED4ext::CRTTISystem::Get();
+    // #region agent log
+    CyberpunkArchipelago::DebugLog(
+        "startup-check",
+        "H2",
+        "RedscriptAPI.cpp:RegisterRedscriptAPI:enter",
+        "RegisterRedscriptAPI called",
+        std::string("{\"rttiPresent\":") + (rtti ? "true" : "false") +
+            ",\"sdkPresent\":" + (sdk ? "true" : "false") + "}");
+    // #endregion
+
     if (!rtti)
     {
+        // #region agent log
+        CyberpunkArchipelago::DebugLog("startup-check",
+                                       "H3",
+                                       "RedscriptAPI.cpp:RegisterRedscriptAPI:rtti_missing",
+                                       "RTTI unavailable during load",
+                                       "{\"rttiPresent\":false}");
+        // #endregion
+
         if (sdk && sdk->logger)
         {
             sdk->logger->Error(handle, "CyberpunkArchipelago: RTTI system unavailable on Load");
@@ -216,5 +252,13 @@ void RegisterRedscriptAPI(RED4ext::v1::PluginHandle handle, const RED4ext::v1::S
     {
         sdk->logger->Info(handle, "CyberpunkArchipelago plugin loaded; awaiting RTTI registration");
     }
+
+    // #region agent log
+    CyberpunkArchipelago::DebugLog("startup-check",
+                                   "H2",
+                                   "RedscriptAPI.cpp:RegisterRedscriptAPI:callbacks_added",
+                                   "RTTI callbacks registered",
+                                   "{\"registerCallbackAdded\":true,\"postRegisterCallbackAdded\":true}");
+    // #endregion
 }
 } // namespace CyberpunkArchipelago
