@@ -68,5 +68,6 @@ jobs:
           name: cyberpunk-archipelago-release
           path: |
             build/cyberpunk2077.apworld
+            build/cyberpunk2077_poptracker_*.zip
             build/CyberpunkArchipelagoMod_*.zip
           if-no-files-found: error

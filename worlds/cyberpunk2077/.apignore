@@ -1,4 +1,5 @@
 # Files excluded from the cyberpunk2077.apworld zip
 # Generator + repo tooling do not need to ship inside the apworld.
 tools/
+../../poptracker/templates/
 __pycache__/
