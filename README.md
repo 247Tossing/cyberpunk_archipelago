@@ -35,12 +35,6 @@ Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip
 
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
 
-### Native plugin (`CyberpunkAP.dll`) and RedScript
-
-Archipelago exposes game functions through **native** bindings declared in RedScript (for example `APNativeBindings.reds`). Those declarations must match the **`CyberpunkAP.dll`** shipped under `red4ext/plugins/CyberpunkAP/` in your game root.
-
-If you update **only** `r6/scripts/...` (e.g. from git) but leave an **older** `CyberpunkAP.dll` in place, RED4ext may report **invalid native definitions** and refuse to start. After any change that adds or renames natives in `APNativeBindings.reds`, rebuild the native plugin and copy **`CyberpunkAP.dll`** (and `APCpp.dll` if present next to it) from the mod’s `Cyberpunk2077/red4ext/plugins/CyberpunkAP/` into the same path under your Cyberpunk 2077 install—**always deploy scripts and the RED4ext plugin together**.
-
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.
@@ -72,36 +66,14 @@ Before anything follow this guide: [Cyber Engine Tweaks Linux Instructions](http
 
 ---
 
-## Credits & Acknowledgements
+## Credits
 
-### Mod Author
 - **247Tossing** — Cyberpunk 2077 Archipelago Mod
+- Built with [Archipelago](https://archipelago.gg/), [RedScript](https://github.com/jac3km4/redscript), and [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks)
 
-### Third-Party Libraries (Native Plugin)
-
-| Library | Author | Purpose |
-|---------|--------|---------|
-| [APCpp](https://github.com/N00byKing/APCpp) | N00byKing | Archipelago C++ client library (vendored + modified) |
-| [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) | WopsS | REDengine 4 plugin SDK headers |
-| [RED4ext](https://github.com/WopsS/RED4ext) | WopsS | RED4ext loader framework (reference) |
-| [Red4Ext-template](https://github.com/ssamjoel/Red4Ext-template) | ssamjoel | Plugin project scaffold |
-| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | open-source-parsers | JSON parsing (APCpp dependency) |
-| [IXWebSocket](https://github.com/machinezone/IXWebSocket) | Machine Zone | WebSocket client (APCpp dependency) |
-| [zlib](https://github.com/madler/zlib) | Mark Adler | Compression (APCpp dependency) |
-
-### Frameworks
-- [Archipelago](https://archipelago.gg/) — multiworld randomizer framework
-- [RedScript](https://github.com/jac3km4/redscript) — Cyberpunk 2077 scripting framework
-- [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) — Cyberpunk 2077 mod engine
+Developers: see [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, issue reporting, and third-party library credits.
 
 ---
 
 ## What if something is broken?
-Open an [Issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose)
-
-### What to include in your issue:
-1. Your spoiler.txt (if generated locally you can find it in ```{archipelago install dir}\output\(zip used in generation)\spoiler.txt```
-2. CET logs (you can find them in ```{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log```
-3. Client Logs (you can find them in ```{archipelago install dir}\logs\Cyperpunk2077Client(some stuff).log```
-4. Server Logs (if hosting locally they will be in ```{archipelago install dir}\logs\Server(some stuff).log```
-5. A good description of what exactly the issue is. I can't help if i don't know what im looking for.
+Open an [Issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose). See [CONTRIBUTING.md](CONTRIBUTING.md#reporting-issues) for what to include in your report.
