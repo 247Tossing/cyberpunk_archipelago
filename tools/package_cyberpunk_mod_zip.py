@@ -14,11 +14,8 @@ the plugin.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import os
 import sys
-import time
 import zipfile
 from pathlib import Path
 from typing import Iterable
@@ -27,8 +24,6 @@ MOD_ROOT = Path(__file__).resolve().parent.parent
 OVERLAY_ROOT = MOD_ROOT / "Cyberpunk2077"
 MANIFEST = MOD_ROOT / "worlds" / "cyberpunk2077" / "archipelago.json"
 DEFAULT_OUTPUT_DIR = MOD_ROOT / "build"
-DEBUG_LOG_PATH = MOD_ROOT / "debug-37257d.log"
-DEBUG_SESSION_ID = "37257d"
 
 # Top-level folders under Cyberpunk2077/ that belong in the game install.
 PAYLOAD_DIRS = ("r6", "bin", "red4ext")
@@ -38,20 +33,6 @@ REQUIRED_NATIVE_DLL = OVERLAY_ROOT / "red4ext" / "plugins" / "CyberpunkAP" / "Cy
 
 # Names skipped anywhere in the tree, even if nested inside a payload dir.
 EXCLUDED_NAMES = {".redscript", ".vscode", "__pycache__", ".DS_Store"}
-
-
-def debug_log(run_id: str, hypothesis_id: str, location: str, message: str, data: dict) -> None:
-    payload = {
-        "sessionId": DEBUG_SESSION_ID,
-        "runId": run_id,
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    with DEBUG_LOG_PATH.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(payload, separators=(",", ":")) + "\n")
 
 
 def read_world_version() -> str:
@@ -76,26 +57,12 @@ def iter_payload_files() -> Iterable[Path]:
 
 
 def build_zip(version: str, output_dir: Path) -> Path:
-    run_id = os.environ.get("GITHUB_RUN_ID", "local")
     if not REQUIRED_NATIVE_DLL.is_file():
         raise FileNotFoundError(
             f"Missing {REQUIRED_NATIVE_DLL}.\n"
             "Build the native plugin first (cmake --build native/build --config "
             "Release) so CyberpunkAP.dll is present before packaging."
         )
-    # region agent log
-    debug_log(
-        run_id,
-        "H2",
-        "tools/package_cyberpunk_mod_zip.py:build_zip:required_native",
-        "Validated required native plugin exists",
-        {
-            "requiredNativePath": str(REQUIRED_NATIVE_DLL),
-            "requiredNativeSize": REQUIRED_NATIVE_DLL.stat().st_size,
-            "requiredNativeSha256": hashlib.sha256(REQUIRED_NATIVE_DLL.read_bytes()).hexdigest(),
-        },
-    )
-    # endregion
 
     files = list(iter_payload_files())
     if not files:
@@ -114,31 +81,6 @@ def build_zip(version: str, output_dir: Path) -> Path:
             # directly into the game root (r6/, bin/, red4ext/ at the top).
             arcname = path.relative_to(OVERLAY_ROOT)
             zf.write(path, arcname.as_posix())
-
-    dll_entries: list[dict[str, object]] = []
-    for path in files:
-        if path.suffix.lower() == ".dll":
-            rel = path.relative_to(OVERLAY_ROOT).as_posix()
-            dll_entries.append(
-                {
-                    "path": rel,
-                    "size": path.stat().st_size,
-                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                }
-            )
-    # region agent log
-    debug_log(
-        run_id,
-        "H5",
-        "tools/package_cyberpunk_mod_zip.py:build_zip:after_write",
-        "Packaged DLL manifest",
-        {
-            "zipPath": str(zip_path),
-            "zipSize": zip_path.stat().st_size if zip_path.is_file() else 0,
-            "dllEntries": dll_entries,
-        },
-    )
-    # endregion
 
     print(f"[package] wrote {zip_path} ({len(files)} files)")
     return zip_path

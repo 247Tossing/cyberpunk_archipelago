@@ -22,11 +22,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import subprocess
 import sys
-import time
 import urllib.request
 from pathlib import Path
 from typing import Iterable
@@ -48,23 +46,6 @@ WORLD_DIR = MOD_ROOT / "worlds" / "cyberpunk2077"
 MANIFEST = WORLD_DIR / "archipelago.json"
 TOOLS_DIR = MOD_ROOT / "tools"
 WORLD_FOLDER_NAME = "cyberpunk2077"
-DEBUG_LOG_PATH = MOD_ROOT / "debug-37257d.log"
-DEBUG_SESSION_ID = "37257d"
-TLS_POLICY_VERSION = "force-mbedtls-v1"
-
-
-def debug_log(run_id: str, hypothesis_id: str, location: str, message: str, data: dict) -> None:
-    payload = {
-        "sessionId": DEBUG_SESSION_ID,
-        "runId": run_id,
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    with DEBUG_LOG_PATH.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(payload, separators=(",", ":")) + "\n")
 
 
 def run(cmd: list[str], *, cwd: Path | None = None, env: dict | None = None) -> None:
@@ -148,7 +129,6 @@ def ensure_mbedtls_tarball() -> None:
 
 
 def build_native() -> None:
-    run_id = os.environ.get("GITHUB_RUN_ID", "local")
     configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
     if os.name == "nt":
         # Release artifacts must be self-contained for end users.
@@ -167,35 +147,9 @@ def build_native() -> None:
         arch = os.environ.get("CMAKE_GENERATOR_PLATFORM")
         if arch:
             configure += ["-A", arch]
-    # region agent log
-    debug_log(
-        run_id,
-        "H1",
-        "tools/build_release.py:build_native:before_configure",
-        "Running CMake configure",
-        {
-            "configure": configure,
-            "generator": generator or "",
-            "generatorPlatform": os.environ.get("CMAKE_GENERATOR_PLATFORM", ""),
-            "tlsPolicyVersion": TLS_POLICY_VERSION,
-        },
-    )
-    # endregion
     try:
         run(configure)
     except subprocess.CalledProcessError as exc:
-        # region agent log
-        debug_log(
-            run_id,
-            "H4",
-            "tools/build_release.py:build_native:configure_failed",
-            "CMake configure failed",
-            {
-                "returnCode": exc.returncode,
-                "command": [str(part) for part in exc.cmd] if isinstance(exc.cmd, list) else str(exc.cmd),
-            },
-        )
-        # endregion
         print("[release] CMake configure failed. Dumping CMake logs (if present):")
         cmake_logs = [
             NATIVE_BUILD_DIR / "CMakeFiles" / "CMakeError.log",
@@ -209,39 +163,7 @@ def build_native() -> None:
                 except OSError as log_exc:
                     print(f"[release] could not read {log}: {log_exc}")
         raise exc
-    cache_path = NATIVE_BUILD_DIR / "CMakeCache.txt"
-    if cache_path.is_file():
-        cache_values: dict[str, str] = {}
-        for raw_line in cache_path.read_text(encoding="utf-8", errors="replace").splitlines():
-            if "=" not in raw_line or raw_line.startswith(("#", "//")):
-                continue
-            key, value = raw_line.split("=", 1)
-            if key.startswith(("USE_OPEN_SSL:", "USE_MBED_TLS:", "OPENSSL_FOUND:", "CMAKE_GENERATOR:")):
-                cache_values[key] = value
-        # region agent log
-        debug_log(
-            run_id,
-            "H1",
-            "tools/build_release.py:build_native:after_configure",
-            "Collected CMake cache TLS settings",
-            cache_values,
-        )
-        # endregion
     run(["cmake", "--build", str(NATIVE_BUILD_DIR), "--config", "Release"])
-    built_dll = NATIVE_BUILD_DIR / "cyberpunk_ap_plugin" / "Release" / "CyberpunkAP.dll"
-    # region agent log
-    debug_log(
-        run_id,
-        "H2",
-        "tools/build_release.py:build_native:after_build",
-        "Native plugin build output",
-        {
-            "dllExists": built_dll.is_file(),
-            "dllSize": built_dll.stat().st_size if built_dll.is_file() else 0,
-            "dllSha256": hashlib.sha256(built_dll.read_bytes()).hexdigest() if built_dll.is_file() else "",
-        },
-    )
-    # endregion
 
 
 def ensure_world_visible(ap_root: Path) -> None:
@@ -272,16 +194,6 @@ def build_apworld(ap_root: Path) -> None:
 
 
 def package_zip(version: str) -> None:
-    run_id = os.environ.get("GITHUB_RUN_ID", "local")
-    # region agent log
-    debug_log(
-        run_id,
-        "H5",
-        "tools/build_release.py:package_zip:before",
-        "Starting mod zip packaging",
-        {"version": version},
-    )
-    # endregion
     run(
         [
             sys.executable,
@@ -326,24 +238,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
-    run_id = os.environ.get("GITHUB_RUN_ID", "local")
-    # region agent log
-    debug_log(
-        run_id,
-        "H3",
-        "tools/build_release.py:main:start",
-        "Release build entry",
-        {
-            "eventName": os.environ.get("GITHUB_EVENT_NAME", ""),
-            "githubRef": os.environ.get("GITHUB_REF", ""),
-            "githubSha": os.environ.get("GITHUB_SHA", ""),
-            "archipelagoRootEnv": os.environ.get("ARCHIPELAGO_ROOT", ""),
-            "tlsPolicyVersion": TLS_POLICY_VERSION,
-            "scriptSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        },
-    )
-    # endregion
-
     version = read_world_version()
     if args.require_tag_version:
         assert_tag_matches_version(args.require_tag_version, version)
@@ -362,22 +256,6 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     build_apworld(ap_root)
     package_zip(version)
-    overlay_dll = MOD_ROOT / "Cyberpunk2077" / "red4ext" / "plugins" / "CyberpunkAP" / "CyberpunkAP.dll"
-    # region agent log
-    debug_log(
-        run_id,
-        "H2",
-        "tools/build_release.py:main:end",
-        "Release build complete",
-        {
-            "overlayDllExists": overlay_dll.is_file(),
-            "overlayDllSize": overlay_dll.stat().st_size if overlay_dll.is_file() else 0,
-            "overlayDllSha256": hashlib.sha256(overlay_dll.read_bytes()).hexdigest()
-            if overlay_dll.is_file()
-            else "",
-        },
-    )
-    # endregion
 
     print(f"[release] done. Artifacts in {MOD_ROOT / 'build'}:")
     print(f"[release]   - cyberpunk2077.apworld")

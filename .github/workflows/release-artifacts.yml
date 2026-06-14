@@ -56,11 +56,16 @@ jobs:
         env:
           ARCHIPELAGO_ROOT: ${{ github.workspace }}/Archipelago
         run: |
+          # Force native build onto bundled mbedTLS in workflow itself so CI
+          # cannot drift back to OpenSSL due to stale script revisions.
+          cmake -S native -B native/build -DUSE_OPEN_SSL=OFF -DUSE_MBED_TLS=ON
+          cmake --build native/build --config Release --target cyberpunk_ap_plugin
+
           $tagArg = @()
           if ("${{ github.ref_type }}" -eq "tag") {
             $tagArg = @("--require-tag-version", "${{ github.ref_name }}")
           }
-          python tools/build_release.py --skip-submodules @tagArg
+          python tools/build_release.py --skip-submodules --skip-native @tagArg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -70,23 +75,3 @@ jobs:
             build/cyberpunk2077.apworld
             build/CyberpunkArchipelagoMod_*.zip
           if-no-files-found: error
-
-      - name: Print debug instrumentation log
-        if: always()
-        shell: pwsh
-        run: |
-          if (Test-Path debug-37257d.log) {
-            Write-Host "---- debug-37257d.log ----"
-            Get-Content debug-37257d.log
-            Write-Host "---- end debug-37257d.log ----"
-          } else {
-            Write-Host "debug-37257d.log not found"
-          }
-
-      - name: Upload debug instrumentation log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cyberpunk-archipelago-debug-37257d
-          path: debug-37257d.log
-          if-no-files-found: warn
