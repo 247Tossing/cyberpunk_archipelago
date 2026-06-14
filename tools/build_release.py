@@ -181,6 +181,18 @@ def build_native() -> None:
     try:
         run(configure)
     except subprocess.CalledProcessError as exc:
+        # region agent log
+        debug_log(
+            run_id,
+            "H4",
+            "tools/build_release.py:build_native:configure_failed",
+            "CMake configure failed",
+            {
+                "returnCode": exc.returncode,
+                "command": [str(part) for part in exc.cmd] if isinstance(exc.cmd, list) else str(exc.cmd),
+            },
+        )
+        # endregion
         print("[release] CMake configure failed. Dumping CMake logs (if present):")
         cmake_logs = [
             NATIVE_BUILD_DIR / "CMakeFiles" / "CMakeError.log",
