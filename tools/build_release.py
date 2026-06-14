@@ -150,9 +150,10 @@ def build_native() -> None:
     run_id = os.environ.get("GITHUB_RUN_ID", "local")
     configure = ["cmake", "-S", str(NATIVE_DIR), "-B", str(NATIVE_BUILD_DIR)]
     if os.name == "nt":
-        # Windows CI images provide OpenSSL; force that backend so IXWebSocket
-        # does not default back to mbedTLS.
-        configure += ["-DUSE_OPEN_SSL=ON", "-DUSE_MBED_TLS=OFF"]
+        # Release artifacts must be self-contained for end users.
+        # Forcing mbedTLS avoids external OpenSSL runtime DLL dependencies on
+        # target machines where OpenSSL may not be installed.
+        configure += ["-DUSE_OPEN_SSL=OFF", "-DUSE_MBED_TLS=ON"]
     else:
         # Non-Windows builds may rely on the bundled mbedTLS fallback.
         ensure_mbedtls_tarball()
