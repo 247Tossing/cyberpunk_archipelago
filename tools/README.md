@@ -5,6 +5,7 @@
 One command produces both end-user artifacts in `build/`:
 
 - `cyberpunk2077.apworld`
+- `cyberpunk2077_poptracker_(<version>).zip`
 - `CyberpunkArchipelagoMod_(<version>).zip`
 
 ```cmd
@@ -14,8 +15,8 @@ python tools\build_release.py --archipelago-root <ARCHIPELAGO>
 It runs the whole pipeline in order: fetch native submodules, build the RED4ext
 plugin (`CyberpunkAP.dll`) with CMake in `Release`, link `worlds/cyberpunk2077`
 into the Archipelago checkout, install Archipelago's Python requirements
-non-interactively (`ModuleUpdate.py -y`), build the apworld, then package the
-mod zip.
+non-interactively (`ModuleUpdate.py -y`), build the apworld, generate the
+PopTracker pack, then package the mod zip.
 
 The mbedTLS source tarball (`native/APCpp/mbedtls-3.6.4.tar.bz2`) is gitignored;
 `build_release.py` downloads and verifies it automatically when missing (CI and
@@ -29,6 +30,7 @@ Useful flags:
 - `--skip-submodules` - CI already checked out submodules (`actions/checkout`).
 - `--skip-native` - reuse an already-built `CyberpunkAP.dll`.
 - `--skip-requirements` - Archipelago deps already installed.
+- `--skip-poptracker` - skip the generated PopTracker pack.
 - `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6.0`) matches
   `world_version`; used for tag-triggered CI.
 
@@ -69,8 +71,30 @@ Release checklist:
 
 Workflow: [`.github/workflows/release-artifacts.yml`](../.github/workflows/release-artifacts.yml).
 
-- **Manual run:** GitHub → *Actions* → *Release artifacts* → *Run workflow*. Pick the Archipelago fork/ref (defaults: `ArchipelagoMW/Archipelago` @ `main`). Downloads appear under the run as artifact **`cyberpunk-archipelago-release`** (`cyberpunk2077.apworld` + `CyberpunkArchipelagoMod_(…).zip`).
+- **Manual run:** GitHub → *Actions* → *Release artifacts* → *Run workflow*. Pick the Archipelago fork/ref (defaults: `ArchipelagoMW/Archipelago` @ `main`). Downloads appear under the run as artifact **`cyberpunk-archipelago-release`** (`cyberpunk2077.apworld` + `cyberpunk2077_poptracker_(…).zip` + `CyberpunkArchipelagoMod_(…).zip`).
 - **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.6.0` requires `world_version` `0.6.0`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
+
+## `build_poptracker_pack.py`
+
+Generates a basic list-based PopTracker pack from
+`worlds/cyberpunk2077/locations.py` and `items.py`, combines it with static
+templates from `poptracker/templates/`, and writes
+`cyberpunk2077_poptracker_(<version>).zip` into `build/`.
+
+```cmd
+python tools\build_poptracker_pack.py --archipelago-root <ARCHIPELAGO>
+```
+
+The pack supports PopTracker's Archipelago connection (`"ap"` variant flag). It
+tracks received items and checked locations from the AP server. It does not
+include Night City map pins, access logic, hint highlighting, or manual location
+sending.
+
+Install the zip by placing it in PopTracker's `packs/` folder, then open the
+pack, click **AP**, and connect with the Cyberpunk 2077 slot name.
+
+Rebuild this pack any time `locations.py` or `items.py` changes so the generated
+PopTracker IDs stay aligned with the apworld and RedScript ID resolver.
 
 ## `package_cyberpunk_mod_zip.py`
 
