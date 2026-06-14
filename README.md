@@ -31,9 +31,14 @@ You will need the following mods for this to work:
 | Phone Extension | Unknown | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
 
 ## Mod Installation
-Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+Download the ```cyberpunk-archipelago-release-vXX.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
 
-take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
+The zip contains:
+ - The AP World
+ - The Mod Itself
+ - The PopTracker
+
+take the ```CyberpunkArchipelagoMod_(X_X_X).zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6```, ```bin```, and ```Red4EXT``` folders.
 
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
@@ -45,7 +50,7 @@ You ***MUST*** restart the launcher before it will show up.
 1. Launch the Cyberpunk 2077 Client.
 2. Start up Cyberpunk 2077
 3. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-4. From the CET overlay, fill out the fields with your ```Archipelago Server IP```, ```Archipelago Server Port```, and ```Save Slot Name```
+4. From the CET overlay, fill out the fields with your ```Archipelago Server IP/URL```, ```Archipelago Server Port```, and ```Save Slot Name```
 5. Profit. Have Fun.
 
 ## Linux Users (like me!)
