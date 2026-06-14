@@ -150,10 +150,12 @@ def build_items(items_mod: Any) -> tuple[list[dict[str, Any]], dict[int, tuple[s
     return item_defs, mapping
 
 
-def build_locations(locations_mod: Any) -> tuple[list[dict[str, Any]], dict[int, list[str]], dict[str, list[str]]]:
+def build_locations(
+    locations_mod: Any,
+) -> tuple[list[dict[str, Any]], dict[int, list[str]], dict[str, list[tuple[str, str]]]]:
     location_defs: list[dict[str, Any]] = []
     mapping: dict[int, list[str]] = OrderedDict()
-    codes_by_category: dict[str, list[str]] = defaultdict(list)
+    codes_by_category: dict[str, list[tuple[str, str]]] = defaultdict(list)
     seen_wire_ids: set[int] = set()
 
     for internal_name, location_data in locations_mod.location_table.items():
@@ -168,7 +170,7 @@ def build_locations(locations_mod: Any) -> tuple[list[dict[str, Any]], dict[int,
         code = f"chk_{slugify(internal_name)}"
         location_defs.append(json_item_toggle(location_data.display_name, code))
         mapping[wire_id] = [code]
-        codes_by_category[category_label(location_data.category)].append(code)
+        codes_by_category[category_label(location_data.category)].append((code, location_data.display_name))
 
     return location_defs, mapping, dict(codes_by_category)
 
@@ -185,18 +187,55 @@ def make_itemgrid(codes: list[str], *, columns: int) -> dict[str, Any]:
     }
 
 
-def build_grids(item_defs: list[dict[str, Any]], location_groups: dict[str, list[str]]) -> dict[str, Any]:
-    """Named itemgrid layouts referenced from tracker.json."""
+def make_labeled_checklist(entries: list[tuple[str, str]]) -> dict[str, Any]:
+    """Build a vertical checklist where each row renders icon + visible label."""
+    rows: list[dict[str, Any]] = []
+    for code, display_name in entries:
+        rows.append(
+            {
+                "type": "array",
+                "orientation": "horizontal",
+                "h_alignment": "left",
+                "v_alignment": "center",
+                "item_margin": "8, 0",
+                "content": [
+                    {
+                        "type": "item",
+                        "item": code,
+                    },
+                    {
+                        "type": "text",
+                        "text": display_name,
+                    },
+                ],
+            }
+        )
+
+    return {
+        "type": "array",
+        "orientation": "vertical",
+        "h_alignment": "left",
+        "v_alignment": "top",
+        "item_margin": "0, 2",
+        "content": rows if rows else [{"type": "text", "text": "No locations in this category."}],
+    }
+
+
+def build_grids(
+    item_defs: list[dict[str, Any]],
+    location_groups: dict[str, list[tuple[str, str]]],
+) -> dict[str, Any]:
+    """Named layouts referenced from tracker.json."""
     grids: dict[str, Any] = {
         "items_grid": make_itemgrid([tracker_code(item) for item in item_defs], columns=6),
     }
     for group_name in sorted(location_groups):
         grid_key = f"locations_{slugify(group_name)}"
-        grids[grid_key] = make_itemgrid(location_groups[group_name], columns=8)
+        grids[grid_key] = make_labeled_checklist(location_groups[group_name])
     return grids
 
 
-def build_tracker(location_groups: dict[str, list[str]]) -> dict[str, Any]:
+def build_tracker(location_groups: dict[str, list[tuple[str, str]]]) -> dict[str, Any]:
     """
     Build the root tracker layout.
 
