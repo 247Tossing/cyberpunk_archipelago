@@ -173,50 +173,73 @@ def build_locations(locations_mod: Any) -> tuple[list[dict[str, Any]], dict[int,
     return location_defs, mapping, dict(codes_by_category)
 
 
-def build_layout(item_defs: list[dict[str, Any]], location_groups: dict[str, list[str]]) -> dict[str, Any]:
-    item_codes = [tracker_code(item) for item in item_defs]
-    item_content = {
-        "type": "group",
-        "header": "Received Items",
-        "content": {
-            "type": "itemgrid",
-            "item_size": "32, 32",
-            "item_margin": "2, 2",
-            "rows": chunked(item_codes, 8),
-        },
+def make_itemgrid(codes: list[str], *, columns: int) -> dict[str, Any]:
+    """Build a PopTracker itemgrid layout node."""
+    return {
+        "type": "itemgrid",
+        "h_alignment": "left",
+        "v_alignment": "top",
+        "item_size": 40,
+        "item_margin": "3, 3",
+        "rows": chunked(codes, columns) if codes else [[]],
     }
 
-    location_tabs = []
+
+def build_grids(item_defs: list[dict[str, Any]], location_groups: dict[str, list[str]]) -> dict[str, Any]:
+    """Named itemgrid layouts referenced from tracker.json."""
+    grids: dict[str, Any] = {
+        "items_grid": make_itemgrid([tracker_code(item) for item in item_defs], columns=6),
+    }
     for group_name in sorted(location_groups):
-        codes = location_groups[group_name]
-        location_tabs.append(
+        grid_key = f"locations_{slugify(group_name)}"
+        grids[grid_key] = make_itemgrid(location_groups[group_name], columns=8)
+    return grids
+
+
+def build_tracker(location_groups: dict[str, list[str]]) -> dict[str, Any]:
+    """
+    Build the root tracker layout.
+
+    PopTracker expects tracker_default to be a container with a content child.
+    Avoid nested tabbed widgets; expose each category as its own top-level tab.
+    """
+    tabs: list[dict[str, Any]] = [
+        {
+            "title": "Items",
+            "content": {
+                "type": "group",
+                "header": "Received Items",
+                "content": {
+                    "type": "layout",
+                    "key": "items_grid",
+                },
+            },
+        },
+    ]
+
+    for group_name in sorted(location_groups):
+        tabs.append(
             {
                 "title": group_name,
                 "content": {
-                    "type": "itemgrid",
-                    "item_size": "32, 32",
-                    "item_margin": "2, 2",
-                    "rows": chunked(codes, 10),
+                    "type": "group",
+                    "header": group_name,
+                    "content": {
+                        "type": "layout",
+                        "key": f"locations_{slugify(group_name)}",
+                    },
                 },
             }
         )
 
     return {
         "tracker_default": {
-            "type": "tabbed",
-            "tabs": [
-                {
-                    "title": "Items",
-                    "content": item_content,
-                },
-                {
-                    "title": "Locations",
-                    "content": {
-                        "type": "tabbed",
-                        "tabs": location_tabs,
-                    },
-                },
-            ],
+            "type": "container",
+            "background": "#1b1b1b",
+            "content": {
+                "type": "tabbed",
+                "tabs": tabs,
+            },
         },
         "tracker_broadcast": {
             "type": "layout",
@@ -285,7 +308,8 @@ def generate_pack(output_dir: Path, template_dir: Path | None = None, version_ov
     write_json(output_dir / "manifest.json", build_manifest(version))
     write_json(output_dir / "items" / "received_items.json", item_defs)
     write_json(output_dir / "items" / "location_checks.json", location_defs)
-    write_json(output_dir / "layouts" / "tracker.json", build_layout(item_defs, location_groups))
+    write_json(output_dir / "layouts" / "grids.json", build_grids(item_defs, location_groups))
+    write_json(output_dir / "layouts" / "tracker.json", build_tracker(location_groups))
     write_text(output_dir / "scripts" / "autotracking" / "item_mapping.lua", render_item_mapping(item_mapping))
     write_text(
         output_dir / "scripts" / "autotracking" / "location_mapping.lua",

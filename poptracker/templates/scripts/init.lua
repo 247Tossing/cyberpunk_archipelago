@@ -6,4 +6,5 @@ require("scripts.autotracking")
 
 Tracker:AddItems("items/received_items.json")
 Tracker:AddItems("items/location_checks.json")
+Tracker:AddLayouts("layouts/grids.json")
 Tracker:AddLayouts("layouts/tracker.json")
