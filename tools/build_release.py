@@ -10,11 +10,14 @@ Runs the full pipeline that produces both release artifacts:
     4. Install Archipelago's runtime requirements non-interactively.
     5. Regenerate the RedScript ID mappings and build cyberpunk2077.apworld
        (delegates to build_cyberpunk2077_apworld.py).
-    6. Package CyberpunkArchipelagoMod_(version).zip (delegates to
+    6. Generate and package cyberpunk2077_poptracker_(version).zip (delegates
+       to build_poptracker_pack.py).
+    7. Package CyberpunkArchipelagoMod_(version).zip (delegates to
        package_cyberpunk_mod_zip.py).
 
 Final artifacts land in ``<mod-root>/build/``:
     - cyberpunk2077.apworld
+    - cyberpunk2077_poptracker_(version).zip
     - CyberpunkArchipelagoMod_(version).zip
 """
 
@@ -194,6 +197,19 @@ def build_apworld(ap_root: Path) -> None:
     )
 
 
+def build_poptracker(ap_root: Path, version: str) -> None:
+    run(
+        [
+            sys.executable,
+            str(TOOLS_DIR / "build_poptracker_pack.py"),
+            "--archipelago-root",
+            str(ap_root),
+            "--version",
+            version,
+        ]
+    )
+
+
 def package_zip(version: str) -> None:
     run(
         [
@@ -231,6 +247,11 @@ def main(argv: Iterable[str] | None = None) -> int:
         help="Skip installing Archipelago's Python requirements.",
     )
     parser.add_argument(
+        "--skip-poptracker",
+        action="store_true",
+        help="Skip building the PopTracker pack zip.",
+    )
+    parser.add_argument(
         "--require-tag-version",
         default=None,
         help=(
@@ -256,10 +277,14 @@ def main(argv: Iterable[str] | None = None) -> int:
         install_archipelago_requirements(ap_root)
 
     build_apworld(ap_root)
+    if not args.skip_poptracker:
+        build_poptracker(ap_root, version)
     package_zip(version)
 
     print(f"[release] done. Artifacts in {MOD_ROOT / 'build'}:")
     print(f"[release]   - cyberpunk2077.apworld")
+    if not args.skip_poptracker:
+        print(f"[release]   - cyberpunk2077_poptracker_({version}).zip")
     print(f"[release]   - CyberpunkArchipelagoMod_({version}).zip")
     return 0
 
