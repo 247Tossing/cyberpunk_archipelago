@@ -5,11 +5,11 @@ public class APConstants {
 
     // ===== VERSION INFORMATION =====
     public static func GetClientVersion() -> String {
-        return "0.5"; 
+        return "0.7.0";
     }
 
     public static func GetRequiredServerVersion() -> String {
-        return "0.5";
+        return "0.7.0";
     } 
 
     // ===== Weapon Types =====
@@ -37,6 +37,16 @@ public class APConstants {
     public static func GetPacificaAccessToken() -> String { return "ap_dat_pacificaAccessToken"; }
     public static func GetBadlandsAccessToken() -> String { return "ap_dat_badlandsAccessToken"; }
     public static func GetDogtownAccessToken() -> String { return "ap_dat_dogtownAccessToken"; }
+
+    // ===== DISTRICT TOKEN-GATE MASK BITS =====
+    // Must match worlds/cyberpunk2077/options.py MAJOR_DISTRICT_SLOT_MASK.
+    public static func GetWestbrookGateMask() -> Int32 { return 1; }
+    public static func GetCityCenterGateMask() -> Int32 { return 2; }
+    public static func GetHeywoodGateMask() -> Int32 { return 4; }
+    public static func GetSantoDomingoGateMask() -> Int32 { return 8; }
+    public static func GetPacificaGateMask() -> Int32 { return 16; }
+    public static func GetBadlandsGateMask() -> Int32 { return 32; }
+    public static func GetDogtownGateMask() -> Int32 { return 64; }
 
     // ===== Weapon Authorization Item IDs =====
     // These are the item IDs for weapon authorization items

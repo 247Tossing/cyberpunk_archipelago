@@ -183,7 +183,7 @@ item_table: Dict[str, ItemData] = {
         category = ItemCategory.DISTRICT_TOKEN
     ),
 
-    "Dogtown Acccess Token" : ItemData(
+    "Dogtown Access Token" : ItemData(
         name = "ap_dat_dogtownAccessToken",
         classification = ItemClassification.progression | ItemClassification.skip_balancing,
         category = ItemCategory.DISTRICT_TOKEN

@@ -1,195 +1,202 @@
 """
 Cyberpunk 2077 Access Rules
-
-This file defines the logic for when locations and regions become accessible.
-
-Rules determine what items are needed to:
-- Travel between regions (region access rules)
-- Complete specific locations (location access rules)
-- Beat the game (victory condition)
-
-Rules are lambda functions that check the player's current item collection.
 """
 
 from typing import TYPE_CHECKING
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
-from .locations import location_table
+from .locations import location_table, LocationCategory
+from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc, is_goal_all_side_quests
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
 
 def set_rules(world: "Cyberpunk2077World") -> None:
-    """
-    Set all access rules for quest progression and victory condition.
-
-    This implements the canonical Cyberpunk 2077 quest chain structure:
-    - Prologue (linear progression)
-    - Act 2 (three branches that can be done in any order, all required)
-    - Point of No Return (requires all three Act 2 branches)
-    - Endings (each with different prerequisites)
-
-    In addition to the quest-chain rules below, ``_apply_multi_region_rules``
-    adds a per-location reachability predicate for every ``LocationData`` whose
-    ``regions`` tuple contains more than one district. This keeps the
-    generator's reachability model in sync with the data when
-    ``restrict_by_major_district`` gates districts behind tokens.
-    """
+    """Set location and victory rules for the selected completion goal."""
     player = world.player
 
-    # ===== PROLOGUE CHAIN =====
-    # Linear progression through prologue quests
+    if _completion_goal(world) == CompletionGoal.option_complete_only_phantom_liberty_questline:
+        _set_phantom_liberty_only_rules(world, player)
+    else:
+        _set_base_game_rules(world, player)
 
+    _apply_multi_region_rules(world, player)
+    _set_victory_rule(world, player)
+
+    world.multiworld.completion_condition[player] = lambda state: state.has("Victory", player)
+
+
+def _completion_goal(world: "Cyberpunk2077World") -> int:
+    return int(world.options.completion_goal.value)
+
+
+def _set_base_game_rules(world: "Cyberpunk2077World", player: int) -> None:
+    """Apply existing base-game progression logic."""
     set_rule(
         world.multiworld.get_location("Prologue - The Ripperdoc", player),
-        lambda state: state.can_reach_location("Prologue - The Rescue", player)
+        lambda state: state.can_reach_location("Prologue - The Rescue", player),
     )
-
     set_rule(
         world.multiworld.get_location("Prologue - The Ride", player),
-        lambda state: state.can_reach_location("Prologue - The Ripperdoc", player)
+        lambda state: state.can_reach_location("Prologue - The Ripperdoc", player),
     )
-
-    # Both The Information AND The Pickup must be completed before The Heist
     set_rule(
         world.multiworld.get_location("Prologue - The Heist", player),
         lambda state: (
             state.can_reach_location("Prologue - The Pickup", player) and
             state.can_reach_location("Prologue - The Information", player)
-        )
+        ),
     )
-
     set_rule(
         world.multiworld.get_location("Prologue - Love Like Fire", player),
-        lambda state: state.can_reach_location("Prologue - The Heist", player)
+        lambda state: state.can_reach_location("Prologue - The Heist", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Main - Playing for Time", player),
+        lambda state: state.can_reach_location("Prologue - Love Like Fire", player),
     )
 
     set_rule(
-        world.multiworld.get_location("Main - Playing for Time", player),
-        lambda state: state.can_reach_location("Prologue - Love Like Fire", player)
+        world.multiworld.get_location("Main - Automatic Love", player),
+        lambda state: state.can_reach_location("Main - Playing for Time", player),
     )
-
-    # ========== Act 2 ============
-
-    # Only need to put the FIRST and LAST quest of a given chain for the generator to understand whats going on theoretically
-    # Vodoo Boys
-    set_rule(world.multiworld.get_location("Main - Automatic Love", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Transmission", player),
-             lambda state: state.can_reach_location("Main - Automatic Love", player))
-
-    # Hellman
-    set_rule(world.multiworld.get_location("Main - Ghost Town", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Life During Wartime", player),
-             lambda state: state.can_reach_location("Main - Ghost Town", player))
-
-    # Takemura
-    set_rule(world.multiworld.get_location("Main - Down on the Street", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Search and Destroy", player),
-             lambda state: state.can_reach_location("Main - Down on the Street", player))
-
-    # ======= Point of No Return ======
-    # Requires ALL THREE Act 2 branches to be completed
-    # Check quest locations directly instead of using event items to avoid circular dependencies
-
-    set_rule(world.multiworld.get_location("Point of No Return - Nocturne Op55N1", player), lambda state: (
+    set_rule(
+        world.multiworld.get_location("Main - Transmission", player),
+        lambda state: state.can_reach_location("Main - Automatic Love", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Main - Ghost Town", player),
+        lambda state: state.can_reach_location("Main - Playing for Time", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Main - Life During Wartime", player),
+        lambda state: state.can_reach_location("Main - Ghost Town", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Main - Down on the Street", player),
+        lambda state: state.can_reach_location("Main - Playing for Time", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Main - Search and Destroy", player),
+        lambda state: state.can_reach_location("Main - Down on the Street", player),
+    )
+    set_rule(
+        world.multiworld.get_location("Point of No Return - Nocturne Op55N1", player),
+        lambda state: (
             state.can_reach_location("Main - Transmission", player) and
             state.can_reach_location("Main - Life During Wartime", player) and
             state.can_reach_location("Main - Search and Destroy", player)
-    ))
-
-    # Ending Reached - accessible after completing Nocturne Op55N1 and any ending path
-    # The epilogue quests (q201_heir, q202_nomads, q203_legend, q204_reborn, q307_tomorrow)
-    # all map to this single location, so completing ANY ending triggers this check
-    set_rule(world.multiworld.get_location("Ending Reached", player), lambda state: (
-        state.can_reach_location("Point of No Return - Nocturne Op55N1", player)
-    ))
-
-    # ==========================================
-    # Ending Side Quest Prerequisites
-    # ==========================================
-    # Set ending side quest chain rules when either include_all_endings OR include_side_quests is enabled
-    # These quests have ENDING_SIDE_QUEST category and are included automatically when either option is true
-    if world.options.include_all_endings or world.options.include_side_quests:
-        # --- PANAM'S BRANCH (For The Star Ending) ---
-        # Unlocked after finishing Branch B (Hellman)
-        set_rule(world.multiworld.get_location("Riders on the Storm", player),
-                 lambda state: state.can_reach_location("Main - Life During Wartime", player))
-
-        # Shortcut: Tying the end of Panam's arc to the beginning of it
-        set_rule(world.multiworld.get_location("Queen of the Highway", player),
-                 lambda state: state.can_reach_location("Riders on the Storm", player))
-
-        # --- ROGUE & JOHNNY'S BRANCH (For The Sun / Temperance Endings) ---
-        # Unlocked after finishing Branch C (Takemura)
-        set_rule(world.multiworld.get_location("Chippin' In", player),
-                 lambda state: state.can_reach_location("Main - Search and Destroy", player))
-
-        # Shortcut: Tying the end of Rogue's arc to the beginning of it
-        set_rule(world.multiworld.get_location("Blistering Love", player),
-                 lambda state: state.can_reach_location("Chippin' In", player))
-
-
-    # List of locations of which only ONE must be accessible to reach a point of no return
-    no_return_locations = [
-        "Epilogue - Where is My Mind?",
-        "Epilogue - All Along the Watchtower",
-        "Epilogue - Path of Glory",
-        "Epilogue - New Dawn Fades",
-        "Phantom Liberty - Firestarter",
-        "Phantom Liberty - The Last Stand"
-    ]
-
-    # ==========================================
-    # Multi-region district reachability
-    # ==========================================
-    # Many quests touch more than one district. ``LocationData.regions`` lists
-    # every district the quest physically requires the player to reach. When
-    # ``restrict_by_major_district`` is on, each district has its own entrance
-    # token, so we must add a per-location rule mirroring the data: the player
-    # must be able to reach every listed major district. ``add_rule`` ANDs with
-    # any quest-chain rule set earlier in this function.
-    #
-    # We only do this when the district randomizer is on. With it off, every
-    # district is reachable as soon as the lifepath intro is done and no extra
-    # rule is needed.
-    _apply_multi_region_rules(world, player)
-
-    # ===== VICTORY CONDITION =====
-    # Victory requires reaching any ending (consolidated into "Ending Reached" location)
+        ),
+    )
     set_rule(
-        world.multiworld.get_location("Victory", world.player),
-        lambda state: state.can_reach_location("Ending Reached", player)
+        world.multiworld.get_location("Ending Reached", player),
+        lambda state: state.can_reach_location("Point of No Return - Nocturne Op55N1", player),
     )
 
-    # Set completion condition - player wins when they collect the Victory event item
-    world.multiworld.completion_condition[player] = \
-        lambda state: state.has("Victory", player)
+    if is_goal_all_side_quests(world.options):
+        set_rule(
+            world.multiworld.get_location("Riders on the Storm", player),
+            lambda state: state.can_reach_location("Main - Life During Wartime", player),
+        )
+        set_rule(
+            world.multiworld.get_location("Queen of the Highway", player),
+            lambda state: state.can_reach_location("Riders on the Storm", player),
+        )
+        set_rule(
+            world.multiworld.get_location("Chippin' In", player),
+            lambda state: state.can_reach_location("Main - Search and Destroy", player),
+        )
+        set_rule(
+            world.multiworld.get_location("Blistering Love", player),
+            lambda state: state.can_reach_location("Chippin' In", player),
+        )
+
+
+def _set_phantom_liberty_only_rules(world: "Cyberpunk2077World", player: int) -> None:
+    """Apply PL questline progression for PL-only completion goal."""
+    _set_rule_if_present(world, player, "Phantom Liberty - Phantom Liberty", "Lifepath Chosen")
+    _set_rule_if_present(world, player, "Phantom Liberty - Dog Eat Dog", "Phantom Liberty - Phantom Liberty")
+    _set_rule_if_present(world, player, "Phantom Liberty - Hole in the Sky", "Phantom Liberty - Dog Eat Dog")
+    _set_rule_if_present(world, player, "Phantom Liberty - Spider and the Fly", "Phantom Liberty - Hole in the Sky")
+    _set_rule_if_present(world, player, "Phantom Liberty - Lucretia My Reflection", "Phantom Liberty - Spider and the Fly")
+    _set_rule_if_present(world, player, "Phantom Liberty - The Damned", "Phantom Liberty - Lucretia My Reflection")
+    _set_rule_if_present(world, player, "Phantom Liberty - Get It Together", "Phantom Liberty - The Damned")
+    _set_rule_if_present(world, player, "Phantom Liberty - You Know My Name", "Phantom Liberty - Get It Together")
+    _set_rule_if_present(world, player, "Phantom Liberty - Birds with Broken Wings", "Phantom Liberty - You Know My Name")
+    _set_rule_if_present(world, player, "Phantom Liberty - I've Seen That Face Before", "Phantom Liberty - Birds with Broken Wings")
+    _set_rule_if_present(world, player, "Phantom Liberty - Firestarter", "Phantom Liberty - I've Seen That Face Before")
+    _set_rule_if_present(world, player, "PL - Split Quest 1", "Phantom Liberty - Firestarter")
+    _set_rule_if_present(world, player, "PL - Split Quest 2", "Phantom Liberty - Firestarter")
+    _set_rule_if_present(world, player, "PL - Split Quest 3", "Phantom Liberty - Firestarter")
+
+    if _location_exists(world, player, "Phantom Liberty - Who Wants to Live Forever"):
+        set_rule(
+            world.multiworld.get_location("Phantom Liberty - Who Wants to Live Forever", player),
+            lambda state: (
+                state.can_reach_location("PL - Split Quest 1", player) or
+                state.can_reach_location("PL - Split Quest 2", player) or
+                state.can_reach_location("PL - Split Quest 3", player)
+            ),
+        )
+
+    if _location_exists(world, player, "Ending Reached"):
+        set_rule(
+            world.multiworld.get_location("Ending Reached", player),
+            lambda state: state.can_reach_location("Phantom Liberty - Who Wants to Live Forever", player),
+        )
+
+
+def _set_victory_rule(world: "Cyberpunk2077World", player: int) -> None:
+    victory_location = world.multiworld.get_location("Victory", player)
+    goal = _completion_goal(world)
+
+    if goal == CompletionGoal.option_complete_any_ending_w_all_side_quests:
+        side_quest_locations = tuple(_get_required_side_quest_locations(world, player))
+        set_rule(
+            victory_location,
+            lambda state, required=side_quest_locations: (
+                state.can_reach_location("Ending Reached", player) and
+                all(state.can_reach_location(name, player) for name in required)
+            ),
+        )
+        return
+
+    set_rule(
+        victory_location,
+        lambda state: state.can_reach_location("Ending Reached", player),
+    )
+
+
+def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int) -> list[str]:
+    """Collect included SIDE_QUEST / DLC_SIDE checks for all-side-quests goal."""
+    included_names = {loc.name for loc in world.multiworld.get_locations(player)}
+    required: list[str] = []
+
+    for data in location_table.values():
+        if data.display_name not in included_names:
+            continue
+        if data.category == LocationCategory.SIDE_QUEST:
+            required.append(data.display_name)
+        elif data.category == LocationCategory.DLC_SIDE and has_effective_phantom_liberty_dlc(world.options):
+            required.append(data.display_name)
+
+    return required
+
+
+def _set_rule_if_present(world: "Cyberpunk2077World", player: int, location_name: str, required_location: str) -> None:
+    if not _location_exists(world, player, location_name):
+        return
+    set_rule(
+        world.multiworld.get_location(location_name, player),
+        lambda state, req=required_location: state.can_reach_location(req, player),
+    )
+
+
+def _location_exists(world: "Cyberpunk2077World", player: int, location_name: str) -> bool:
+    return any(loc.name == location_name for loc in world.multiworld.get_locations(player))
 
 # ===== MULTI-REGION HELPERS =====
-
-# Top-level regions that have entrance token gates when
-# ``restrict_by_major_district`` is enabled. ``LocationData.regions`` entries
-# outside this set (e.g. ``Afterlife``, ``North Oak``, ``Cyberspace``) carry no
-# token rule so we ignore them when building the OR predicate -- they cannot
-# meaningfully gate the location any more than the parent region already does.
-_MAJOR_DISTRICTS_BASE = frozenset({
-    "Watson",
-    "Westbrook",
-    "City Center",
-    "Heywood",
-    "Santo Domingo",
-    "Pacifica",
-    "Badlands",
-})
-_MAJOR_DISTRICTS_DLC = frozenset({"Dogtown"})
-
 
 def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     """
@@ -204,16 +211,15 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     Why AND (``all``) instead of OR? Multi-region locations represent quests
     that require the player to actually move between districts to complete the
     quest in-game, so the safe default is to require reach to every district
-    listed. A permissive ``any`` would let generation place a key item on a
-    multi-district location while only one district is reachable; the in-game
-    check would never fire, creating a soft-lock. Quests with looser
-    semantics can override this with their own ``set_rule`` higher up.
+    listed gated major district. A permissive ``any`` would let generation
+    place a key item on a multi-district location while only one gated district
+    is reachable; the in-game check would never fire, creating a soft-lock.
+    Quests with looser semantics can override this with their own ``set_rule``
+    higher up.
 
-    The rule is only added when ``restrict_by_major_district`` is enabled --
-    without it every district is reachable after the lifepath intro and the
-    extra rule would be a no-op. We also skip locations that have been
-    filtered out by the player's category/DLC options to avoid touching
-    Locations that were never created.
+    The rule is only added for selected gated majors. Non-gated districts are
+    intentionally ignored because the client auto-opens those districts from
+    slot-data during sync.
 
     Subdistrict mode (``restrict_by_sub_district``) is intentionally not
     handled here: subdistrict tokens layer on top of the major-district
@@ -221,12 +227,9 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     If/when ``regions`` entries start naming subdistricts directly, this
     helper should be extended to recognise ``"<Major> - <Sub>"`` names.
     """
-    if not world.options.restrict_by_major_district:
+    gated_major_districts = set(get_gated_major_districts(world.options))
+    if not gated_major_districts:
         return
-
-    major_districts = set(_MAJOR_DISTRICTS_BASE)
-    if world.options.include_phantom_liberty_dlc:
-        major_districts |= _MAJOR_DISTRICTS_DLC
 
     # Snapshot of location names actually created for this player so we
     # silently skip rows filtered out by category/DLC options.
@@ -240,7 +243,7 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
         if loc_data.display_name not in existing_locations:
             continue
 
-        applicable = tuple(r for r in loc_data.regions if r in major_districts)
+        applicable = tuple(r for r in loc_data.regions if r in gated_major_districts)
         if not applicable:
             continue
 

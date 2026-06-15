@@ -136,12 +136,28 @@ public class TCPClient extends ScriptableService {
 
     public func Pump() -> Void {
         // Apply slot config received from the server (e.g. district restriction).
-        // The native bridge captures restrict_by_major_district from the Connected
-        // packet's slot_data; mirror it into APGameState so enforcement can read it.
+        // The native bridge captures these from the Connected packet's slot_data;
+        // mirror them into APGameState so enforcement can read them.
         if this.IsConnected() {
             let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
             if IsDefined(gameState) {
-                gameState.SetRestrictByMajorDistrict(AP_GetRestrictByMajorDistrict());
+                let changed: Bool = gameState.SetDistrictRestrictionConfig(
+                    AP_GetRestrictByMajorDistrict(),
+                    AP_GetRestrictBySubDistrict(),
+                    AP_GetDistrictTokenGatedMajorMask()
+                );
+                if changed {
+                    let gatedSummary: String = gameState.GetGatedDistrictSummary();
+                    let autoOpenSummary: String = gameState.GetAutoOpenDistrictSummary();
+                    APLogger.LogInfo(
+                        s"District restriction config received: major=\(gameState.restrictByMajorDistrict), sub=\(gameState.restrictBySubDistrict), gated=\(gatedSummary), auto_open=\(autoOpenSummary)"
+                    );
+
+                    let districtGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+                    if IsDefined(districtGameSystem) {
+                        districtGameSystem.ApplyDistrictRestrictionConfig();
+                    }
+                }
             }
         }
 

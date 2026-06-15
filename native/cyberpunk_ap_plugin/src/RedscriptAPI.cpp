@@ -147,6 +147,24 @@ void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* a
     }
 }
 
+void APGetRestrictBySubDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetRestrictBySubDistrict();
+    }
+}
+
+void APGetDistrictTokenGatedMajorMask(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetDistrictTokenGatedMajorMask();
+    }
+}
+
 template <typename TFunc>
 void RegisterNative(RED4ext::CRTTISystem* rtti, const char* fullName, const char* shortName, TFunc fn)
 {
@@ -185,6 +203,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
+    RegisterNative(rtti, "Archipelago.AP_GetRestrictBySubDistrict", "AP_GetRestrictBySubDistrict", &APGetRestrictBySubDistrict);
+    RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);
 
     if (g_sdk && g_sdk->logger)
     {

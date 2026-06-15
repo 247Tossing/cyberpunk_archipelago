@@ -11,9 +11,10 @@ Each location declares a ``regions`` tuple listing every district the quest
 physically touches. Archipelago itself still attaches each location to a
 single parent Region (the graph parent); that parent is either
 ``placement_region`` when set, or ``regions[0]`` otherwise. For multi-district
-quests, ``rules.py`` adds a logical-OR ``can_reach_region`` predicate so the
-generator only considers the location reachable when the player can enter at
-least one of the listed districts. See ``LocationData`` for details.
+quests, ``rules.py`` adds a reachability predicate for any listed major
+districts that are token-gated, so the generator only considers the location
+reachable when the player can enter the required gated districts. See
+``LocationData`` for details.
 """
 
 from dataclasses import dataclass
@@ -51,9 +52,10 @@ class LocationData:
           used as the Archipelago graph parent. When ``None``, ``regions[0]`` is
           used. For multi-district quests we typically pick a hub like ``Watson``
           so the location's reachability is not coupled to a token-gated district.
-        - When ``restrict_by_major_district`` is enabled, rules.py adds an extra
-          predicate to multi-region locations: the player must be able to reach
-          at least one of ``regions`` (logical OR over ``can_reach_region``).
+        - When major-district token restrictions are enabled, rules.py adds an
+          extra predicate to multi-region locations: the player must be able to
+          reach every listed major district that is token-gated. Non-gated
+          districts are ignored because the client opens them from slot data.
 
     Attributes:
         display_name: Human-readable location name (e.g., "Prologue - StreetKid Intro")
@@ -71,8 +73,8 @@ class LocationData:
                  Defaults to ``regions[0]``. May intentionally be a region NOT in
                  ``regions`` so multi-district umbrella quests can be parked on a
                  reachable hub (e.g. ``Watson``) while ``regions`` still records
-                 the districts the quest actually requires; rules.py adds the
-                 OR-over-``regions`` reachability predicate in that case.
+                 the districts the quest actually requires; rules.py adds gated
+                 major-district reachability predicates in that case.
     """
     display_name: str
     regions: Tuple[str, ...]  # Districts this location touches; first entry is the default parent
@@ -539,8 +541,8 @@ location_table: Dict[str, LocationData] = {
     # NOTE: Branch completion event locations removed - Nocturne Op55N1 checks quest
     # locations directly instead of using event items to avoid circular dependencies
 
-    # NOTE: Side quest event locations removed - include_all_endings option handles
-    # side quest progression by checking quest locations directly instead of using events
+    # NOTE: Side quest event locations removed - side quest progression is tracked
+    # directly by quest location access rules instead of using events
 
     # NOTE: Phantom Liberty event locations removed - DLC progression tracked directly
     # via quest location access rules, not through event items

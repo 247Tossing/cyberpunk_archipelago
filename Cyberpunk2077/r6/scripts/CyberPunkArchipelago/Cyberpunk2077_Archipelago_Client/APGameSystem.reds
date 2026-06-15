@@ -98,7 +98,49 @@ public class APGameSystem extends ScriptableSystem {
 
         // Always ensure Watson is unlocked as starting district
         this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
+        this.ApplyDistrictRestrictionConfig();
         APLogger.LogInfo("Item Sync Complete");
+    }
+
+    public func ApplyDistrictRestrictionConfig() -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("APGameSystem: Cannot apply district config - game state not available");
+            return;
+        }
+
+        if !APGameState.districtRestrictionConfigInitialized || !APGameState.restrictByMajorDistrict {
+            return;
+        }
+
+        if !IsDefined(this.questHandler) {
+            APLogger.LogDebug("APGameSystem: Cannot apply district config - quest handler not available");
+            return;
+        }
+
+        this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
+
+        if !APGameState.IsDistrictTokenGated(APConstants.GetWestbrookAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetWestbrookAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetCityCenterAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetCityCenterAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetHeywoodAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetHeywoodAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetSantoDomingoAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetSantoDomingoAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetPacificaAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetPacificaAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetBadlandsAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetBadlandsAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetDogtownAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetDogtownAccessToken());
+        }
     }
 
     public func HandleDistrictRestriction(district: String) -> Void {

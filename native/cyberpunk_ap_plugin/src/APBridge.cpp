@@ -31,6 +31,8 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_SetDeathLinkSupported(true);
     AP_SetDeathLinkRecvCallback(&APBridge::OnDeathLinkReceived);
     AP_RegisterSlotDataIntCallback("restrict_by_major_district", &APBridge::OnSlotDataRestrictByMajorDistrict);
+    AP_RegisterSlotDataIntCallback("restrict_by_sub_district", &APBridge::OnSlotDataRestrictBySubDistrict);
+    AP_RegisterSlotDataIntCallback("district_token_gated_major_mask", &APBridge::OnSlotDataDistrictTokenGatedMajorMask);
 
     // AP_Init() is void and has no synchronous failure path; AP_IsInit() only
     // returns true after AP_Start() is called, so we track init state ourselves.
@@ -70,6 +72,8 @@ void APBridge::Shutdown()
     m_started = false;
     m_deathLinkPending = false;
     m_restrictByMajorDistrict = false;
+    m_restrictBySubDistrict = false;
+    m_districtTokenGatedMajorMask = 0;
     std::queue<int64_t> empty;
     m_receivedItemIds.swap(empty);
 }
@@ -184,6 +188,18 @@ bool APBridge::GetRestrictByMajorDistrict() const
     return m_restrictByMajorDistrict;
 }
 
+bool APBridge::GetRestrictBySubDistrict() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_restrictBySubDistrict;
+}
+
+int32_t APBridge::GetDistrictTokenGatedMajorMask() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_districtTokenGatedMajorMask;
+}
+
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
@@ -210,6 +226,16 @@ void APBridge::OnSlotDataRestrictByMajorDistrict(int value)
     APBridge::Get().SetRestrictByMajorDistrict(value != 0);
 }
 
+void APBridge::OnSlotDataRestrictBySubDistrict(int value)
+{
+    APBridge::Get().SetRestrictBySubDistrict(value != 0);
+}
+
+void APBridge::OnSlotDataDistrictTokenGatedMajorMask(int value)
+{
+    APBridge::Get().SetDistrictTokenGatedMajorMask(value);
+}
+
 void APBridge::PushItem(int64_t itemId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -226,5 +252,17 @@ void APBridge::SetRestrictByMajorDistrict(bool value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_restrictByMajorDistrict = value;
+}
+
+void APBridge::SetRestrictBySubDistrict(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_restrictBySubDistrict = value;
+}
+
+void APBridge::SetDistrictTokenGatedMajorMask(int32_t value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_districtTokenGatedMajorMask = value;
 }
 } // namespace CyberpunkArchipelago

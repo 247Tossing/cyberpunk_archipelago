@@ -24,12 +24,17 @@ public class APDistrictManager extends ScriptableSystem {
             return true;
         }
 
+        if StrCmp(districtId, "unknown") == 0 {
+            return true;
+        }
+
+        if !APGameState.IsDistrictTokenGated(districtId) {
+            return true;
+        }
+
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return false;
-        }
-        if StrCmp(districtId, "unknown") == 0 {
-            return true;
         }
         return this.questHandler.HasQuestKey(districtId);
     }

@@ -234,7 +234,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         "--require-tag-version",
         default=None,
         help=(
-            "A git tag/ref (e.g. 'v0.6.0' or 'refs/tags/v0.6.0'); fail unless it "
+            "A git tag/ref (e.g. 'v0.7.0' or 'refs/tags/v0.7.0'); fail unless it "
             "matches archipelago.json world_version. Intended for tag-triggered CI."
         ),
     )

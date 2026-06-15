@@ -8,6 +8,9 @@ public class APGameState extends ScriptableService {
     public let skillPointsAsItems: Bool;
     public let enableDeathLink: Bool;
     public let restrictByMajorDistrict: Bool;
+    public let restrictBySubDistrict: Bool;
+    public let districtTokenGatedMajorMask: Int32;
+    public let districtRestrictionConfigInitialized: Bool;
 
     // Weapon restriction settings (synced from APWorld options via SYNC_CONFIG)
     // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
@@ -56,6 +59,134 @@ public class APGameState extends ScriptableService {
 
     public func SetRestrictByMajorDistrict(value: Bool) -> Void {
         this.restrictByMajorDistrict = value;
+    }
+
+    public func SetDistrictRestrictionConfig(restrictMajor: Bool, restrictSub: Bool, gatedMajorMask: Int32) -> Bool {
+        let changed: Bool = !this.districtRestrictionConfigInitialized
+            || (this.restrictByMajorDistrict && !restrictMajor)
+            || (!this.restrictByMajorDistrict && restrictMajor)
+            || (this.restrictBySubDistrict && !restrictSub)
+            || (!this.restrictBySubDistrict && restrictSub)
+            || this.districtTokenGatedMajorMask < gatedMajorMask
+            || this.districtTokenGatedMajorMask > gatedMajorMask;
+
+        this.restrictByMajorDistrict = restrictMajor;
+        this.restrictBySubDistrict = restrictSub;
+        this.districtTokenGatedMajorMask = gatedMajorMask;
+        this.districtRestrictionConfigInitialized = true;
+        return changed;
+    }
+
+    public func IsDistrictTokenGated(districtId: String) -> Bool {
+        if !this.restrictByMajorDistrict {
+            return false;
+        }
+
+        if StrCmp(districtId, APConstants.GetWestbrookAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetWestbrookGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetCityCenterAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetCityCenterGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetHeywoodAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetHeywoodGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetSantoDomingoAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetSantoDomingoGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetPacificaAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetPacificaGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetBadlandsAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetBadlandsGateMask());
+        }
+        if StrCmp(districtId, APConstants.GetDogtownAccessToken()) == 0 {
+            return this.MaskHasBit(APConstants.GetDogtownGateMask());
+        }
+        return false;
+    }
+
+    public func GetGatedDistrictSummary() -> String {
+        if !this.restrictByMajorDistrict {
+            return "none";
+        }
+
+        let summary: String = "";
+        if this.IsDistrictTokenGated(APConstants.GetWestbrookAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "westbrook");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetCityCenterAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "city_center");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetHeywoodAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "heywood");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetSantoDomingoAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "santo_domingo");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetPacificaAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "pacifica");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetBadlandsAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "badlands");
+        }
+        if this.IsDistrictTokenGated(APConstants.GetDogtownAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "dogtown");
+        }
+
+        if StrLen(summary) == 0 {
+            return "none";
+        }
+        return summary;
+    }
+
+    public func GetAutoOpenDistrictSummary() -> String {
+        if !this.restrictByMajorDistrict {
+            return "all";
+        }
+
+        let summary: String = "";
+        if !this.IsDistrictTokenGated(APConstants.GetWestbrookAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "westbrook");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetCityCenterAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "city_center");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetHeywoodAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "heywood");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetSantoDomingoAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "santo_domingo");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetPacificaAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "pacifica");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetBadlandsAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "badlands");
+        }
+        if !this.IsDistrictTokenGated(APConstants.GetDogtownAccessToken()) {
+            summary = this.AppendDistrictSummary(summary, "dogtown");
+        }
+
+        if StrLen(summary) == 0 {
+            return "none";
+        }
+        return summary;
+    }
+
+    private func MaskHasBit(bit: Int32) -> Bool {
+        let value: Int32 = this.districtTokenGatedMajorMask;
+        while value >= bit * 2 {
+            value -= bit * 2;
+        }
+        return value >= bit;
+    }
+
+    private func AppendDistrictSummary(summary: String, district: String) -> String {
+        if StrLen(summary) == 0 {
+            return district;
+        }
+        return s"\(summary),\(district)";
     }
 
     public func HandlePlayerRespawn() -> Void {
