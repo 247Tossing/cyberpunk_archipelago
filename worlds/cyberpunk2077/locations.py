@@ -528,9 +528,13 @@ location_table: Dict[str, LocationData] = {
     # =================================
     # Vendor Sanity
     # =================================
-    "VendorCheck_Victor_1": LocationData(display_name="VendorCheck_Victor_1", regions=("Watson",), category=LocationCategory.VENDOR),
-    "VendorCheck_Victor_2": LocationData(display_name="VendorCheck_Victor_2", regions=("Watson",), category=LocationCategory.VENDOR),
-    "VendorCheck_Victor_3": LocationData(display_name="VendorCheck_Victor_3", regions=("Watson",), category=LocationCategory.VENDOR),
+    "VendorCheck_Victor_1": LocationData(display_name="Victor's Shop 1", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED),
+    "VendorCheck_Victor_2": LocationData(display_name="Victor's Shop 2", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.DEFAULT),
+    "VendorCheck_Victor_3": LocationData(display_name="Victor's Shop 3", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY),
+
+    "VendorCheck_2ndAmendment_1": LocationData(display_name="2nd Amendment Shop 1", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED),
+    "VendorCheck_2ndAmendment_2": LocationData(display_name="2nd Amendment Shop 2", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED),
+    "VendorCheck_2ndAmendment_3": LocationData(display_name="2nd Amendment Shop 3", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY),
 
     # =================================
     # Event Locations

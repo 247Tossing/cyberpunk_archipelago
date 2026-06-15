@@ -1,21 +1,125 @@
-# 1. Define the Price Modifier as a standalone record
-Items.APCheck_Viktor_1_Price:
+Items.APCheck_Price_Priority:
   $type: ConstantStatModifier
   statType: BaseStats.Price
   modifierType: Additive
   value: 5000
 
-# 2. Define the Dummy Item
-Items.APCheck_Viktor_1:
+Items.APCheck_Price_Standard:
+  $type: ConstantStatModifier
+  statType: BaseStats.Price
+  modifierType: Additive
+  value: 2500
+
+Items.APCheck_Price_Excluded:
+  $type: ConstantStatModifier
+  statType: BaseStats.Price
+  modifierType: Additive
+  value: 1000
+
+Items.VendorCheck_2ndAmendment_1:
   $base: Items.GenericJunkItem1
-  displayName: "LocKey#APCheck_Viktor_1_Name"
-  localizedDescription: "LocKey#APCheck_Viktor_1_Desc"
-  statModifiers:
-    - !append Items.APCheck_Viktor_1_Price
-      
-# Add it to Wilson's Inventory instead
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_2ndAmendment_2:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_2ndAmendment_3:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_Victor_1:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_Victor_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_Victor_2:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_Victor_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_Victor_3:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_Victor_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
 Vendors.wat_lch_gunsmith_01:
   itemStock:
     - !append
-      item: Items.APCheck_Viktor_1 # (You can rename this to APCheck_Wilson_1 later)
-      quantity: [ Vendors.Always_Present ]
+      item: Items.VendorCheck_2ndAmendment_1
+      quantity: 1
+    - !append
+      item: Items.VendorCheck_2ndAmendment_2
+      quantity: 1
+    - !append
+      item: Items.VendorCheck_2ndAmendment_3
+      quantity: 1
+
+Vendors.wat_lch_ripperdoc_01:
+  itemStock:
+    - !append
+      item: Items.VendorCheck_Victor_1
+      quantity: 1
+    - !append
+      item: Items.VendorCheck_Victor_2
+      quantity: 1
+    - !append
+      item: Items.VendorCheck_Victor_3
+      quantity: 1

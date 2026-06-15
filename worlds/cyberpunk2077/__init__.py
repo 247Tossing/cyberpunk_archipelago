@@ -27,7 +27,21 @@ from .options import (
     is_goal_phantom_liberty_only,
 )
 from .regions import create_regions
-from .rules import set_rules
+from .rules import set_rules, VENDOR_LOCATION_NAMES
+
+
+def _vendor_stock_parts_from_check_name(location_name: str) -> tuple[str, int] | None:
+    """Parse `VendorCheck_<vendor>_<slot>` into (`vendor`, `slot`)."""
+    prefix = "VendorCheck_"
+    if not location_name.startswith(prefix):
+        return None
+
+    tail = location_name[len(prefix):]
+    vendor_key, separator, slot_text = tail.rpartition("_")
+    if separator != "_" or not vendor_key or not slot_text.isdigit():
+        return None
+
+    return vendor_key, int(slot_text)
 
 
 
@@ -164,12 +178,6 @@ class Cyberpunk2077World(World):
         "Badlands Yucca Access Token": "Badlands",
         "Badlands Morro Rock Access Token": "Badlands",
     }
-
-    VENDOR_STOCK_LOCATIONS = (
-        "VendorCheck_Victor_1",
-        "VendorCheck_Victor_2",
-        "VendorCheck_Victor_3",
-    )
 
     def __init__(self, multiworld: MultiWorld, player: int):
         """
@@ -468,7 +476,12 @@ class Cyberpunk2077World(World):
         }
         if bool(self.options.vendor_sanity.value):
             stock_records: List[str] = []
-            for stock_index, location_name in enumerate(self.VENDOR_STOCK_LOCATIONS, start=1):
+            for location_name in VENDOR_LOCATION_NAMES:
+                parsed = _vendor_stock_parts_from_check_name(location_name)
+                if parsed is None:
+                    continue
+                vendor_key, stock_index = parsed
+
                 stock_item_name = "Unknown Item"
                 stock_recipient_name = "Unknown Player"
                 location = self.multiworld.get_location(location_name, self.player)
@@ -478,7 +491,7 @@ class Cyberpunk2077World(World):
 
                 safe_item_name = self._sanitize_vendor_stock_token(stock_item_name)
                 safe_recipient_name = self._sanitize_vendor_stock_token(stock_recipient_name)
-                stock_records.append(f"Victor:{stock_index}:{safe_item_name}:{safe_recipient_name}")
+                stock_records.append(f"{vendor_key}:{stock_index}:{safe_item_name}:{safe_recipient_name}")
 
             slot_data["vendor_sanity_stock"] = ",".join(stock_records)
 

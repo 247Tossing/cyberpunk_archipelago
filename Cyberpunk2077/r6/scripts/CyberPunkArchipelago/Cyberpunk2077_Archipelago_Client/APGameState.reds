@@ -88,6 +88,9 @@ public class APGameState extends ScriptableService {
         this.vendorSanityEnabled = enabled;
         this.vendorSanityStockLine = stockLine;
         this.vendorSanityItems = APVendorItem.ParseStockLine(stockLine);
+        if changed {
+            this.LogVendorSanitySlotDataDebug();
+        }
         return changed;
     }
 
@@ -201,6 +204,37 @@ public class APGameState extends ScriptableService {
             return district;
         }
         return s"\(summary),\(district)";
+    }
+
+    // slot_data vendor_sanity / vendor_sanity_stock — log what the client received and how it maps to checks
+    private func LogVendorSanitySlotDataDebug() -> Void {
+        APLogger.LogDebug(
+            s"APGameState: Vendor sanity (slot_data) — enabled=\(this.vendorSanityEnabled), raw_vendor_sanity_stock=\"\(this.vendorSanityStockLine)\""
+        );
+
+        if ArraySize(this.vendorSanityItems) == 0 {
+            APLogger.LogDebug("APGameState: Vendor sanity — no parsed stock rows (empty line, option off, or malformed Vendor:Index:Item:Recipient records)");
+            return;
+        }
+
+        let rowIndex: Int32 = 0;
+        while rowIndex < ArraySize(this.vendorSanityItems) {
+            let entry: ref<APVendorItem> = this.vendorSanityItems[rowIndex];
+            if IsDefined(entry) {
+                let locationCheckId: String = s"VendorCheck_\(entry.vendorName)_\(ToString(entry.slotIndex))";
+                let wireId: Int64 = APNativeMappings.ResolveLocationAddress(locationCheckId);
+                if wireId >= 0l {
+                    APLogger.LogDebug(
+                        s"APGameState: Vendor location assignment — check=\(locationCheckId), wire_id=\(ToString(wireId)), multiworld_item=\"\(entry.itemName)\", recipient=\"\(entry.recipientName)\", vendor_key=\"\(entry.vendorName)\", slot_index=\(ToString(entry.slotIndex))"
+                    );
+                } else {
+                    APLogger.LogDebug(
+                        s"APGameState: Vendor location assignment — check=\(locationCheckId) has NO mapping (wire_id=-1); stock row vendor=\"\(entry.vendorName)\", slot_index=\(ToString(entry.slotIndex)), item=\"\(entry.itemName)\", recipient=\"\(entry.recipientName)\""
+                    );
+                }
+            }
+            rowIndex += 1;
+        }
     }
 
     public func HandlePlayerRespawn() -> Void {

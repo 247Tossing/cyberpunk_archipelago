@@ -272,6 +272,8 @@ public class APGameSystem extends ScriptableSystem {
             return;
         }
 
+        APLogger.LogDebug(s"APGameSystem: Item received from AP server (sync): \(item)");
+
         // Increment NetworkItem counter for each item processed (matches Python's len(received_items))
         gameState.totalNetworkItemsReceived += 1;
 
@@ -310,6 +312,8 @@ public class APGameSystem extends ScriptableSystem {
             return;
         }
 
+        APLogger.LogDebug(s"APGameSystem: Item received from AP server: \(item)");
+
         // Increment NetworkItem counter for real-time items from queue worker
         if IsDefined(APGameState) {
             APGameState.totalNetworkItemsReceived += 1;
@@ -325,7 +329,6 @@ public class APGameSystem extends ScriptableSystem {
             // Not implemented
         }
         else if APItemParser.IsTrap(item) {
-            APLogger.LogDebug(s"APGameSystem: HandleItemReceived called - trap: \(item)");
             let APTrapSystem: ref<APTrapSystem> = GameInstance.GetScriptableSystemsContainer(GetGameInstance()).Get(n"Archipelago.APTrapSystem") as APTrapSystem;
             if IsDefined(APTrapSystem) {
                 APTrapSystem.DoTrap(item);

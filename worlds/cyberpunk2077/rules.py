@@ -11,10 +11,12 @@ from .options import CompletionGoal, get_gated_major_districts, has_effective_ph
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
-VENDOR_LOCATION_NAMES = (
-    "VendorCheck_Victor_1",
-    "VendorCheck_Victor_2",
-    "VendorCheck_Victor_3",
+VENDOR_LOCATION_NAMES = tuple(
+    sorted(
+        location_data.display_name
+        for location_data in location_table.values()
+        if location_data.category == LocationCategory.VENDOR and location_data.code is not None
+    )
 )
 
 

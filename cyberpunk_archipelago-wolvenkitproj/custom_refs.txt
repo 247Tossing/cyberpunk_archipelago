@@ -1,0 +1,6 @@
+ap-icons_1080.xbm
+ap-icons.xbm
+archipelago\ap-icons_1080.xbm
+archipelago\ap-icons.xbm
+cyberpunk_archipelago-wolvenkitproj_icons_1080.xbm
+cyberpunk_archipelago-wolvenkitproj_icons.xbm
