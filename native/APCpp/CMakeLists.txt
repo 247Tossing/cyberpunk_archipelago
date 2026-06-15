@@ -18,36 +18,12 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 
-# Enable TLS. Keep backend toggles in cache so command-line -D flags are
-# respected and propagated into IXWebSocket's CMake options.
+# Enable TLS. OpenSSL backend is intentionally disabled for release stability.
+# Always force IXWebSocket/APCpp onto bundled mbedTLS so produced binaries do
+# not rely on external OpenSSL runtime installs.
 set(USE_TLS ON CACHE BOOL "Enable TLS support" FORCE)
-set(USE_MBED_TLS OFF CACHE BOOL "Use mbedTLS backend for TLS" FORCE)
+set(USE_MBED_TLS ON CACHE BOOL "Use mbedTLS backend for TLS" FORCE)
 set(USE_OPEN_SSL OFF CACHE BOOL "Use OpenSSL backend for TLS" FORCE)
-
-if (USE_OPEN_SSL AND USE_MBED_TLS)
-    message(FATAL_ERROR "USE_OPEN_SSL and USE_MBED_TLS cannot both be ON.")
-endif()
-
-# Prefer OpenSSL when available unless the caller explicitly forces a backend.
-if (NOT MINGW)
-    if (USE_OPEN_SSL)
-        find_package(OpenSSL REQUIRED)
-        # IXWebSocket defaults to mbedTLS on Windows unless USE_OPEN_SSL is set.
-        set(USE_OPEN_SSL ON CACHE BOOL "" FORCE)
-        set(USE_MBED_TLS OFF CACHE BOOL "" FORCE)
-    elseif (NOT USE_MBED_TLS)
-        find_package(OpenSSL QUIET)
-        if (OPENSSL_FOUND)
-            message(STATUS "Using system OpenSSL.")
-            set(USE_OPEN_SSL ON CACHE BOOL "" FORCE)
-            set(USE_MBED_TLS OFF CACHE BOOL "" FORCE)
-        else()
-            message(STATUS "OpenSSL not found; falling back to bundled mbedTLS.")
-            set(USE_MBED_TLS ON CACHE BOOL "" FORCE)
-            set(USE_OPEN_SSL OFF CACHE BOOL "" FORCE)
-        endif()
-    endif()
-endif()
 
 if (USE_MBED_TLS)
     set(APCPP_MBEDTLS_VER 3.6.4)
@@ -65,11 +41,11 @@ if (USE_MBED_TLS)
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
-    set(MBEDTLS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include)
-    set(MBEDTLS_VERSION_GREATER_THAN_3 ${MBEDTLS_INCLUDE_DIRS})
-    set(MBEDTLS_LIBRARY mbedtls)
-    set(MBEDX509_LIBRARY mbedx509)
-    set(MBEDCRYPTO_LIBRARY mbedcrypto)
+    set(MBEDTLS_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include CACHE PATH "" FORCE)
+    set(MBEDTLS_VERSION_GREATER_THAN_3 ${MBEDTLS_INCLUDE_DIRS} CACHE PATH "" FORCE)
+    set(MBEDTLS_LIBRARY mbedtls CACHE STRING "" FORCE)
+    set(MBEDX509_LIBRARY mbedx509 CACHE STRING "" FORCE)
+    set(MBEDCRYPTO_LIBRARY mbedcrypto CACHE STRING "" FORCE)
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER} mbedtls_bin)
 endif (USE_MBED_TLS)
 

@@ -1,4 +1,5 @@
-# Builds cyberpunk2077.apworld + CyberpunkArchipelagoMod_(version).zip on Windows.
+# Builds cyberpunk2077.apworld + cyberpunk2077_poptracker_(version).zip +
+# CyberpunkArchipelagoMod_(version).zip on Windows.
 # See tools/README.md → "GitHub Actions" for how to trigger and download artifacts.
 
 name: Release artifacts
@@ -51,31 +52,21 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
         
-      - name: Setup OpenSSL
-        shell: pwsh
-        run: |
-          choco install openssl --no-progress -y
-          $candidates = @(
-            "C:\Program Files\OpenSSL-Win64",
-            "C:\Program Files\OpenSSL"
-          )
-          $root = $candidates | Where-Object { Test-Path "$_\include\openssl\ssl.h" } | Select-Object -First 1
-          if (-not $root) {
-            throw "OpenSSL headers not found after installation."
-          }
-          "OPENSSL_ROOT_DIR=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "$root\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - name: Build release artifacts
         shell: pwsh
         env:
           ARCHIPELAGO_ROOT: ${{ github.workspace }}/Archipelago
         run: |
+          # Force native build onto bundled mbedTLS in workflow itself so CI
+          # cannot drift back to OpenSSL due to stale script revisions.
+          cmake -S native -B native/build -DUSE_OPEN_SSL=OFF -DUSE_MBED_TLS=ON
+          cmake --build native/build --config Release --target cyberpunk_ap_plugin
+
           $tagArg = @()
           if ("${{ github.ref_type }}" -eq "tag") {
             $tagArg = @("--require-tag-version", "${{ github.ref_name }}")
           }
-          python tools/build_release.py --skip-submodules @tagArg
+          python tools/build_release.py --skip-submodules --skip-native @tagArg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

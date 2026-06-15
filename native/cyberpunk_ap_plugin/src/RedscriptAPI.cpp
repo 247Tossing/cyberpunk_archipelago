@@ -166,6 +166,7 @@ void RegisterTypes()
 void PostRegisterTypes()
 {
     auto rtti = RED4ext::CRTTISystem::Get();
+
     if (!rtti)
     {
         return;
@@ -200,6 +201,7 @@ void RegisterRedscriptAPI(RED4ext::v1::PluginHandle handle, const RED4ext::v1::S
     g_sdk = sdk;
 
     auto rtti = RED4ext::CRTTISystem::Get();
+
     if (!rtti)
     {
         if (sdk && sdk->logger)
