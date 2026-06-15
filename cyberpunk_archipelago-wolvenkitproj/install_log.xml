@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<InstalLog Project="cyberpunk_archipelago-wolvenkitproj" Build_date="6/15/2026 1:07:43 AM">
+  <Files>
+    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive">
+      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc">
+        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod">
+          <file>E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod\cyberpunk_archipelago-wolvenkitproj.archive</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\archive\pc\mod\cyberpunk_archipelago-wolvenkitproj.archive.xl</file>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6">
+      <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks">
+        <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj">
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks.yaml</file>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Files>
+</InstalLog>

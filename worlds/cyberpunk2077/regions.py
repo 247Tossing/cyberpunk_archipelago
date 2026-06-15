@@ -354,6 +354,8 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
                 not (location_data.dlc_only and location_data.category == LocationCategory.DLC_MAIN)
             ):
                 continue
+        if location_data.category == LocationCategory.VENDOR and not world.options.vendor_sanity:
+            continue
 
         # Skip DLC locations if the player didn't enable them
         # Check both regions membership and dlc_only flag (events may be in Watson to avoid circular deps)

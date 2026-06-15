@@ -24,6 +24,8 @@ You will need the following mods for this to work:
 | Mod          | Github Link | Nexusmods Link |
 | ----------------- | ------------------------------------------------------------------ | ------------------------------------------- |
 | RedScript 0.5.31 | [Github Link](https://github.com/jac3km4/redscript)| [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/1511)
+| TweakXL | [Github Link](https://github.com/psiberx/cp2077-tweak-xl) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/4197)
+| ArchiveXL | [Github Link](https://github.com/psiberx/cp2077-archive-xl) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/4198)
 | Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/107)
 | Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/7780)
 | Red4Ext | [Github Link](https://github.com/wopss/RED4ext) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/2380)

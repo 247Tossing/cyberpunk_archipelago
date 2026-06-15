@@ -11,6 +11,9 @@ public class APGameState extends ScriptableService {
     public let restrictBySubDistrict: Bool;
     public let districtTokenGatedMajorMask: Int32;
     public let districtRestrictionConfigInitialized: Bool;
+    public let vendorSanityEnabled: Bool;
+    public let vendorSanityStockLine: String;
+    public let vendorSanityItems: array<ref<APVendorItem>>;
 
     // Weapon restriction settings (synced from APWorld options via SYNC_CONFIG)
     // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
@@ -74,6 +77,17 @@ public class APGameState extends ScriptableService {
         this.restrictBySubDistrict = restrictSub;
         this.districtTokenGatedMajorMask = gatedMajorMask;
         this.districtRestrictionConfigInitialized = true;
+        return changed;
+    }
+
+    public func SetVendorSanityData(enabled: Bool, stockLine: String) -> Bool {
+        let changed: Bool = (this.vendorSanityEnabled && !enabled)
+            || (!this.vendorSanityEnabled && enabled)
+            || StrCmp(this.vendorSanityStockLine, stockLine) != 0;
+
+        this.vendorSanityEnabled = enabled;
+        this.vendorSanityStockLine = stockLine;
+        this.vendorSanityItems = APVendorItem.ParseStockLine(stockLine);
         return changed;
     }
 

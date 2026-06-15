@@ -158,6 +158,16 @@ public class TCPClient extends ScriptableService {
                         districtGameSystem.ApplyDistrictRestrictionConfig();
                     }
                 }
+
+                let vendorChanged: Bool = gameState.SetVendorSanityData(
+                    AP_GetVendorSanityEnabled(),
+                    AP_GetVendorSanityStockLine()
+                );
+                if vendorChanged {
+                    APLogger.LogInfo(
+                        s"Vendor sanity data received: enabled=\(gameState.vendorSanityEnabled), slots=\(ToString(ArraySize(gameState.vendorSanityItems)))"
+                    );
+                }
             }
         }
 

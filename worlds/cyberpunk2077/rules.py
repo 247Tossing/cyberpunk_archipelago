@@ -11,6 +11,12 @@ from .options import CompletionGoal, get_gated_major_districts, has_effective_ph
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
+VENDOR_LOCATION_NAMES = (
+    "VendorCheck_Victor_1",
+    "VendorCheck_Victor_2",
+    "VendorCheck_Victor_3",
+)
+
 
 def set_rules(world: "Cyberpunk2077World") -> None:
     """Set location and victory rules for the selected completion goal."""
@@ -21,6 +27,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     else:
         _set_base_game_rules(world, player)
 
+    _apply_vendor_rules(world, player)
     _apply_multi_region_rules(world, player)
     _set_victory_rule(world, player)
 
@@ -166,6 +173,14 @@ def _set_victory_rule(world: "Cyberpunk2077World", player: int) -> None:
         victory_location,
         lambda state: state.can_reach_location("Ending Reached", player),
     )
+
+
+def _apply_vendor_rules(world: "Cyberpunk2077World", player: int) -> None:
+    if not bool(world.options.vendor_sanity.value):
+        return
+
+    for location_name in VENDOR_LOCATION_NAMES:
+        _set_rule_if_present(world, player, location_name, "Prologue - The Ripperdoc")
 
 
 def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int) -> list[str]:

@@ -37,6 +37,8 @@ public:
     bool GetRestrictByMajorDistrict() const;
     bool GetRestrictBySubDistrict() const;
     int32_t GetDistrictTokenGatedMajorMask() const;
+    bool GetVendorSanityEnabled() const;
+    std::string GetVendorSanityStockLine() const;
 
 private:
     APBridge() = default;
@@ -50,6 +52,8 @@ private:
     static void OnSlotDataRestrictByMajorDistrict(int value);
     static void OnSlotDataRestrictBySubDistrict(int value);
     static void OnSlotDataDistrictTokenGatedMajorMask(int value);
+    static void OnSlotDataVendorSanity(int value);
+    static void OnSlotDataVendorSanityStock(std::string value);
 
     bool IsReadyLocked() const; // caller must hold m_mutex
 
@@ -58,6 +62,8 @@ private:
     void SetRestrictByMajorDistrict(bool value);
     void SetRestrictBySubDistrict(bool value);
     void SetDistrictTokenGatedMajorMask(int32_t value);
+    void SetVendorSanityEnabled(bool value);
+    void SetVendorSanityStockLine(const std::string& value);
 
     mutable std::mutex m_mutex;
     bool m_initialized{false};
@@ -66,6 +72,8 @@ private:
     bool m_restrictByMajorDistrict{false};
     bool m_restrictBySubDistrict{false};
     int32_t m_districtTokenGatedMajorMask{0};
+    bool m_vendorSanityEnabled{false};
+    std::string m_vendorSanityStockLine;
     std::queue<int64_t> m_receivedItemIds;
 };
 } // namespace CyberpunkArchipelago

@@ -1,5 +1,64 @@
 #include "APBridge.hpp"
 
+namespace
+{
+std::string NormalizeSlotDataRawString(std::string rawValue)
+{
+    while (!rawValue.empty() && (rawValue.back() == '\n' || rawValue.back() == '\r'))
+    {
+        rawValue.pop_back();
+    }
+
+    if (rawValue.size() >= 2 && rawValue.front() == '"' && rawValue.back() == '"')
+    {
+        rawValue = rawValue.substr(1, rawValue.size() - 2);
+        std::string unescaped;
+        unescaped.reserve(rawValue.size());
+        bool escaping = false;
+        for (char current : rawValue)
+        {
+            if (escaping)
+            {
+                switch (current)
+                {
+                case 'n':
+                    unescaped.push_back('\n');
+                    break;
+                case 'r':
+                    unescaped.push_back('\r');
+                    break;
+                case 't':
+                    unescaped.push_back('\t');
+                    break;
+                case '\\':
+                    unescaped.push_back('\\');
+                    break;
+                case '"':
+                    unescaped.push_back('"');
+                    break;
+                default:
+                    unescaped.push_back(current);
+                    break;
+                }
+                escaping = false;
+                continue;
+            }
+
+            if (current == '\\')
+            {
+                escaping = true;
+                continue;
+            }
+
+            unescaped.push_back(current);
+        }
+        rawValue = unescaped;
+    }
+
+    return rawValue;
+}
+} // namespace
+
 namespace CyberpunkArchipelago
 {
 APBridge& APBridge::Get()
@@ -33,6 +92,8 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_RegisterSlotDataIntCallback("restrict_by_major_district", &APBridge::OnSlotDataRestrictByMajorDistrict);
     AP_RegisterSlotDataIntCallback("restrict_by_sub_district", &APBridge::OnSlotDataRestrictBySubDistrict);
     AP_RegisterSlotDataIntCallback("district_token_gated_major_mask", &APBridge::OnSlotDataDistrictTokenGatedMajorMask);
+    AP_RegisterSlotDataIntCallback("vendor_sanity", &APBridge::OnSlotDataVendorSanity);
+    AP_RegisterSlotDataRawCallback("vendor_sanity_stock", &APBridge::OnSlotDataVendorSanityStock);
 
     // AP_Init() is void and has no synchronous failure path; AP_IsInit() only
     // returns true after AP_Start() is called, so we track init state ourselves.
@@ -74,6 +135,8 @@ void APBridge::Shutdown()
     m_restrictByMajorDistrict = false;
     m_restrictBySubDistrict = false;
     m_districtTokenGatedMajorMask = 0;
+    m_vendorSanityEnabled = false;
+    m_vendorSanityStockLine.clear();
     std::queue<int64_t> empty;
     m_receivedItemIds.swap(empty);
 }
@@ -200,6 +263,18 @@ int32_t APBridge::GetDistrictTokenGatedMajorMask() const
     return m_districtTokenGatedMajorMask;
 }
 
+bool APBridge::GetVendorSanityEnabled() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_vendorSanityEnabled;
+}
+
+std::string APBridge::GetVendorSanityStockLine() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_vendorSanityStockLine;
+}
+
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
@@ -236,6 +311,16 @@ void APBridge::OnSlotDataDistrictTokenGatedMajorMask(int value)
     APBridge::Get().SetDistrictTokenGatedMajorMask(value);
 }
 
+void APBridge::OnSlotDataVendorSanity(int value)
+{
+    APBridge::Get().SetVendorSanityEnabled(value != 0);
+}
+
+void APBridge::OnSlotDataVendorSanityStock(std::string value)
+{
+    APBridge::Get().SetVendorSanityStockLine(value);
+}
+
 void APBridge::PushItem(int64_t itemId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -264,5 +349,17 @@ void APBridge::SetDistrictTokenGatedMajorMask(int32_t value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_districtTokenGatedMajorMask = value;
+}
+
+void APBridge::SetVendorSanityEnabled(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_vendorSanityEnabled = value;
+}
+
+void APBridge::SetVendorSanityStockLine(const std::string& value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_vendorSanityStockLine = NormalizeSlotDataRawString(value);
 }
 } // namespace CyberpunkArchipelago

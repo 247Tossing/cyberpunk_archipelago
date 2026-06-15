@@ -16,6 +16,8 @@ public static native func AP_PollItemQueue() -> Int64
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
 public static native func AP_GetRestrictBySubDistrict() -> Bool
 public static native func AP_GetDistrictTokenGatedMajorMask() -> Int32
+public static native func AP_GetVendorSanityEnabled() -> Bool
+public static native func AP_GetVendorSanityStockLine() -> String
 
 // Thin wrappers around the generated APArchipelagoIdMappings class.
 // The actual id <-> string tables live in APArchipelagoIdMappings.reds, which is

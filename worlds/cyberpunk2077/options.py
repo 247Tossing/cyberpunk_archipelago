@@ -194,6 +194,11 @@ class OopsAllTraps(Toggle):
     default = 0
 
 
+class VendorSanity(Toggle):
+    display_name = "Vendor Sanity"
+    default = 0
+
+
 # TODO: Add more options as needed for your implementation
 # Examples:
 # - Randomize quest order
@@ -248,6 +253,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     quick_hacks_as_items: QuickHacksAsItems
     include_ncpd_hustles: IncludeNCPDHustles
     include_minor_quests: IncludeMinorQuests
+    vendor_sanity: VendorSanity
     enable_traps: EnableTraps
     trap_amount: TrapItemsPerTrap
     oops_all_traps: OopsAllTraps
@@ -301,6 +307,9 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("Item Options", [
         QuickHacksAsItems,
+    ]),
+    OptionGroup("Vendor Sanity Options", [
+        VendorSanity,
     ]),
     OptionGroup("Extra Challenge", [
         EnableDeathLink,

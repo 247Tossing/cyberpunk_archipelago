@@ -1,0 +1,21 @@
+# 1. Define the Price Modifier as a standalone record
+Items.APCheck_Viktor_1_Price:
+  $type: ConstantStatModifier
+  statType: BaseStats.Price
+  modifierType: Additive
+  value: 5000
+
+# 2. Define the Dummy Item
+Items.APCheck_Viktor_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#APCheck_Viktor_1_Name"
+  localizedDescription: "LocKey#APCheck_Viktor_1_Desc"
+  statModifiers:
+    - !append Items.APCheck_Viktor_1_Price
+      
+# Add it to Wilson's Inventory instead
+Vendors.wat_lch_gunsmith_01:
+  itemStock:
+    - !append
+      item: Items.APCheck_Viktor_1 # (You can rename this to APCheck_Wilson_1 later)
+      quantity: [ Vendors.Always_Present ]

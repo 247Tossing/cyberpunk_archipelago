@@ -165,6 +165,11 @@ class Cyberpunk2077World(World):
         "Badlands Morro Rock Access Token": "Badlands",
     }
 
+    VENDOR_STOCK_LOCATIONS = (
+        "VendorCheck_Victor_1",
+        "VendorCheck_Victor_2",
+        "VendorCheck_Victor_3",
+    )
 
     def __init__(self, multiworld: MultiWorld, player: int):
         """
@@ -455,8 +460,31 @@ class Cyberpunk2077World(World):
             "restrict_by_major_district": district_restriction_active(self.options),
             "restrict_by_sub_district": bool(self.options.restrict_by_sub_district.value),
             "district_token_gated_major_mask": get_gated_major_district_mask(self.options),
+            # Vendor sanity settings
+            "vendor_sanity": int(bool(self.options.vendor_sanity.value)),
+            "vendor_sanity_stock": "",
             # TODO: Add skill_points_as_items option when implemented
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
         }
+        if bool(self.options.vendor_sanity.value):
+            stock_records: List[str] = []
+            for stock_index, location_name in enumerate(self.VENDOR_STOCK_LOCATIONS, start=1):
+                stock_item_name = "Unknown Item"
+                stock_recipient_name = "Unknown Player"
+                location = self.multiworld.get_location(location_name, self.player)
+                if location.item is not None:
+                    stock_item_name = location.item.name
+                    stock_recipient_name = self.multiworld.get_player_name(location.item.player)
+
+                safe_item_name = self._sanitize_vendor_stock_token(stock_item_name)
+                safe_recipient_name = self._sanitize_vendor_stock_token(stock_recipient_name)
+                stock_records.append(f"Victor:{stock_index}:{safe_item_name}:{safe_recipient_name}")
+
+            slot_data["vendor_sanity_stock"] = ",".join(stock_records)
+
         return slot_data
+
+    @staticmethod
+    def _sanitize_vendor_stock_token(value: str) -> str:
+        return value.replace(":", " ").replace(",", " ").strip()
 

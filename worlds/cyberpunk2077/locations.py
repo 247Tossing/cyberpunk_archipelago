@@ -127,6 +127,7 @@ class LocationCategory:
     DLC_SIDE = "dlc_side"                # Phantom Liberty side content
     MISC = "misc"                        # Uncategorized/miscellaneous
     TAROT = "tarot"                      # Tarot card locations
+    VENDOR = "vendor"                    # Vendor stock checks
 
 
 # ===== LOCATION TABLE =====
@@ -525,6 +526,13 @@ location_table: Dict[str, LocationData] = {
     # =================================
 
     # =================================
+    # Vendor Sanity
+    # =================================
+    "VendorCheck_Victor_1": LocationData(display_name="VendorCheck_Victor_1", regions=("Watson",), category=LocationCategory.VENDOR),
+    "VendorCheck_Victor_2": LocationData(display_name="VendorCheck_Victor_2", regions=("Watson",), category=LocationCategory.VENDOR),
+    "VendorCheck_Victor_3": LocationData(display_name="VendorCheck_Victor_3", regions=("Watson",), category=LocationCategory.VENDOR),
+
+    # =================================
     # Event Locations
     # =================================
     # Event locations have code=None and represent milestones or quest completions
@@ -695,6 +703,7 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
     epilogues = []
     dlc_main = []
     dlc_side = []
+    vendor = []
     misc = []
 
     for loc_name, loc_data in location_table.items():
@@ -722,6 +731,8 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
             dlc_main.append(loc_name)
         elif loc_data.category == LocationCategory.DLC_SIDE:
             dlc_side.append(loc_name)
+        elif loc_data.category == LocationCategory.VENDOR:
+            vendor.append(loc_name)
         elif loc_data.category == LocationCategory.MISC:
             misc.append(loc_name)
 
@@ -746,6 +757,8 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
         groups["Phantom Liberty Main Quests"] = dlc_main
     if dlc_side:
         groups["Phantom Liberty Side Content"] = dlc_side
+    if vendor:
+        groups["Vendor Sanity"] = vendor
     if misc:
         groups["Miscellaneous"] = misc
 

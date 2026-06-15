@@ -165,6 +165,25 @@ void APGetDistrictTokenGatedMajorMask(RED4ext::IScriptable*, RED4ext::CStackFram
     }
 }
 
+void APGetVendorSanityEnabled(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetVendorSanityEnabled();
+    }
+}
+
+void APGetVendorSanityStockLine(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetVendorSanityStockLine().c_str());
+        *aOut = result;
+    }
+}
+
 template <typename TFunc>
 void RegisterNative(RED4ext::CRTTISystem* rtti, const char* fullName, const char* shortName, TFunc fn)
 {
@@ -205,6 +224,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictBySubDistrict", "AP_GetRestrictBySubDistrict", &APGetRestrictBySubDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);
+    RegisterNative(rtti, "Archipelago.AP_GetVendorSanityEnabled", "AP_GetVendorSanityEnabled", &APGetVendorSanityEnabled);
+    RegisterNative(rtti, "Archipelago.AP_GetVendorSanityStockLine", "AP_GetVendorSanityStockLine", &APGetVendorSanityStockLine);
 
     if (g_sdk && g_sdk->logger)
     {
