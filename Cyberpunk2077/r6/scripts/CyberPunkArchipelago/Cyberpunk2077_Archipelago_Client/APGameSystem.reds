@@ -414,6 +414,7 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
         //APLogger.LogInfo( "AP Game State Defined");
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
+        APNGPlusBridge.TryReleasePrologueChecksOnSpawn(GetGameInstance());
         APGameSystem.SendSyncChecks();
 
         // Register the Archipelago phone contact on every spawn

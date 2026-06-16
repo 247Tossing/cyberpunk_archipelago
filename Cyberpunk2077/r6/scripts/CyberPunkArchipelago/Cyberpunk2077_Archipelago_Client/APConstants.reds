@@ -163,6 +163,9 @@ public class APConstants {
     public static func GetQuestQ101_01_firestormDone() -> String { return "ap_q101_01_firestorm"; }
     public static func GetTarotCounterFact() -> String { return "mq033_grafitti_counter"; }
     public static func GetVPillsFact() -> String { return "q101_v_reached_pills"; }
+    public static func GetNGPlusActiveFact() -> String { return "ngplus_active"; }
+    public static func GetNGPlusQ001StartFact() -> String { return "ngplus_q001_start"; }
+    public static func GetNGPlusStandaloneQ101StartFact() -> String { return "ngplus_standalone_q101_start"; }
 
     // ===== SERVICE NAMES =====
     // CNames for retrieving services from the game engine

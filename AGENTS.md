@@ -84,6 +84,11 @@ flowchart LR
 - **TCPClient.reds** forwards to **native** functions declared in [Cyberpunk2077/r6/scripts/CyberPunkArchipelago/Cyberpunk2077_Archipelago_Client/APNativeBindings.reds](Cyberpunk2077/r6/scripts/CyberPunkArchipelago/Cyberpunk2077_Archipelago_Client/APNativeBindings.reds); the implementation lives in **`CyberpunkAP.dll`** (APCpp and bridge code).
 - **APGameState** / **APGameSystem** hold and drive game-side state (items, districts, traps, phone UI, etc.).
 
+## Optional CyberpunkNewGamePlus bridge
+
+- `APNGPlusBridge.reds` provides an optional runtime integration for [CyberpunkNewGamePlus](https://github.com/alphanin9/CyberpunkNewGamePlus) (GPL-3.0). Keep this integration RedScript-only and fact-driven (`ngplus_*` quest facts) so AP remains functional when NG+ is not installed.
+- Do not vendor or bundle NG+ code/artifacts into this repository or release zips. Treat NG+ as a separate user-installed dependency.
+
 ## Hard invariant: natives and DLL stay paired
 
 Declarations in [APNativeBindings.reds](Cyberpunk2077/r6/scripts/CyberPunkArchipelago/Cyberpunk2077_Archipelago_Client/APNativeBindings.reds) **must match** the exported API of the shipped **`CyberpunkAP.dll`**.

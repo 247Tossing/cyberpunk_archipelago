@@ -70,6 +70,10 @@ public class APQuestHandler extends ScriptableSystem {
 
     // Check if heist intro is complete (used for district enforcement)
     public func IsPassedPrologue() -> Bool {
+        if APNGPlusBridge.IsPastPrologueForEnforcement(this.GetGameInstance()) {
+            return true;
+        }
+
         return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 && 
         this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0 && 
         this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone()) > 0 &&

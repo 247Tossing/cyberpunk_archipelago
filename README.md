@@ -31,6 +31,11 @@ You will need the following mods for this to work:
 | Red4Ext | [Github Link](https://github.com/wopss/RED4ext) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/2380)
 | Phone Extension | Unknown | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
 
+Optional companion mod (not required for normal AP runs):
+| Mod | Github Link | Nexusmods Link |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------- |
+| CyberpunkNewGamePlus (GPL-3.0, optional) | [Github Link](https://github.com/alphanin9/CyberpunkNewGamePlus) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) |
+
 ## Mod Installation
 Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
 
@@ -45,6 +50,11 @@ If you update **only** `r6/scripts/...` (e.g. from git) but leave an **older** `
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.
+
+### Optional NG+ bridge behavior
+
+When CyberpunkNewGamePlus is installed, this mod can auto-release skipped prologue checks for NG+ Q101/standalone starts on spawn. NG+ remains a separate install and is never bundled in the AP zip. This bridge currently targets NG+ `v1.3.1` and Cyberpunk game `2.31`.
+
 # Usage
 
 ## Using the Mod
