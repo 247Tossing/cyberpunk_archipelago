@@ -354,8 +354,19 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
                 not (location_data.dlc_only and location_data.category == LocationCategory.DLC_MAIN)
             ):
                 continue
-        if location_data.category == LocationCategory.VENDOR and not world.options.vendor_sanity:
-            continue
+        if location_data.category == LocationCategory.VENDOR:
+            if not world.options.vendor_sanity:
+                continue
+            subtype_option_map = {
+                "ripperdoc": world.options.vendor_ripperdocs,
+                "gunsmith":  world.options.vendor_gunsmiths,
+                "clothing":  world.options.vendor_clothing,
+                "melee":     world.options.vendor_melee,
+                "netrunner": world.options.vendor_netrunners,
+            }
+            subtype = location_data.vendor_subtype
+            if subtype and not subtype_option_map.get(subtype):
+                continue
 
         # Skip DLC locations if the player didn't enable them
         # Check both regions membership and dlc_only flag (events may be in Watson to avoid circular deps)

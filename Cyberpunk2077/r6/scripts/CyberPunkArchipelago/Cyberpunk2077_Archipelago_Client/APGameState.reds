@@ -237,6 +237,24 @@ public class APGameState extends ScriptableService {
         }
     }
 
+    // Returns true if the given locationId (e.g. "VendorCheck_Victor_1") is part of this run's
+    // vendor_sanity_stock. Items absent from the stock were either from a disabled category or
+    // were never added, and should be hidden from vendor inventories.
+    public func IsVendorCheckInRun(locationId: String) -> Bool {
+        let i: Int32 = 0;
+        while i < ArraySize(this.vendorSanityItems) {
+            let entry: ref<APVendorItem> = this.vendorSanityItems[i];
+            if IsDefined(entry) {
+                let entryId: String = s"VendorCheck_\(entry.vendorName)_\(ToString(entry.slotIndex))";
+                if StrCmp(entryId, locationId) == 0 {
+                    return true;
+                }
+            }
+            i += 1;
+        }
+        return false;
+    }
+
     public func HandlePlayerRespawn() -> Void {
         this.diedFromDeathLink = false;
     }

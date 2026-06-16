@@ -1,0 +1,773 @@
+# Weapon vendors
+# Archipelago vendor sanity — 2nd Amendment + gunsmith VendorCheck items and weapon vendor stock.
+# TweakXL loads all .yaml here; numeric prefix keeps vendor_checks_0_common before other files.
+
+
+Items.VendorCheck_2ndAmendment_1:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_2ndAmendment_2:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_2ndAmendment_3:
+  $base: Items.GenericJunkItem1
+  icon: UIIcon.APLogo
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_2ndAmendment_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+# 2nd Amendment (Kabuki) — stock must attach to the vendor the player interacts with
+# (`Character.wat_kab_gunsmith_01` → `Vendors.wat_kab_gunsmith_01`), not Little China.
+Vendors.wat_kab_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_3
+      quantity: [ Vendors.Always_Present ]
+
+# =============================================================================
+# Weapon Vendors
+# =============================================================================
+
+Items.VendorCheck_CctDtnGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CctDtnGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_CctDtnGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CctDtnGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_CctDtnGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CctDtnGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_HeyGleGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyGleGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_HeyGleGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyGleGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_HeyGleGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyGleGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_HeyReyGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyReyGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_HeyReyGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyReyGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_HeyReyGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeyReyGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_HeySprGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeySprGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_HeySprGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeySprGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_HeySprGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_HeySprGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_PacWwdGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_PacWwdGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_PacWwdGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_PacWwdGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_PacWwdGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_PacWwdGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_StdArrGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdArrGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_StdArrGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdArrGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_StdArrGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdArrGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_StdRcrGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdRcrGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_StdRcrGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdRcrGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_StdRcrGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_StdRcrGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_WatNidGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WatNidGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_WatNidGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WatNidGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_WatNidGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WatNidGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_WbrJpnGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WbrJpnGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_WbrJpnGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WbrJpnGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_WbrJpnGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_WbrJpnGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_BlsInaSe1Gunsmith01a_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith01a_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_BlsInaSe1Gunsmith01a_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith01a_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_BlsInaSe1Gunsmith01a_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith01a_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_BlsInaSe1Gunsmith02_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith02_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_BlsInaSe1Gunsmith02_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith02_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_BlsInaSe1Gunsmith02_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe1Gunsmith02_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_BlsInaSe5Gunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe5Gunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_BlsInaSe5Gunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe5Gunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_BlsInaSe5Gunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_BlsInaSe5Gunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+Items.VendorCheck_CzConGunsmith_1:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CzConGunsmith_1
+  quality: Quality.Common
+  buyPrice:
+    - Items.APCheck_Price_Excluded
+
+Items.VendorCheck_CzConGunsmith_2:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CzConGunsmith_2
+  quality: Quality.Epic
+  buyPrice:
+    - Items.APCheck_Price_Standard
+
+Items.VendorCheck_CzConGunsmith_3:
+  $base: Items.GenericJunkItem1
+  displayName: "LocKey#VendorCheck_Fallback_1_Name"
+  localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
+  icon:
+    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasPartName: color-icon
+  tags:
+    - VendorCheck_CzConGunsmith_3
+  quality: Quality.Legendary
+  buyPrice:
+    - Items.APCheck_Price_Priority
+
+# =============================================================================
+# Vendor stock blocks — Weapon Vendors
+# =============================================================================
+
+Vendors.cct_dtn_guns_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CctDtnGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CctDtnGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CctDtnGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.hey_gle_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyGleGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyGleGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyGleGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.hey_rey_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyReyGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyReyGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeyReyGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.hey_spr_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeySprGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeySprGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_HeySprGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.pac_wwd_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_PacWwdGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_PacWwdGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_PacWwdGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.std_arr_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdArrGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdArrGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdArrGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.std_rcr_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdRcrGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdRcrGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_StdRcrGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.wat_nid_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WatNidGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WatNidGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WatNidGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.wbr_jpn_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WbrJpnGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WbrJpnGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_WbrJpnGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.bls_ina_se1_gunsmith_01a:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith01a_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith01a_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith01a_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.bls_ina_se1_gunsmith_02:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith02_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith02_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe1Gunsmith02_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.bls_ina_se5_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe5Gunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe5Gunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_BlsInaSe5Gunsmith_3
+      quantity: [ Vendors.Always_Present ]
+
+Vendors.cz_con_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CzConGunsmith_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CzConGunsmith_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_CzConGunsmith_3
+      quantity: [ Vendors.Always_Present ]
+

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<InstalLog Project="cyberpunk_archipelago-wolvenkitproj" Build_date="6/15/2026 5:57:54 AM">
+<InstalLog Project="cyberpunk_archipelago-wolvenkitproj" Build_date="6/16/2026 2:09:24 AM">
   <Files>
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\archive\pc">
@@ -12,7 +12,13 @@
     <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6">
       <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks">
         <Directory Path="E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj">
-          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_0_common.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_1_ripperdoc.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_2_gunsmith.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_3_clothing.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_4_melee.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_5_netrunner.yaml</file>
+          <file>E:\CyperPunk2077\Cyberpunk 2077\r6\tweaks\cyberpunk_archipelago-wolvenkitproj\vendor_checks_README.md</file>
         </Directory>
       </Directory>
     </Directory>

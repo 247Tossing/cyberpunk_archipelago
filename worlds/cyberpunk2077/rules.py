@@ -11,11 +11,16 @@ from .options import CompletionGoal, get_gated_major_districts, has_effective_ph
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
-VENDOR_LOCATION_NAMES = tuple(
+# Internal ``location_table`` keys ``VendorCheck_*`` (sorted for stable slot_data order).
+# Archipelago Location.name is each row's ``display_name``; rules and slot_data resolve that from here.
+VENDOR_CHECK_INTERNAL_KEYS = tuple(
     sorted(
-        location_data.display_name
-        for location_data in location_table.values()
-        if location_data.category == LocationCategory.VENDOR and location_data.code is not None
+        (
+            name
+            for name, data in location_table.items()
+            if data.category == LocationCategory.VENDOR and data.code is not None
+        ),
+        key=lambda name: (location_table[name].display_name, name),
     )
 )
 
@@ -181,8 +186,21 @@ def _apply_vendor_rules(world: "Cyberpunk2077World", player: int) -> None:
     if not bool(world.options.vendor_sanity.value):
         return
 
-    for location_name in VENDOR_LOCATION_NAMES:
-        _set_rule_if_present(world, player, location_name, "Prologue - The Ripperdoc")
+    subtype_option_map = {
+        "ripperdoc": world.options.vendor_ripperdocs,
+        "gunsmith":  world.options.vendor_gunsmiths,
+        "clothing":  world.options.vendor_clothing,
+        "melee":     world.options.vendor_melee,
+        "netrunner": world.options.vendor_netrunners,
+    }
+
+    for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
+        loc_data = location_table[internal_key]
+        subtype = loc_data.vendor_subtype
+        if subtype and not subtype_option_map.get(subtype):
+            continue
+        display_name = loc_data.display_name
+        _set_rule_if_present(world, player, display_name, "Prologue - The Ripperdoc")
 
 
 def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int) -> list[str]:

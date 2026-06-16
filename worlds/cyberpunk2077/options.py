@@ -198,6 +198,30 @@ class VendorSanity(Toggle):
     display_name = "Vendor Sanity"
     default = 0
 
+class VendorRipperdocs(DefaultOnToggle):
+    """Include ripperdoc vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Ripperdocs"
+
+class VendorGunsmiths(Toggle):
+    """Include weapon vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Weapon Vendors"
+    default = 0
+
+class VendorClothing(Toggle):
+    """Include clothing vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Clothing Vendors"
+    default = 0
+
+class VendorMelee(Toggle):
+    """Include melee weapon vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Melee Vendors"
+    default = 0
+
+class VendorNetrunners(Toggle):
+    """Include netrunner vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Netrunners"
+    default = 0
+
 
 # TODO: Add more options as needed for your implementation
 # Examples:
@@ -254,6 +278,11 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     include_ncpd_hustles: IncludeNCPDHustles
     include_minor_quests: IncludeMinorQuests
     vendor_sanity: VendorSanity
+    vendor_ripperdocs: VendorRipperdocs
+    vendor_gunsmiths: VendorGunsmiths
+    vendor_clothing: VendorClothing
+    vendor_melee: VendorMelee
+    vendor_netrunners: VendorNetrunners
     enable_traps: EnableTraps
     trap_amount: TrapItemsPerTrap
     oops_all_traps: OopsAllTraps
@@ -310,6 +339,11 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("Vendor Sanity Options", [
         VendorSanity,
+        VendorRipperdocs,
+        VendorGunsmiths,
+        VendorClothing,
+        VendorMelee,
+        VendorNetrunners,
     ]),
     OptionGroup("Extra Challenge", [
         EnableDeathLink,

@@ -27,7 +27,7 @@ from .options import (
     is_goal_phantom_liberty_only,
 )
 from .regions import create_regions
-from .rules import set_rules, VENDOR_LOCATION_NAMES
+from .rules import set_rules, VENDOR_CHECK_INTERNAL_KEYS
 
 
 def _vendor_stock_parts_from_check_name(location_name: str) -> tuple[str, int] | None:
@@ -476,15 +476,20 @@ class Cyberpunk2077World(World):
         }
         if bool(self.options.vendor_sanity.value):
             stock_records: List[str] = []
-            for location_name in VENDOR_LOCATION_NAMES:
-                parsed = _vendor_stock_parts_from_check_name(location_name)
+            for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
+                parsed = _vendor_stock_parts_from_check_name(internal_key)
                 if parsed is None:
                     continue
                 vendor_key, stock_index = parsed
 
                 stock_item_name = "Unknown Item"
                 stock_recipient_name = "Unknown Player"
-                location = self.multiworld.get_location(location_name, self.player)
+                display_name = location_table[internal_key].display_name
+                try:
+                    location = self.multiworld.get_location(display_name, self.player)
+                except KeyError:
+                    # Location was not created for this seed (e.g. dlc_only vendors when PL is off).
+                    continue
                 if location.item is not None:
                     stock_item_name = location.item.name
                     stock_recipient_name = self.multiworld.get_player_name(location.item.player)

@@ -28,9 +28,7 @@ public final func BuyItemFromVendor(item: wref<gameItemData>, quantity: Int32, o
         let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetTCPClientName()) as TCPClient;
         APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
 
-        let player = this.GetVendorInstance().GetGame().GetPlayerSystem().GetLocalPlayerMainGameObject();
-        let transactionSystem = GameInstance.GetTransactionSystem(player.GetGame());
-        transactionSystem.RemoveItem(player, item.GetID(), quantity);
+        wrappedMethod(item, quantity, requestId);
     }
     else {
         wrappedMethod(item, quantity, requestId);

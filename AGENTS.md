@@ -51,6 +51,10 @@ See [native/README.md](native/README.md) for build commands and submodule setup.
 | `native/APCpp/` | Vendored Archipelago C++ client (do not mass-reformat). |
 | `native/RED4ext.SDK/`, `native/RED4ext/`, `native/Red4Ext-template/` | SDK / reference / scaffold (upstream-owned layout and formatters). |
 
+### `cyberpunk_archipelago-wolvenkitproj/` — WolvenKit / TweakXL
+
+TweakDB YAML for vendor sanity lives under `source/resources/r6/tweaks/cyberpunk_archipelago-wolvenkitproj/` as **`vendor_checks_0_common.yaml`** through **`vendor_checks_5_*.yaml`** (split by vendor category; `0_` must stay first for load order). See [vendor_checks_README.md](cyberpunk_archipelago-wolvenkitproj/source/resources/r6/tweaks/cyberpunk_archipelago-wolvenkitproj/vendor_checks_README.md) in that folder.
+
 ## Architecture (data flow)
 
 ```mermaid
