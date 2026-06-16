@@ -8,3 +8,4 @@
 worlds/**/__pycache__/
 # Release artifacts (apworld + mod zip) from tools/build_release.py
 /build/
+cyberpunk_archipelago-wolvenkitproj/install_log.xml
