@@ -44,8 +44,24 @@ Items.VendorCheck_2ndAmendment_3:
   quality: Quality.Legendary
   buyPrice:
     - Items.APCheck_Price_Priority
-# 2nd Amendment (Kabuki) — stock must attach to the vendor the player interacts with
-# (`Character.wat_kab_gunsmith_01` → `Vendors.wat_kab_gunsmith_01`), not Little China.
+# VendorCheck_2ndAmendment_* — Wilson (Megabuilding H10) uses `Vendors.wat_lch_gunsmith_01` (Little China),
+# not Northside. Kabuki weapon counter: `Vendors.wat_kab_gunsmith_01`. Same item records where duplicated;
+# first purchase sends the Archipelago location check.
+Vendors.wat_lch_gunsmith_01:
+  itemStock:
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_1
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_2
+      quantity: [ Vendors.Always_Present ]
+    - !append
+      $type: VendorItem
+      item: Items.VendorCheck_2ndAmendment_3
+      quantity: [ Vendors.Always_Present ]
+
 Vendors.wat_kab_gunsmith_01:
   itemStock:
     - !append

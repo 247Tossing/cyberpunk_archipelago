@@ -6,7 +6,7 @@ Vendor sanity uses several `vendor_checks_*.yaml` files in this folder. **TweakX
 |------|----------|
 | `vendor_checks_0_common.yaml` | Price stat modifiers for vendor check items |
 | `vendor_checks_1_ripperdoc.yaml` | Ripperdoc `VendorCheck_*` items + ripperdoc vendor `itemStock` |
-| `vendor_checks_2_gunsmith.yaml` | 2nd Amendment + gunsmith items + weapon vendor stock (`Vendors.wat_kab_gunsmith_01` for 2nd Amendment checks) |
+| `vendor_checks_2_gunsmith.yaml` | 2nd Amendment + gunsmith items + weapon vendor stock (`VendorCheck_2ndAmendment_*` on `Vendors.wat_lch_gunsmith_01` Wilson / H10, and `Vendors.wat_kab_gunsmith_01` Kabuki) |
 | `vendor_checks_3_clothing.yaml` | Clothing vendor checks + stock |
 | `vendor_checks_4_melee.yaml` | Melee vendor checks + stock |
 | `vendor_checks_5_netrunner.yaml` | Netrunner vendor checks + stock |

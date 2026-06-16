@@ -4,11 +4,7 @@
 A mod and client for Cyberpunk 2077 for [Archipelago](https://archipelago.gg/)
 
 ## ⚠️ WARNING: Experimental Release
-**This current release is NOT recommended for use in large community async environments.**
-It is currently prone to **generation issues**. Thar be dragons!
-## ⚠️ WARNING: Other Mod Support
-I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listed in the Requirements are supported.
----
+While most generation issues have been resolved. There is the possibility that certain quirks exist in the new features being added.
 
 ## What does this mod do?
 
@@ -35,35 +31,29 @@ You will need the following mods for this to work:
 | Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/107)
 | Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/7780)
 | Red4Ext | [Github Link](https://github.com/wopss/RED4ext) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/2380)
-| Phone Extension | Unknown | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
+| Phone Extension | N/A | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
 
-Optional companion mod (not required for normal AP runs):
-| Mod | Github Link | Nexusmods Link |
-| ----------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| New Game Plus - Native (GPL-3.0, optional) | [Github Link](https://github.com/alphanin9/CyberpunkNewGamePlus) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) |
+### Optional reccomended mods
+
+These are **not** required for Archipelago. However, these are mods that i have tested to be compatable and/or added compatability specifically for them that i reccomend to enhance the experience
+
+| Mod | Links | Notes |
+| --- | --- | --- |
+| New Game Plus - Native | [GitHub](https://github.com/alphanin9/CyberpunkNewGamePlus) · [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) | when installed, this AP mod can auto-release skipped prologue checks depending on YAML options. See [Optional NG+ bridge behavior](#optional-ng-bridge-behavior). |
+| Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | ***If you use Vendor Sanity*** you **MUST** disable Randomize Vendors in the mod options or this **WILL** cause softlocks |
 
 ## Mod Installation
 Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
 
 take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
 
-### Native plugin (`CyberpunkAP.dll`) and RedScript
-
-Archipelago exposes game functions through **native** bindings declared in RedScript (for example `APNativeBindings.reds`). Those declarations must match the **`CyberpunkAP.dll`** shipped under `red4ext/plugins/CyberpunkAP/` in your game root.
-
-If you update **only** `r6/scripts/...` (e.g. from git) but leave an **older** `CyberpunkAP.dll` in place, RED4ext may report **invalid native definitions** and refuse to start. After any change that adds or renames natives in `APNativeBindings.reds`, rebuild the native plugin and copy **`CyberpunkAP.dll`** (and `APCpp.dll` if present next to it) from the mod’s `Cyberpunk2077/red4ext/plugins/CyberpunkAP/` into the same path under your Cyberpunk 2077 install—**always deploy scripts and the RED4ext plugin together**.
-
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.
 
-### Optional PopTracker pack
+### PopTracker pack
 
 Some [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest) and GitHub Actions artifacts also ship `cyberpunk2077_poptracker_(<version>).zip`. Install [PopTracker](https://github.com/black-sliver/PopTracker/releases), copy that zip into PopTracker’s `packs/` folder (or unpack it there if your PopTracker build expects an extracted pack), open the **Cyberpunk 2077 AP Tracker** pack, choose **AP**, and connect with the same slot name as in-game. The pack lists received items and checked locations; it does not drive the game client. Developers can rebuild it with `python tools/build_poptracker_pack.py`; see [tools/README.md](tools/README.md).
-
-### Optional NG+ bridge behavior
-
-When New Game Plus - Native is installed, this mod can auto-release skipped prologue checks depending on the selected options in the mod settings.
 
 # Usage
 
