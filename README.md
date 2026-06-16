@@ -1,7 +1,7 @@
 
 # Cyberpunk 2077 Archipelago Mod
 
-A mod and client for Cyberpunk 2077 for [Archipelago](https://archipelago.gg/)
+An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
 ## ⚠️ WARNING: Experimental Release
 While most generation issues have been resolved. There is the possibility that certain quirks exist in the new features being added.
@@ -43,17 +43,13 @@ These are **not** required for Archipelago. However, these are mods that i have 
 | Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | ***If you use Vendor Sanity*** you **MUST** disable Randomize Vendors in the mod options or this **WILL** cause softlocks |
 
 ## Mod Installation
-Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+Download the latest release from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
 
-take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6``` and ```bin``` folders.
+take the ```CyberpunkArchipelagoMod.zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6```, ```bin```, and ```Red4EXT``` folders.
 
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.
-
-### PopTracker pack
-
-Some [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest) and GitHub Actions artifacts also ship `cyberpunk2077_poptracker_(<version>).zip`. Install [PopTracker](https://github.com/black-sliver/PopTracker/releases), copy that zip into PopTracker’s `packs/` folder (or unpack it there if your PopTracker build expects an extracted pack), open the **Cyberpunk 2077 AP Tracker** pack, choose **AP**, and connect with the same slot name as in-game. The pack lists received items and checked locations; it does not drive the game client. Developers can rebuild it with `python tools/build_poptracker_pack.py`; see [tools/README.md](tools/README.md).
 
 # Usage
 
