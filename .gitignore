@@ -6,6 +6,7 @@
 /native/APCpp/mbedtls-*.tar.bz2
 # Python caches
 worlds/**/__pycache__/
+.pytest_cache/
 # Release artifacts (apworld + mod zip) from tools/build_release.py
 /build/
 cyberpunk_archipelago-wolvenkitproj/install_log.xml
