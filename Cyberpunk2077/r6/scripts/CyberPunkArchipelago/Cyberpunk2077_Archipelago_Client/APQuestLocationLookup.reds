@@ -42,6 +42,23 @@ public class APQuestLocationLookup {
             return "";
         }
 
+        // Act 3 pre-Nocturne branches — intermediate quests, not tracked separately.
+        if StrCmp(questId, "q113_rescuing_hanako") == 0
+            || StrCmp(questId, "q113_corpo") == 0 {
+            return "";
+        }
+
+        // Act 3 ending-path quests — epilogues (q201_heir aliases) cover "Ending Reached".
+        if StrCmp(questId, "q114_01_nomad_initiation") == 0
+            || StrCmp(questId, "q114_02_maglev_line_assault") == 0
+            || StrCmp(questId, "q114_03_attack_on_arasaka_tower") == 0
+            || StrCmp(questId, "q115_afterlife") == 0
+            || StrCmp(questId, "q115_rogues_last_flight") == 0
+            || StrCmp(questId, "q116_cyberspace") == 0
+            || StrCmp(questId, "09_solo") == 0 {
+            return "";
+        }
+
         return questId;
     }
 
@@ -58,5 +75,15 @@ public class APQuestLocationLookup {
 
         questSystem.SetFact(factName, 1);
         tcpService.SendCheck(locationId);
+
+        // Notify the AP server of goal completion so remaining slot checks can release.
+        if StrCmp(locationId, "q201_heir") == 0 {
+            let storyCompleteFact: CName = StringToName("ap_story_complete_sent");
+            if questSystem.GetFact(storyCompleteFact) < 1 {
+                if AP_StoryComplete() {
+                    questSystem.SetFact(storyCompleteFact, 1);
+                }
+            }
+        }
     }
 }
