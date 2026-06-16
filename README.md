@@ -10,11 +10,19 @@ It is currently prone to **generation issues**. Thar be dragons!
 I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listed in the Requirements are supported.
 ---
 
-## What does this do?
-If enabled, you will be restricted by District and be unable to travel to those districts until you aquire the access token from the multiworld.
-You can get extra items suchs as Eddies, Quckhacks, Burrito from the multi-world.
-More will come in due time.
-***Have Patience***
+## What does this mod do?
+
+This project is a full **Archipelago** slot for **Cyberpunk 2077**: a Python **APWorld** (`cyberpunk2077.apworld`) defines locations (checks), items, rules, and player options for generation, while the **in-game mod** (RedScript, **Cyber Engine Tweaks** UI, and **RED4ext** `CyberpunkAP.dll` with APCpp) connects to an Archipelago server and keeps your run in sync.
+
+**Checks (locations)** can include story and DLC quest beats, gigs, tarot, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs, weapon vendors, clothing vendors, melee vendors, and netrunners. Which checks exist depends on your YAML (for example **Include Gigs**, **Include Phantom Liberty DLC**, **Vendor Sanity**, and **Completion Goal**).
+
+**Items** from the multiworld are sent to your client when you receive them in Archipelago: progression and utility gear, filler rewards, optional **trap** items, **eddies**, and (if enabled) **quickhacks as items**. Optional **district access tokens** (and **subdistrict** tokens when that mode is enabled) can require you to unlock Night City regions using multiworld items instead of only story progress.
+
+**Weapon restriction** options can hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+
+**Extra modes** include **Death Link** (share deaths with the multiworld when enabled) and **Oops! All Traps!** (replaces useful and filler items with traps).
+
+You configure the slot in your player YAML before generation; the mod reads the resulting **slot data** (death link, weapon rules, district gating, vendor stock hints, and similar flags) when you connect from the game.
 
 # Installation
 
