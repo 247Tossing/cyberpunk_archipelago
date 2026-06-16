@@ -31,7 +31,7 @@ CET UI (init.lua)
 - **Windows** — native plugin builds and CI both target Windows (Visual Studio + CMake).
 - **Python ~3.12** — world/apworld tooling.
 - **[Archipelago](https://github.com/ArchipelagoMW/Archipelago) source checkout** — sibling folder `../Archipelago`, or set `ARCHIPELAGO_ROOT`.
-- **Cyberpunk 2077** with the dependency mods listed in the README (RedScript, CET, Codeware, Red4Ext, RedSocket, Phone Extension).
+- **Cyberpunk 2077** with the dependency mods listed in the README (RedScript, CET, Codeware, Red4Ext, Phone Extension).
 
 ## Dev environment setup
 
