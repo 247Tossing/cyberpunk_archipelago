@@ -34,7 +34,7 @@ You will need the following mods for this to work:
 Optional companion mod (not required for normal AP runs):
 | Mod | Github Link | Nexusmods Link |
 | ----------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| CyberpunkNewGamePlus (GPL-3.0, optional) | [Github Link](https://github.com/alphanin9/CyberpunkNewGamePlus) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) |
+| New Game Plus - Native (GPL-3.0, optional) | [Github Link](https://github.com/alphanin9/CyberpunkNewGamePlus) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) |
 
 ## Mod Installation
 Download both the ```cyberpunk2077.apworld``` and ```CyberpunkArchipelagoMod.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
@@ -53,18 +53,35 @@ You ***MUST*** restart the launcher before it will show up.
 
 ### Optional NG+ bridge behavior
 
-When CyberpunkNewGamePlus is installed, this mod can auto-release skipped prologue checks for NG+ Q101/standalone starts on spawn. NG+ remains a separate install and is never bundled in the AP zip. This bridge currently targets NG+ `v1.3.1` and Cyberpunk game `2.31`.
+When New Game Plus - Native is installed, this mod can auto-release skipped prologue checks depending on the selected options in the mod settings.
 
 # Usage
 
 ## Using the Mod
-1. After you restart the launcher, launch the Cyberpunk 2077 Client.
-2. Connect to the AP Server and enter your save slot.
-3. The client will provide the ```localhost:port``` for the local TCP socket
-4. Start up Cyberpunk 2077
-5. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-6. From the CET overlay, put in either ```locahost``` or ```127.0.0.1``` in the Server IP field, and the Port you got from the AP Client into the ```Port``` field.
-7. Profit. Have Fun.
+1. Start up Cyberpunk 2077
+2. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
+3. From the CET overlay, put in your ```Archipelago IP/URL```, ```port```, and ```Slot Name```. Then click Connect to Archipelago.
+4. Profit. Have Fun.
+
+## Setting up your YAML
+There are a significant number of options in the options creator for this mod because there is a lot of content, and depending on the size of your group, you will want to tune this differently.
+Below is a list of options that add location checks (or change the check pool) and how many checks apply when they are enabled.
+
+| Option | Number of Checks |
+| ------ | ---------------- |
+| Completion Goal — Complete Any Ending W/ All Side Quests | 45 (base game) or 46 (with Include Phantom Liberty DLC) |
+| Completion Goal — Complete Only Phantom Liberty Questline | 17 (total checks for this mode) |
+| Include Phantom Liberty DLC | Up to 57 (DLC-flagged locations; other toggles still apply) |
+| Include Gigs | 81 |
+| Include Tarot | 26 |
+| Include Cyber Psycho Sighting | 18 |
+| Include NCPD Hustles | 37 |
+| Include Minor Quests | 62 |
+| Include Ripperdocs | 54 (requires Vendor Sanity) |
+| Include Weapon Vendors | 42 (requires Vendor Sanity) |
+| Include Clothing Vendors | 42 (requires Vendor Sanity) |
+| Include Melee Vendors | 21 (requires Vendor Sanity) |
+| Include Netrunners | 21 (requires Vendor Sanity) |
 
 ## Linux Users (like me!)
 
