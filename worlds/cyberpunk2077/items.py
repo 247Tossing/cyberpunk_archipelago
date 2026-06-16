@@ -580,12 +580,6 @@ item_table: Dict[str, ItemData] = {
     # These items have negative effects
     # Remove if you don't want traps in your world
 
-    # "Smasher Trap": ItemData(
-    #     name="ap_tp_smasher",
-    #     code=7000,
-    #     classification=ItemClassification.trap
-    # ),
-
     "NCPD False Cyberpsycho Report": ItemData(
         name = "ap_trp_mostWanted",
         classification = ItemClassification.trap,
