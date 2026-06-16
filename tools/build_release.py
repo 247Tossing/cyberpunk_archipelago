@@ -1,7 +1,7 @@
 """
 End-to-end release build for the Cyberpunk 2077 Archipelago mod.
 
-Runs the full pipeline that produces both release artifacts:
+Runs the full pipeline that produces release artifacts:
 
     1. Fetch native submodules (skippable; CI uses ``actions/checkout`` instead).
     2. Build the RED4ext native plugin (CyberpunkAP.dll) with CMake (Release).
@@ -10,11 +10,14 @@ Runs the full pipeline that produces both release artifacts:
     4. Install Archipelago's runtime requirements non-interactively.
     5. Regenerate the RedScript ID mappings and build cyberpunk2077.apworld
        (delegates to build_cyberpunk2077_apworld.py).
-    6. Package CyberpunkArchipelagoMod_(version).zip (delegates to
+    6. Generate and package cyberpunk2077_poptracker_(version).zip (delegates to
+       build_poptracker_pack.py).
+    7. Package CyberpunkArchipelagoMod_(version).zip (delegates to
        package_cyberpunk_mod_zip.py).
 
 Final artifacts land in ``<mod-root>/build/``:
     - cyberpunk2077.apworld
+    - cyberpunk2077_poptracker_(version).zip
     - CyberpunkArchipelagoMod_(version).zip
 """
 
@@ -194,6 +197,19 @@ def build_apworld(ap_root: Path) -> None:
     )
 
 
+def build_poptracker(ap_root: Path, version: str) -> None:
+    run(
+        [
+            sys.executable,
+            str(TOOLS_DIR / "build_poptracker_pack.py"),
+            "--archipelago-root",
+            str(ap_root),
+            "--version",
+            version,
+        ]
+    )
+
+
 def package_zip(version: str) -> None:
     run(
         [
@@ -207,7 +223,7 @@ def package_zip(version: str) -> None:
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Build the full release: cyberpunk2077.apworld + mod zip."
+        description="Build the full release: cyberpunk2077.apworld + PopTracker pack + mod zip."
     )
     parser.add_argument(
         "--archipelago-root",
@@ -229,6 +245,11 @@ def main(argv: Iterable[str] | None = None) -> int:
         "--skip-requirements",
         action="store_true",
         help="Skip installing Archipelago's Python requirements.",
+    )
+    parser.add_argument(
+        "--skip-poptracker",
+        action="store_true",
+        help="Skip building the PopTracker pack zip.",
     )
     parser.add_argument(
         "--require-tag-version",
@@ -256,10 +277,14 @@ def main(argv: Iterable[str] | None = None) -> int:
         install_archipelago_requirements(ap_root)
 
     build_apworld(ap_root)
+    if not args.skip_poptracker:
+        build_poptracker(ap_root, version)
     package_zip(version)
 
     print(f"[release] done. Artifacts in {MOD_ROOT / 'build'}:")
     print(f"[release]   - cyberpunk2077.apworld")
+    if not args.skip_poptracker:
+        print(f"[release]   - cyberpunk2077_poptracker_({version}).zip")
     print(f"[release]   - CyberpunkArchipelagoMod_({version}).zip")
     return 0
 

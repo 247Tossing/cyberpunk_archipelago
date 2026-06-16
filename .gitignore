@@ -7,6 +7,6 @@
 # Python caches
 worlds/**/__pycache__/
 .pytest_cache/
-# Release artifacts (apworld + mod zip) from tools/build_release.py
+# Release artifacts (apworld + PopTracker pack + mod zip) from tools/build_release.py
 /build/
 cyberpunk_archipelago-wolvenkitproj/install_log.xml

@@ -12,17 +12,15 @@ I do not support adding other mods on top of this one, nor will i assist if this
 
 ## What does this mod do?
 
-This project is a full **Archipelago** slot for **Cyberpunk 2077**: a Python **APWorld** (`cyberpunk2077.apworld`) defines locations (checks), items, rules, and player options for generation, while the **in-game mod** (RedScript, **Cyber Engine Tweaks** UI, and **RED4ext** `CyberpunkAP.dll` with APCpp) connects to an Archipelago server and keeps your run in sync.
+First thing you should do is understand what Archipelago actually is. Please refer to [The Archipelago FAQ](https://archipelago.gg/faq/en/) to learn more.
 
-**Checks (locations)** can include story and DLC quest beats, gigs, tarot, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs, weapon vendors, clothing vendors, melee vendors, and netrunners. Which checks exist depends on your YAML (for example **Include Gigs**, **Include Phantom Liberty DLC**, **Vendor Sanity**, and **Completion Goal**).
+**Checks (locations)** can include story and DLC quest beats, gigs, tarot paintings, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs, weapon vendors, clothing vendors, melee vendors, and netrunners. Which checks exist depends on your YAML.
 
-**Items** from the multiworld are sent to your client when you receive them in Archipelago: progression and utility gear, filler rewards, optional **trap** items, **eddies**, and (if enabled) **quickhacks as items**. Optional **district access tokens** (and **subdistrict** tokens when that mode is enabled) can require you to unlock Night City regions using multiworld items instead of only story progress.
+**Items**: progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks as items**. Optional **district access tokens** can require you to unlock Night City regions using multiworld items instead of only story progress.
 
-**Weapon restriction** options can hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+**Weapon restrictions**: options can hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
 
-**Extra modes** include **Death Link** (share deaths with the multiworld when enabled) and **Oops! All Traps!** (replaces useful and filler items with traps).
-
-You configure the slot in your player YAML before generation; the mod reads the resulting **slot data** (death link, weapon rules, district gating, vendor stock hints, and similar flags) when you connect from the game.
+**Extras**: **Death Link** (share deaths with the multiworld when enabled) and **Oops! All Traps!** (replaces useful and filler items with traps).
 
 # Installation
 
@@ -58,6 +56,10 @@ If you update **only** `r6/scripts/...` (e.g. from git) but leave an **older** `
 Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
 
 You ***MUST*** restart the launcher before it will show up.
+
+### Optional PopTracker pack
+
+Some [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest) and GitHub Actions artifacts also ship `cyberpunk2077_poptracker_(<version>).zip`. Install [PopTracker](https://github.com/black-sliver/PopTracker/releases), copy that zip into PopTracker’s `packs/` folder (or unpack it there if your PopTracker build expects an extracted pack), open the **Cyberpunk 2077 AP Tracker** pack, choose **AP**, and connect with the same slot name as in-game. The pack lists received items and checked locations; it does not drive the game client. Developers can rebuild it with `python tools/build_poptracker_pack.py`; see [tools/README.md](tools/README.md).
 
 ### Optional NG+ bridge behavior
 

@@ -1,4 +1,5 @@
-# Builds cyberpunk2077.apworld + CyberpunkArchipelagoMod_(version).zip on Windows.
+# Builds cyberpunk2077.apworld + cyberpunk2077_poptracker_(version).zip +
+# CyberpunkArchipelagoMod_(version).zip on Windows.
 # See tools/README.md → "GitHub Actions" for how to trigger and download artifacts.
 
 name: Release artifacts
@@ -73,5 +74,6 @@ jobs:
           name: cyberpunk-archipelago-release
           path: |
             build/cyberpunk2077.apworld
+            build/cyberpunk2077_poptracker_*.zip
             build/CyberpunkArchipelagoMod_*.zip
           if-no-files-found: error
