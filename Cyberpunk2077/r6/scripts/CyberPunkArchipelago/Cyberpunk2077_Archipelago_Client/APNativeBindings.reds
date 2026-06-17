@@ -13,6 +13,8 @@ public static native func AP_StoryComplete() -> Bool
 public static native func AP_IsDeathLinkPending() -> Bool
 public static native func AP_ClearDeathLink() -> Void
 public static native func AP_PollItemQueue() -> Int64
+public static native func AP_GetPolledItemNotifySender() -> String
+public static native func AP_GetPolledItemNotifyDisplayName() -> String
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
 public static native func AP_GetRestrictBySubDistrict() -> Bool
 public static native func AP_GetDistrictTokenGatedMajorMask() -> Int32

@@ -9,7 +9,10 @@ a multiworld seed.
 """
 
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import TYPE_CHECKING, Dict, Set, Tuple
+
+if TYPE_CHECKING:
+    from . import Cyberpunk2077World
 from Options import (
     Toggle,           # On/Off option (like a checkbox)
     DefaultOnToggle,  # Toggle that defaults to On
@@ -164,6 +167,31 @@ class RestrictBySubDistrict(Toggle):
     default = 0
     visibility = Visibility.none # Temporary
 
+
+class DistrictTokensFromOtherWorlds(DefaultOnToggle):
+    """
+    When district restrictions are active and this is enabled in a multiworld,
+    active district and subdistrict access tokens are added to non_local_items
+    and cannot be placed on your own checks.
+
+    No effect when district restriction type is None, in solo seeds, or when
+    the PL-only completion goal disables district restrictions.
+    """
+    display_name = "District Tokens from Other Worlds"
+
+
+class WeaponPassesFromOtherWorlds(DefaultOnToggle):
+    """
+    When weapon pass mode is active and this is enabled in a multiworld,
+    active weapon passes are added to non_local_items and cannot be placed
+    on your own checks.
+
+    No effect when weapon restriction type is not Require Multiworld Item,
+    or in solo seeds.
+    """
+    display_name = "Weapon Passes from Other Worlds"
+
+
 class QuickHacksAsItems(Toggle):
     """Put progressive quickhack items into the multiworld"""
     display_name = "Quick Hacks as Items"
@@ -258,6 +286,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     weapon_restrict_lmg: RestrictLMG
     weapon_restrict_shotgun: RestrictShotgun
     weapon_restrict_smg: RestrictSMG
+    weapon_passes_from_other_worlds: WeaponPassesFromOtherWorlds
     completion_goal: CompletionGoal
     district_restriction_type: DistrictRestrictionType
     district_restrict_westbrook: RestrictWestbrook
@@ -268,6 +297,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     district_restrict_badlands: RestrictBadlands
     district_restrict_dogtown: RestrictDogtown
     restrict_by_sub_district: RestrictBySubDistrict
+    district_tokens_from_other_worlds: DistrictTokensFromOtherWorlds
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
     death_link: EnableDeathLink
     include_gigs: IncludeGigs
@@ -315,6 +345,7 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("District Restriction Options", [
         DistrictRestrictionType,
+        DistrictTokensFromOtherWorlds,
         RestrictWestbrook,
         RestrictCityCenter,
         RestrictHeywood,
@@ -326,6 +357,7 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("Weapon Restriction Options", [
         WeaponRestrictionType,
+        WeaponPassesFromOtherWorlds,
         RestrictSniper,
         RestrictLMG,
         RestrictMelee,
@@ -424,6 +456,62 @@ def get_gated_major_district_mask(options: Cyberpunk2077Options) -> int:
     for district in get_gated_major_districts(options):
         mask |= MAJOR_DISTRICT_SLOT_MASK[district]
     return mask
+
+
+def get_active_district_token_names(world: "Cyberpunk2077World") -> Set[str]:
+    """Return district/subdistrict token names that enter the item pool for this world."""
+    from .items import ItemCategory, item_table
+
+    names: Set[str] = set()
+    for item_name, item_data in item_table.items():
+        if item_data.code is None:
+            continue
+
+        if item_data.category == ItemCategory.SUBDISTRICT_TOKEN:
+            parent_region = world.SUBDISTRICT_TOKEN_PARENT_MAP.get(item_name)
+            if (
+                not world.options.restrict_by_sub_district
+                or not parent_region
+                or not is_major_district_token_gated(world.options, parent_region)
+            ):
+                continue
+            names.add(item_name)
+            continue
+
+        if item_data.category == ItemCategory.DISTRICT_TOKEN:
+            region_name = world.DISTRICT_TOKEN_REGION_MAP.get(item_name)
+            if not region_name or not is_major_district_token_gated(world.options, region_name):
+                continue
+            names.add(item_name)
+
+    return names
+
+
+def get_active_weapon_pass_names(world: "Cyberpunk2077World") -> Set[str]:
+    """Return weapon pass names that enter the item pool for this world."""
+    from .items import ItemCategory, item_table
+
+    if int(world.options.weapon_restriction_type.value) != WeaponRestrictionType.option_requireMultiworldItem:
+        return set()
+
+    names: Set[str] = set()
+    for item_name, item_data in item_table.items():
+        if item_data.category != ItemCategory.WEAPON_PASS:
+            continue
+        option_attr = world.WEAPON_PASS_OPTION_MAP.get(item_name)
+        if not option_attr or not getattr(world.options, option_attr).value:
+            continue
+        names.add(item_name)
+
+    return names
+
+
+def apply_token_locality_options(world: "Cyberpunk2077World") -> None:
+    """Populate non_local_items for active access tokens and weapon passes."""
+    if world.options.district_tokens_from_other_worlds:
+        world.options.non_local_items.value |= get_active_district_token_names(world)
+    if world.options.weapon_passes_from_other_worlds:
+        world.options.non_local_items.value |= get_active_weapon_pass_names(world)
 
 
 # ===== USAGE EXAMPLES =====

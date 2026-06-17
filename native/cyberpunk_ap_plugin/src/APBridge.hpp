@@ -31,6 +31,8 @@ public:
     bool StoryComplete();
 
     bool PollReceivedItemId(int64_t& outItemId);
+    std::string GetPolledItemNotifySender() const;
+    std::string GetPolledItemNotifyDisplayName() const;
     bool IsDeathLinkPending() const;
     void ClearDeathLink();
 
@@ -46,7 +48,7 @@ private:
     APBridge& operator=(const APBridge&) = delete;
 
     static void OnItemClear();
-    static void OnItemReceived(int64_t itemId, bool notify);
+    static void OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify);
     static void OnLocationChecked(int64_t locationId);
     static void OnDeathLinkReceived();
     static void OnSlotDataRestrictByMajorDistrict(int value);
@@ -57,7 +59,15 @@ private:
 
     bool IsReadyLocked() const; // caller must hold m_mutex
 
-    void PushItem(int64_t itemId);
+    void PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify);
+
+    struct ReceivedItemEntry
+    {
+        int64_t itemId;
+        std::string senderName;
+        std::string itemDisplayName;
+        bool shouldNotify;
+    };
     void MarkDeathLinkPending();
     void SetRestrictByMajorDistrict(bool value);
     void SetRestrictBySubDistrict(bool value);
@@ -74,6 +84,8 @@ private:
     int32_t m_districtTokenGatedMajorMask{0};
     bool m_vendorSanityEnabled{false};
     std::string m_vendorSanityStockLine;
-    std::queue<int64_t> m_receivedItemIds;
+    std::queue<ReceivedItemEntry> m_receivedItems;
+    std::string m_lastPolledNotifySender;
+    std::string m_lastPolledNotifyDisplayName;
 };
 } // namespace CyberpunkArchipelago

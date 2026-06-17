@@ -710,6 +710,7 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
     # Group by category
     district_tokens = []
     subdistrict_tokens = []
+    weapon_passes = []
     quickhacks = []
     currency = []
     consumables = []
@@ -741,6 +742,8 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
             district_tokens.append(display_name)
         elif item_data.category == ItemCategory.SUBDISTRICT_TOKEN:
             subdistrict_tokens.append(display_name)
+        elif item_data.category == ItemCategory.WEAPON_PASS:
+            weapon_passes.append(display_name)
         elif item_data.category == ItemCategory.QUICKHACK:
             quickhacks.append(display_name)
         elif item_data.category == ItemCategory.CURRENCY:
@@ -769,6 +772,8 @@ def _build_item_name_groups() -> Dict[str, List[str]]:
         groups["District Tokens"] = district_tokens
     if subdistrict_tokens:
         groups["Subdistrict Tokens"] = subdistrict_tokens
+    if weapon_passes:
+        groups["Weapon Passes"] = weapon_passes
     if quickhacks:
         groups["Quickhacks"] = quickhacks
     if currency:

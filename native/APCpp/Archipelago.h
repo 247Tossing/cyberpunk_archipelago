@@ -53,8 +53,8 @@ void AP_SetDeathLinkSupported(bool);
 
 //Parameter Function must reset local state
 void AP_SetItemClearCallback(std::function<void()> f_itemclr);
-//Parameter Function must collect item id given with parameter. Secound parameter indicates whether or not to notify player
-void AP_SetItemRecvCallback(std::function<void(int64_t,bool)> f_itemrecv);
+// Parameter receives item id, sender alias, item display name, and notify flag.
+void AP_SetItemRecvCallback(std::function<void(int64_t, std::string, std::string, bool)> f_itemrecv);
 //Parameter Function must mark given location id as checked
 void AP_SetLocationCheckedCallback(std::function<void(int64_t)> f_locrecv);
 

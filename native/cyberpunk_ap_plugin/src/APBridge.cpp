@@ -137,8 +137,10 @@ void APBridge::Shutdown()
     m_districtTokenGatedMajorMask = 0;
     m_vendorSanityEnabled = false;
     m_vendorSanityStockLine.clear();
-    std::queue<int64_t> empty;
-    m_receivedItemIds.swap(empty);
+    std::queue<ReceivedItemEntry> empty;
+    m_receivedItems.swap(empty);
+    m_lastPolledNotifySender.clear();
+    m_lastPolledNotifyDisplayName.clear();
 }
 
 bool APBridge::IsReady() const
@@ -219,14 +221,33 @@ bool APBridge::StoryComplete()
 bool APBridge::PollReceivedItemId(int64_t& outItemId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    if (m_receivedItemIds.empty())
+    m_lastPolledNotifySender.clear();
+    m_lastPolledNotifyDisplayName.clear();
+
+    if (m_receivedItems.empty())
     {
         return false;
     }
 
-    outItemId = m_receivedItemIds.front();
-    m_receivedItemIds.pop();
+    const ReceivedItemEntry entry = m_receivedItems.front();
+    m_receivedItems.pop();
+    outItemId = entry.itemId;
+
+    m_lastPolledNotifySender = entry.senderName;
+    m_lastPolledNotifyDisplayName = entry.itemDisplayName;
     return true;
+}
+
+std::string APBridge::GetPolledItemNotifySender() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNotifySender;
+}
+
+std::string APBridge::GetPolledItemNotifyDisplayName() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNotifyDisplayName;
 }
 
 bool APBridge::IsDeathLinkPending() const
@@ -278,13 +299,15 @@ std::string APBridge::GetVendorSanityStockLine() const
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
-    std::queue<int64_t> empty;
-    APBridge::Get().m_receivedItemIds.swap(empty);
+    std::queue<ReceivedItemEntry> empty;
+    APBridge::Get().m_receivedItems.swap(empty);
+    APBridge::Get().m_lastPolledNotifySender.clear();
+    APBridge::Get().m_lastPolledNotifyDisplayName.clear();
 }
 
-void APBridge::OnItemReceived(int64_t itemId, bool)
+void APBridge::OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify)
 {
-    APBridge::Get().PushItem(itemId);
+    APBridge::Get().PushItem(itemId, senderName, itemDisplayName, notify);
 }
 
 void APBridge::OnLocationChecked(int64_t)
@@ -321,10 +344,10 @@ void APBridge::OnSlotDataVendorSanityStock(std::string value)
     APBridge::Get().SetVendorSanityStockLine(value);
 }
 
-void APBridge::PushItem(int64_t itemId)
+void APBridge::PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_receivedItemIds.push(itemId);
+    m_receivedItems.push({itemId, senderName, itemDisplayName, shouldNotify});
 }
 
 void APBridge::MarkDeathLinkPending()

@@ -69,7 +69,7 @@ std::set<int> teams_set;
 
 // Callback function pointers
 std::function<void()> resetItemValues = nullptr;
-std::function<void(int64_t,bool)> getitemfunc = nullptr;
+std::function<void(int64_t, std::string, std::string, bool)> getitemfunc = nullptr;
 std::function<void(int64_t)> checklocfunc = nullptr;
 std::function<void(std::vector<AP_NetworkItem>)> locinfofunc = nullptr;
 std::function<void(std::string, std::string)> recvdeath = nullptr;
@@ -446,7 +446,7 @@ void AP_SetItemClearCallback(std::function<void()> f_itemclr) {
     resetItemValues = f_itemclr;
 }
 
-void AP_SetItemRecvCallback(std::function<void(int64_t,bool)> f_itemrecv) {
+void AP_SetItemRecvCallback(std::function<void(int64_t, std::string, std::string, bool)> f_itemrecv) {
     getitemfunc = f_itemrecv;
 }
 
@@ -991,12 +991,13 @@ bool parse_response(std::string msg, std::string &request) {
             for (unsigned int j = 0; j < root[i]["items"].size(); j++) {
                 int64_t item_id = root[i]["items"][j]["item"].asInt64();
                 notify = (item_idx == 0 && last_item_idx <= j && multiworld) || item_idx != 0;
-                getitemfunc(item_id, notify);
+                AP_NetworkPlayer sender = getPlayer(0, root[i]["items"][j]["player"].asInt());
+                const std::string itemDisplayName = getItemName(ap_game, item_id);
+                getitemfunc(item_id, sender.alias, itemDisplayName, notify);
                 if (queueitemrecvmsg && notify) {
                     AP_ItemRecvMessage* msg = new AP_ItemRecvMessage;
-                    AP_NetworkPlayer sender = getPlayer(0, root[i]["items"][j]["player"].asInt());
                     msg->type = AP_MessageType::ItemRecv;
-                    msg->item = getItemName(ap_game, item_id);
+                    msg->item = itemDisplayName;
                     msg->sendPlayer = sender.alias;
                     msg->text = std::string("Received ") + msg->item + std::string(" from ") + msg->sendPlayer;
                     messageQueue.push_back(msg);

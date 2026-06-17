@@ -138,6 +138,26 @@ void APPollItemQueue(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int64_
     }
 }
 
+void APGetPolledItemNotifySender(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledItemNotifySender().c_str());
+        *aOut = result;
+    }
+}
+
+void APGetPolledItemNotifyDisplayName(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledItemNotifyDisplayName().c_str());
+        *aOut = result;
+    }
+}
+
 void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -221,6 +241,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_IsDeathLinkPending", "AP_IsDeathLinkPending", &APIsDeathLinkPending);
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifySender", "AP_GetPolledItemNotifySender", &APGetPolledItemNotifySender);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifyDisplayName", "AP_GetPolledItemNotifyDisplayName", &APGetPolledItemNotifyDisplayName);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictBySubDistrict", "AP_GetRestrictBySubDistrict", &APGetRestrictBySubDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);

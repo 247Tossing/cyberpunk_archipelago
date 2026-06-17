@@ -19,6 +19,7 @@ from .locations import Cyberpunk2077Location, location_table, location_name_to_i
 from .options import (
     Cyberpunk2077Options,
     DistrictRestrictionType,
+    apply_token_locality_options,
     cyberpunk_option_groups,
     district_restriction_active,
     get_gated_major_district_mask,
@@ -221,8 +222,7 @@ class Cyberpunk2077World(World):
             self.options.district_restriction_type.value = DistrictRestrictionType.option_none
             self.options.restrict_by_sub_district.value = 0
 
-
-    def create_regions(self) -> None:
+        apply_token_locality_options(self)
         """
         Create all regions (game areas) and locations (item checks).
 

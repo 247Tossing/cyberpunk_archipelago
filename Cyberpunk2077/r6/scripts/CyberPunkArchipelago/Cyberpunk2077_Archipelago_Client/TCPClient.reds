@@ -180,6 +180,16 @@ public class TCPClient extends ScriptableService {
                 let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
                 if IsDefined(gameSystem) {
                     gameSystem.HandleItemReceived(itemId);
+                    let senderName: String = AP_GetPolledItemNotifySender();
+                    if StrLen(senderName) == 0 {
+                        senderName = "Archipelago";
+                    }
+                    let itemDisplayName: String = AP_GetPolledItemNotifyDisplayName();
+                    if StrLen(itemDisplayName) == 0 {
+                        itemDisplayName = itemId;
+                    }
+                    APLogger.LogDebug(s"TCPClient: Dispatching item notification - sender: \(senderName), item: \(itemDisplayName)");
+                    gameSystem.HandleItemReceivedNotification(senderName, itemDisplayName);
                 }
             } else {
                 APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");
