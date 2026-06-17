@@ -2,7 +2,8 @@
 Cyberpunk 2077 Access Rules
 """
 
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Callable, TypeAlias
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
 from .locations import location_table, LocationCategory
@@ -10,6 +11,82 @@ from .options import CompletionGoal, get_gated_major_districts, has_effective_ph
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
+
+
+@dataclass(frozen=True)
+class PrereqAny:
+    """Represents an OR dependency over location names."""
+
+    names: tuple[str, ...]
+
+
+Prerequisite: TypeAlias = str | tuple[str, ...] | PrereqAny
+
+
+def any_of(*names: str) -> PrereqAny:
+    return PrereqAny(tuple(names))
+
+
+# Base questline + default ending dependencies.
+BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
+    "Prologue - The Ripperdoc": "Prologue - The Rescue",
+    "Prologue - The Ride": "Prologue - The Ripperdoc",
+    "Prologue - The Heist": ("Prologue - The Pickup", "Prologue - The Information"),
+    "Prologue - Love Like Fire": "Prologue - The Heist",
+    "Main - Playing for Time": "Prologue - Love Like Fire",
+    "Main - Automatic Love": "Main - Playing for Time",
+    "Main - Transmission": "Main - Automatic Love",
+    "Main - Ghost Town": "Main - Playing for Time",
+    "Main - Life During Wartime": "Main - Ghost Town",
+    "Main - Down on the Street": "Main - Playing for Time",
+    "Main - Search and Destroy": "Main - Down on the Street",
+    "Point of No Return - Nocturne Op55N1": (
+        "Main - Transmission",
+        "Main - Life During Wartime",
+        "Main - Search and Destroy",
+    ),
+    "Ending Reached": "Point of No Return - Nocturne Op55N1",
+}
+
+# Additional requirements only used in "all side quests" goal mode.
+SIDE_QUEST_GOAL_PREREQUISITES: dict[str, Prerequisite] = {
+    "Riders on the Storm": "Main - Life During Wartime",
+    "Queen of the Highway": "Riders on the Storm",
+    "Chippin' In": "Main - Search and Destroy",
+    "Blistering Love": "Chippin' In",
+}
+
+# Phantom Liberty-only questline requirements.
+PHANTOM_LIBERTY_ONLY_PREREQUISITES: dict[str, Prerequisite] = {
+    "Phantom Liberty - Phantom Liberty": "Lifepath Chosen",
+    "Phantom Liberty - Dog Eat Dog": "Phantom Liberty - Phantom Liberty",
+    "Phantom Liberty - Hole in the Sky": "Phantom Liberty - Dog Eat Dog",
+    "Phantom Liberty - Spider and the Fly": "Phantom Liberty - Hole in the Sky",
+    "Phantom Liberty - Lucretia My Reflection": "Phantom Liberty - Spider and the Fly",
+    "Phantom Liberty - The Damned": "Phantom Liberty - Lucretia My Reflection",
+    "Phantom Liberty - Get It Together": "Phantom Liberty - The Damned",
+    "Phantom Liberty - You Know My Name": "Phantom Liberty - Get It Together",
+    "Phantom Liberty - Birds with Broken Wings": "Phantom Liberty - You Know My Name",
+    "Phantom Liberty - I've Seen That Face Before": "Phantom Liberty - Birds with Broken Wings",
+    "Phantom Liberty - Firestarter": "Phantom Liberty - I've Seen That Face Before",
+    "PL - Split Quest 1": "Phantom Liberty - Firestarter",
+    "PL - Split Quest 2": "Phantom Liberty - Firestarter",
+    "PL - Split Quest 3": "Phantom Liberty - Firestarter",
+    "Phantom Liberty - Who Wants to Live Forever": any_of(
+        "PL - Split Quest 1",
+        "PL - Split Quest 2",
+        "PL - Split Quest 3",
+    ),
+    "Ending Reached": "Phantom Liberty - Who Wants to Live Forever",
+}
+
+
+# Stable exported prerequisite catalog (source of truth for tests and rules).
+LOCATION_PREREQUISITES: dict[str, dict[str, Prerequisite]] = {
+    "base": BASE_LOCATION_PREREQUISITES,
+    "all_side_quests": SIDE_QUEST_GOAL_PREREQUISITES,
+    "phantom_liberty_only": PHANTOM_LIBERTY_ONLY_PREREQUISITES,
+}
 
 # Internal ``location_table`` keys ``VendorCheck_*`` (sorted for stable slot_data order).
 # Archipelago Location.name is each row's ``display_name``; rules and slot_data resolve that from here.
@@ -29,10 +106,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     """Set location and victory rules for the selected completion goal."""
     player = world.player
 
-    if _completion_goal(world) == CompletionGoal.option_complete_only_phantom_liberty_questline:
-        _set_phantom_liberty_only_rules(world, player)
-    else:
-        _set_base_game_rules(world, player)
+    _apply_location_prerequisites(world, player, _get_goal_location_prerequisites(world))
 
     _apply_vendor_rules(world, player)
     _apply_multi_region_rules(world, player)
@@ -45,119 +119,53 @@ def _completion_goal(world: "Cyberpunk2077World") -> int:
     return int(world.options.completion_goal.value)
 
 
-def _set_base_game_rules(world: "Cyberpunk2077World", player: int) -> None:
-    """Apply existing base-game progression logic."""
-    set_rule(
-        world.multiworld.get_location("Prologue - The Ripperdoc", player),
-        lambda state: state.can_reach_location("Prologue - The Rescue", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Prologue - The Ride", player),
-        lambda state: state.can_reach_location("Prologue - The Ripperdoc", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Prologue - The Heist", player),
-        lambda state: (
-            state.can_reach_location("Prologue - The Pickup", player) and
-            state.can_reach_location("Prologue - The Information", player)
-        ),
-    )
-    set_rule(
-        world.multiworld.get_location("Prologue - Love Like Fire", player),
-        lambda state: state.can_reach_location("Prologue - The Heist", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Playing for Time", player),
-        lambda state: state.can_reach_location("Prologue - Love Like Fire", player),
-    )
+def _get_goal_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
+    goal = _completion_goal(world)
+    if goal == CompletionGoal.option_complete_only_phantom_liberty_questline:
+        return dict(LOCATION_PREREQUISITES["phantom_liberty_only"])
 
-    set_rule(
-        world.multiworld.get_location("Main - Automatic Love", player),
-        lambda state: state.can_reach_location("Main - Playing for Time", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Transmission", player),
-        lambda state: state.can_reach_location("Main - Automatic Love", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Ghost Town", player),
-        lambda state: state.can_reach_location("Main - Playing for Time", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Life During Wartime", player),
-        lambda state: state.can_reach_location("Main - Ghost Town", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Down on the Street", player),
-        lambda state: state.can_reach_location("Main - Playing for Time", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Main - Search and Destroy", player),
-        lambda state: state.can_reach_location("Main - Down on the Street", player),
-    )
-    set_rule(
-        world.multiworld.get_location("Point of No Return - Nocturne Op55N1", player),
-        lambda state: (
-            state.can_reach_location("Main - Transmission", player) and
-            state.can_reach_location("Main - Life During Wartime", player) and
-            state.can_reach_location("Main - Search and Destroy", player)
-        ),
-    )
-    set_rule(
-        world.multiworld.get_location("Ending Reached", player),
-        lambda state: state.can_reach_location("Point of No Return - Nocturne Op55N1", player),
-    )
-
+    edges = dict(LOCATION_PREREQUISITES["base"])
     if is_goal_all_side_quests(world.options):
-        set_rule(
-            world.multiworld.get_location("Riders on the Storm", player),
-            lambda state: state.can_reach_location("Main - Life During Wartime", player),
-        )
-        set_rule(
-            world.multiworld.get_location("Queen of the Highway", player),
-            lambda state: state.can_reach_location("Riders on the Storm", player),
-        )
-        set_rule(
-            world.multiworld.get_location("Chippin' In", player),
-            lambda state: state.can_reach_location("Main - Search and Destroy", player),
-        )
-        set_rule(
-            world.multiworld.get_location("Blistering Love", player),
-            lambda state: state.can_reach_location("Chippin' In", player),
-        )
+        edges.update(LOCATION_PREREQUISITES["all_side_quests"])
+    return edges
 
 
-def _set_phantom_liberty_only_rules(world: "Cyberpunk2077World", player: int) -> None:
-    """Apply PL questline progression for PL-only completion goal."""
-    _set_rule_if_present(world, player, "Phantom Liberty - Phantom Liberty", "Lifepath Chosen")
-    _set_rule_if_present(world, player, "Phantom Liberty - Dog Eat Dog", "Phantom Liberty - Phantom Liberty")
-    _set_rule_if_present(world, player, "Phantom Liberty - Hole in the Sky", "Phantom Liberty - Dog Eat Dog")
-    _set_rule_if_present(world, player, "Phantom Liberty - Spider and the Fly", "Phantom Liberty - Hole in the Sky")
-    _set_rule_if_present(world, player, "Phantom Liberty - Lucretia My Reflection", "Phantom Liberty - Spider and the Fly")
-    _set_rule_if_present(world, player, "Phantom Liberty - The Damned", "Phantom Liberty - Lucretia My Reflection")
-    _set_rule_if_present(world, player, "Phantom Liberty - Get It Together", "Phantom Liberty - The Damned")
-    _set_rule_if_present(world, player, "Phantom Liberty - You Know My Name", "Phantom Liberty - Get It Together")
-    _set_rule_if_present(world, player, "Phantom Liberty - Birds with Broken Wings", "Phantom Liberty - You Know My Name")
-    _set_rule_if_present(world, player, "Phantom Liberty - I've Seen That Face Before", "Phantom Liberty - Birds with Broken Wings")
-    _set_rule_if_present(world, player, "Phantom Liberty - Firestarter", "Phantom Liberty - I've Seen That Face Before")
-    _set_rule_if_present(world, player, "PL - Split Quest 1", "Phantom Liberty - Firestarter")
-    _set_rule_if_present(world, player, "PL - Split Quest 2", "Phantom Liberty - Firestarter")
-    _set_rule_if_present(world, player, "PL - Split Quest 3", "Phantom Liberty - Firestarter")
+def get_active_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
+    """
+    Return active location prerequisite edges for the configured world/options.
 
-    if _location_exists(world, player, "Phantom Liberty - Who Wants to Live Forever"):
-        set_rule(
-            world.multiworld.get_location("Phantom Liberty - Who Wants to Live Forever", player),
-            lambda state: (
-                state.can_reach_location("PL - Split Quest 1", player) or
-                state.can_reach_location("PL - Split Quest 2", player) or
-                state.can_reach_location("PL - Split Quest 3", player)
-            ),
-        )
+    This mirrors the rule application behavior and filters out prerequisite rules
+    for locations not present in the generated location set.
+    """
+    player = world.player
+    edges = _get_goal_location_prerequisites(world)
+    edges.update(_get_vendor_location_prerequisites(world))
+    return {
+        location_name: required
+        for location_name, required in edges.items()
+        if _location_exists(world, player, location_name)
+    }
 
-    if _location_exists(world, player, "Ending Reached"):
+
+def _build_prerequisite_rule(required: Prerequisite, player: int) -> Callable[[CollectionState], bool]:
+    if isinstance(required, PrereqAny):
+        return lambda state, reqs=required.names: any(state.can_reach_location(req, player) for req in reqs)
+    if isinstance(required, tuple):
+        return lambda state, reqs=required: all(state.can_reach_location(req, player) for req in reqs)
+    return lambda state, req=required: state.can_reach_location(req, player)
+
+
+def _apply_location_prerequisites(
+    world: "Cyberpunk2077World",
+    player: int,
+    edges: dict[str, Prerequisite],
+) -> None:
+    for location_name, required in edges.items():
+        if not _location_exists(world, player, location_name):
+            continue
         set_rule(
-            world.multiworld.get_location("Ending Reached", player),
-            lambda state: state.can_reach_location("Phantom Liberty - Who Wants to Live Forever", player),
+            world.multiworld.get_location(location_name, player),
+            _build_prerequisite_rule(required, player),
         )
 
 
@@ -183,24 +191,28 @@ def _set_victory_rule(world: "Cyberpunk2077World", player: int) -> None:
 
 
 def _apply_vendor_rules(world: "Cyberpunk2077World", player: int) -> None:
+    _apply_location_prerequisites(world, player, _get_vendor_location_prerequisites(world))
+
+
+def _get_vendor_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
     if not bool(world.options.vendor_sanity.value):
-        return
+        return {}
 
     subtype_option_map = {
         "ripperdoc": world.options.vendor_ripperdocs,
-        "gunsmith":  world.options.vendor_gunsmiths,
-        "clothing":  world.options.vendor_clothing,
-        "melee":     world.options.vendor_melee,
+        "gunsmith": world.options.vendor_gunsmiths,
+        "clothing": world.options.vendor_clothing,
+        "melee": world.options.vendor_melee,
         "netrunner": world.options.vendor_netrunners,
     }
-
+    edges: dict[str, Prerequisite] = {}
     for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
         loc_data = location_table[internal_key]
         subtype = loc_data.vendor_subtype
         if subtype and not subtype_option_map.get(subtype):
             continue
-        display_name = loc_data.display_name
-        _set_rule_if_present(world, player, display_name, "Prologue - The Ripperdoc")
+        edges[loc_data.display_name] = "Prologue - The Ripperdoc"
+    return edges
 
 
 def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int) -> list[str]:
@@ -217,15 +229,6 @@ def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int)
             required.append(data.display_name)
 
     return required
-
-
-def _set_rule_if_present(world: "Cyberpunk2077World", player: int, location_name: str, required_location: str) -> None:
-    if not _location_exists(world, player, location_name):
-        return
-    set_rule(
-        world.multiworld.get_location(location_name, player),
-        lambda state, req=required_location: state.can_reach_location(req, player),
-    )
 
 
 def _location_exists(world: "Cyberpunk2077World", player: int, location_name: str) -> bool:
