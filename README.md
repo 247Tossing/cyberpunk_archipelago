@@ -3,7 +3,7 @@
 
 An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
-[!WARNING] Experemental Release
+[ !WARNING ] Experemental Release
 While most generation issues have been resolved. There is the possibility that certain quirks exist in the new features being added.
 
 [!NOTE] What does this mod do?
