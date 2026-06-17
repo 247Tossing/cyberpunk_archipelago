@@ -59,6 +59,9 @@ The release pipeline uses `tools/build_wolvenkit_project.py` to run:
 wolvenkit.cli build cyberpunk_archipelago-wolvenkitproj
 ```
 
+The script auto-detects either `wolvenkit.cli` or `cp77tools` (the default
+command exposed by `dotnet tool install -g wolvenkit.cli`).
+
 Then it validates `cyberpunk_archipelago-wolvenkitproj/packed/` and syncs:
 
 - `packed/archive/` -> `Cyberpunk2077/archive/`

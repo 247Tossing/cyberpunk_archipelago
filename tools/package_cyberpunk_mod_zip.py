@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import zipfile
 from pathlib import Path
@@ -94,15 +95,31 @@ def build_zip(version: str, output_dir: Path) -> Path:
 
     output_dir.mkdir(parents=True, exist_ok=True)
     zip_path = output_dir / f"CyberpunkArchipelagoMod_({version}).zip"
-    if zip_path.exists():
-        zip_path.unlink()
+    staging_path = zip_path.with_name(f"{zip_path.name}.part")
+    if staging_path.exists():
+        staging_path.unlink()
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+    with zipfile.ZipFile(staging_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for path in files:
             # Arcnames are relative to Cyberpunk2077/ so the zip extracts
             # directly into the game root (r6/, bin/, red4ext/ at the top).
             arcname = path.relative_to(OVERLAY_ROOT)
             zf.write(path, arcname.as_posix())
+
+    try:
+        if zip_path.exists():
+            zip_path.unlink()
+        os.replace(staging_path, zip_path)
+    except PermissionError:
+        fallback = zip_path.with_name(f"{zip_path.stem}.new.zip")
+        if fallback.exists():
+            fallback.unlink()
+        os.replace(staging_path, fallback)
+        print(
+            f"[package] warning: could not overwrite locked {zip_path} "
+            f"(close Explorer/7-Zip if open); wrote {fallback}"
+        )
+        zip_path = fallback
 
     print(f"[package] wrote {zip_path} ({len(files)} files)")
     return zip_path

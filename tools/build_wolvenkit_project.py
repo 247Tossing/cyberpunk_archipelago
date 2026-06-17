@@ -40,25 +40,52 @@ def run(cmd: list[str], *, cwd: Path | None = None) -> None:
     subprocess.check_call(cmd, cwd=str(cwd) if cwd else None)
 
 
-def resolve_cli_command() -> list[str]:
+def _dotnet_tools_dir() -> Path:
+    return Path(os.environ.get("USERPROFILE", "")) / ".dotnet" / "tools"
+
+
+def _cli_candidates() -> list[str]:
+    """Ordered WolvenKit CLI locations; cp77tools is the dotnet global-tool shim name."""
+    candidates: list[str] = []
     explicit = os.environ.get("WOLVENKIT_CLI")
     if explicit:
-        return [explicit]
-    return ["wolvenkit.cli"]
+        candidates.append(explicit)
+
+    dotnet_tools = _dotnet_tools_dir()
+    for name in ("cp77tools.exe", "cp77tools", "wolvenkit.cli.exe", "wolvenkit.cli"):
+        candidates.append(str(dotnet_tools / name))
+
+    for name in ("cp77tools", "wolvenkit.cli"):
+        found = shutil.which(name)
+        if found:
+            candidates.append(found)
+
+    # Preserve order while dropping duplicates.
+    seen: set[str] = set()
+    unique: list[str] = []
+    for item in candidates:
+        if item not in seen:
+            seen.add(item)
+            unique.append(item)
+    return unique
 
 
-def ensure_cli_available(cmd: list[str]) -> None:
-    executable = cmd[0]
-    explicit_path = Path(executable)
-    if explicit_path.is_file():
-        return
-    if shutil.which(executable):
-        return
-    raise FileNotFoundError(
-        "Could not find WolvenKit CLI command. Install it with "
-        f"'dotnet tool install -g wolvenkit.cli' (minimum {WOLVENKIT_CLI_MIN_VERSION}) "
-        "or set WOLVENKIT_CLI to an explicit executable path."
-    )
+def resolve_cli_command(*, required: bool = False) -> list[str]:
+    for candidate in _cli_candidates():
+        path = Path(candidate)
+        if path.is_file():
+            return [str(path)]
+        resolved = shutil.which(candidate)
+        if resolved and Path(resolved).is_file():
+            return [resolved]
+    if required:
+        raise FileNotFoundError(
+            "Could not find WolvenKit CLI command (tried cp77tools, wolvenkit.cli, and "
+            f"{_dotnet_tools_dir()}). Install it with "
+            f"'dotnet tool install -g wolvenkit.cli' (minimum {WOLVENKIT_CLI_MIN_VERSION}) "
+            "then reopen your shell, or set WOLVENKIT_CLI to an explicit executable path."
+        )
+    return ["cp77tools"]
 
 
 def run_wolvenkit_build(project_dir: Path, *, require_cli: bool) -> None:
@@ -72,9 +99,7 @@ def run_wolvenkit_build(project_dir: Path, *, require_cli: bool) -> None:
     if not cpmodproj:
         raise FileNotFoundError(f"No .cpmodproj found in {project_dir}")
 
-    cli = resolve_cli_command()
-    if require_cli:
-        ensure_cli_available(cli)
+    cli = resolve_cli_command(required=require_cli)
     run([*cli, "build", str(project_dir)], cwd=MOD_ROOT)
 
 
