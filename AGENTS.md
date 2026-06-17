@@ -54,6 +54,7 @@ See [native/README.md](native/README.md) for build commands and submodule setup.
 ### `cyberpunk_archipelago-wolvenkitproj/` — WolvenKit / TweakXL
 
 TweakDB YAML for vendor sanity lives under `source/resources/r6/tweaks/cyberpunk_archipelago-wolvenkitproj/` as **`vendor_checks_0_common.yaml`** through **`vendor_checks_5_*.yaml`** (split by vendor category; `0_` must stay first for load order). See [vendor_checks_README.md](cyberpunk_archipelago-wolvenkitproj/source/resources/r6/tweaks/cyberpunk_archipelago-wolvenkitproj/vendor_checks_README.md) in that folder.
+Release automation builds and syncs this project via `tools/build_wolvenkit_project.py` before packaging `CyberpunkArchipelagoMod_(version).zip`.
 
 ## Architecture (data flow)
 

@@ -9,4 +9,7 @@ worlds/**/__pycache__/
 .pytest_cache/
 # Release artifacts (apworld + PopTracker pack + mod zip) from tools/build_release.py
 /build/
+# Synced WolvenKit packed outputs (generated from cyberpunk_archipelago-wolvenkitproj/packed)
+/Cyberpunk2077/archive/
+/Cyberpunk2077/r6/tweaks/
 cyberpunk_archipelago-wolvenkitproj/install_log.xml

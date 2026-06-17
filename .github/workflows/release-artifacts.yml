@@ -46,6 +46,17 @@ jobs:
         with:
           python-version: "~3.12"
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.x"
+
+      - name: Install WolvenKit CLI
+        shell: pwsh
+        run: |
+          # `build` command support landed in WolvenKit CLI 8.17.0.
+          dotnet tool install -g wolvenkit.cli --version 8.17.0
+
       - name: Setup CMake
         uses: lukka/get-cmake@latest
 
@@ -66,7 +77,7 @@ jobs:
           if ("${{ github.ref_type }}" -eq "tag") {
             $tagArg = @("--require-tag-version", "${{ github.ref_name }}")
           }
-          python tools/build_release.py --skip-submodules --skip-native @tagArg
+          python tools/build_release.py --skip-submodules --skip-native --allow-wolvenkit-fallback --require-wolvenkit-cli @tagArg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

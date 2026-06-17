@@ -5,14 +5,16 @@ Runs the full pipeline that produces release artifacts:
 
     1. Fetch native submodules (skippable; CI uses ``actions/checkout`` instead).
     2. Build the RED4ext native plugin (CyberpunkAP.dll) with CMake (Release).
-    3. Locate the Archipelago checkout and expose worlds/cyberpunk2077 inside it
+    3. Build the WolvenKit project payload and sync it into Cyberpunk2077/
+       (with optional fallback to committed packed/ artifacts).
+    4. Locate the Archipelago checkout and expose worlds/cyberpunk2077 inside it
        via a directory junction (Windows) or symlink (POSIX).
-    4. Install Archipelago's runtime requirements non-interactively.
-    5. Regenerate the RedScript ID mappings and build cyberpunk2077.apworld
+    5. Install Archipelago's runtime requirements non-interactively.
+    6. Regenerate the RedScript ID mappings and build cyberpunk2077.apworld
        (delegates to build_cyberpunk2077_apworld.py).
-    6. Generate and package cyberpunk2077_poptracker_(version).zip (delegates to
+    7. Generate and package cyberpunk2077_poptracker_(version).zip (delegates to
        build_poptracker_pack.py).
-    7. Package CyberpunkArchipelagoMod_(version).zip (delegates to
+    8. Package CyberpunkArchipelagoMod_(version).zip (delegates to
        package_cyberpunk_mod_zip.py).
 
 Final artifacts land in ``<mod-root>/build/``:
@@ -210,6 +212,17 @@ def build_poptracker(ap_root: Path, version: str) -> None:
     )
 
 
+def build_wolvenkit(*, skip_build: bool, allow_fallback: bool, require_cli: bool) -> None:
+    cmd = [sys.executable, str(TOOLS_DIR / "build_wolvenkit_project.py")]
+    if skip_build:
+        cmd.append("--skip-build")
+    if allow_fallback:
+        cmd.append("--allow-fallback")
+    if require_cli:
+        cmd.append("--require-cli")
+    run(cmd)
+
+
 def package_zip(version: str) -> None:
     run(
         [
@@ -242,6 +255,21 @@ def main(argv: Iterable[str] | None = None) -> int:
         help="Skip the CMake native build (use only if CyberpunkAP.dll is already built).",
     )
     parser.add_argument(
+        "--skip-wolvenkit",
+        action="store_true",
+        help="Skip WolvenKit CLI build+sync (use existing overlay payload as-is).",
+    )
+    parser.add_argument(
+        "--allow-wolvenkit-fallback",
+        action="store_true",
+        help="If WolvenKit CLI build fails, fall back to committed packed/ artifacts.",
+    )
+    parser.add_argument(
+        "--require-wolvenkit-cli",
+        action="store_true",
+        help="Fail immediately if WolvenKit CLI command is not available.",
+    )
+    parser.add_argument(
         "--skip-requirements",
         action="store_true",
         help="Skip installing Archipelago's Python requirements.",
@@ -269,6 +297,12 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     if not args.skip_native:
         build_native()
+
+    build_wolvenkit(
+        skip_build=args.skip_wolvenkit,
+        allow_fallback=args.allow_wolvenkit_fallback,
+        require_cli=args.require_wolvenkit_cli,
+    )
 
     ap_root = find_archipelago_root(args.archipelago_root)
     ensure_world_visible(ap_root)
