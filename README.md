@@ -3,20 +3,20 @@
 
 An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
-> [!WARNING] Experemental Release
-> While most generation issues have been resolved. There is the possibility that certain quirks exist in the new features being added.
+[!WARNING] Experemental Release
+While most generation issues have been resolved. There is the possibility that certain quirks exist in the new features being added.
 
-> [!NOTE] What does this mod do?
+[!NOTE] What does this mod do?
 
-> First thing you should do is understand what Archipelago actually is. Please refer to [The Archipelago FAQ](https://archipelago.gg/faq/en/) to learn more.
+ First thing you should do is understand what Archipelago actually is. Please refer to [The Archipelago FAQ](https://archipelago.gg/faq/en/) to learn more.
 
-> **Checks (locations)** can include story and DLC quest beats, gigs, tarot paintings, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs, weapon vendors, clothing vendors, melee vendors, and netrunners. Which checks exist depends on your YAML.
+ **Checks (locations)** can include story and DLC quest beats, gigs, tarot paintings, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs, weapon vendors, clothing vendors, melee vendors, and netrunners. Which checks exist depends on your YAML.
 
-> **Items**: progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks as items**. Optional **district access tokens** can require you to unlock Night City regions using multiworld items instead of only story progress.
+ **Items**: progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks as items**. Optional **district access tokens** can require you to unlock Night City regions using multiworld items instead of only story progress.
 
-> **Weapon restrictions**: options can hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+ **Weapon restrictions**: options can hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
 
-> **Extras**: **Death Link** (share deaths with the multiworld when enabled) and **Oops! All Traps!** (replaces useful and filler items with traps).
+ **Extras**: **Death Link** (share deaths with the multiworld when enabled) and **Oops! All Traps!** (replaces useful and filler items with traps).
 
 # Installation
 
