@@ -2,6 +2,7 @@
 
 An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
+> [!WARNING]
 > ⚠️ **Experimental Release**
 > 
 > While most generation issues have been resolved, there is a possibility that certain quirks exist in the new features being added.
