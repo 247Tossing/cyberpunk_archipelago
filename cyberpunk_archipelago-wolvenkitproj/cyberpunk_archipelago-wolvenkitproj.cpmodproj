@@ -6,4 +6,9 @@
   <Email>sageport@gmail.com</Email>
   <Version>0.7.0</Version>
   <OpenProjectFiles>localization\en-us\ap-strings.json</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\fullscreen\main_menu\singleplayer_menu.inkwidget</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\fullscreen\main_menu\eula_button_style.inkstyle</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\fullscreen\main_menu\menu_background_pl.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\fullscreen\main_menu\menu_background.inkatlas</OpenProjectFiles>
+  <OpenProjectFiles>base\gameplay\gui\fullscreen\main_menu\menu_background.xbm</OpenProjectFiles>
 </CP77Mod>
