@@ -170,25 +170,24 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument(
         "--require-cli",
         action="store_true",
-        help="Fail immediately if WolvenKit CLI is not resolvable before build.",
+        help="Fail immediately if WolvenKit CLI is not resolvable before build (does not disable --allow-fallback on build errors).",
     )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.skip_build:
         print("[wolvenkit] skipping CLI build; using existing packed artifacts.")
     else:
-        if not args.allow_fallback:
+        try:
             run_wolvenkit_build(args.project_dir.resolve(), require_cli=args.require_cli)
-        else:
-            try:
-                run_wolvenkit_build(args.project_dir.resolve(), require_cli=args.require_cli)
-            except (FileNotFoundError, NotADirectoryError, subprocess.CalledProcessError) as exc:
-                if args.require_cli:
-                    raise
-                print(
-                    "[wolvenkit] warning: build failed; using existing packed artifacts "
-                    f"for fallback ({exc})."
-                )
+        except subprocess.CalledProcessError as exc:
+            if not args.allow_fallback:
+                raise
+            print(
+                "[wolvenkit] warning: WolvenKit CLI build failed; using committed "
+                f"packed/ artifacts for fallback ({exc})."
+            )
+        except (FileNotFoundError, NotADirectoryError):
+            raise
 
     packed_dir = args.project_dir.resolve() / "packed"
     validate_packed_payload(packed_dir)

@@ -33,7 +33,7 @@ Useful flags:
 - `--skip-wolvenkit` - skip WolvenKit CLI build/sync (uses overlay as-is).
 - `--allow-wolvenkit-fallback` - if WolvenKit CLI build fails, fall back to
   committed `cyberpunk_archipelago-wolvenkitproj/packed/` artifacts.
-- `--require-wolvenkit-cli` - fail fast if WolvenKit CLI command is missing.
+- `--require-wolvenkit-cli` - fail fast if WolvenKit CLI command is missing (build may still fall back when combined with `--allow-wolvenkit-fallback`).
 - `--skip-requirements` - Archipelago deps already installed.
 - `--skip-poptracker` - skip the generated PopTracker pack.
 - `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.7.0`) matches
@@ -72,7 +72,7 @@ so `package_cyberpunk_mod_zip.py` includes ArchiveXL + TweakXL payloads.
 Local prerequisites:
 
 - .NET 8 SDK
-- `dotnet tool install -g wolvenkit.cli` (version `8.17.0+` for `build`)
+- `dotnet tool install -g wolvenkit.cli` (8.17.0+ for `build`; CI installs latest)
 
 Notes:
 

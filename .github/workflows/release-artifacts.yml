@@ -54,8 +54,8 @@ jobs:
       - name: Install WolvenKit CLI
         shell: pwsh
         run: |
-          # `build` command support landed in WolvenKit CLI 8.17.0.
-          dotnet tool install -g wolvenkit.cli --version 8.17.0
+          # `build` command support landed in WolvenKit CLI 8.17.0+.
+          dotnet tool install -g wolvenkit.cli
 
       - name: Setup CMake
         uses: lukka/get-cmake@latest
