@@ -84,6 +84,72 @@ public class APPhoneContact extends PhoneEventsListener {
     }
 }
 
+public class APDistrictAuthorityContact extends PhoneEventsListener {
+    private let messages: array<String>;
+    private let lastPreview: String;
+
+    public func GetContactHash() -> Int32 {
+        return APConstants.GetDistrictAuthorityContactHash();
+    }
+
+    public func GetContactData(isText: Bool) -> ref<ContactData> {
+        let contactData: ref<ContactData> = new ContactData();
+        contactData.hash = this.GetContactHash();
+        contactData.localizedName = APConstants.GetDistrictAuthorityContactName();
+        contactData.contactId = APConstants.GetDistrictAuthorityContactId();
+        contactData.id = APConstants.GetDistrictAuthorityContactShortId();
+        contactData.avatarID = t"PhoneAvatars.Avatar_Unknown";
+        contactData.questRelated = false;
+        contactData.isCallable = false;
+        if isText {
+            contactData.type = MessengerContactType.SingleThread;
+            if StrLen(this.lastPreview) > 0 {
+                contactData.lastMesssagePreview = this.lastPreview;
+            } else {
+                contactData.lastMesssagePreview = "District access authority alerts";
+            };
+        } else {
+            contactData.type = MessengerContactType.Contact;
+        };
+        contactData.messagesCount = ArraySize(this.messages);
+        contactData.hasMessages = ArraySize(this.messages) > 0;
+        contactData.playerIsLastSender = false;
+        return contactData;
+    }
+
+    public func ShowDialog(messengerController: wref<MessengerDialogViewController>) -> Bool {
+        APLogger.LogDebug(s"APDistrictAuthorityContact: ShowDialog called, message count: \(ArraySize(this.messages))");
+        if ArraySize(this.messages) == 0 {
+            messengerController.PushMessageCustom(
+                "No district restriction alerts yet.",
+                MessageViewType.Received,
+                APConstants.GetDistrictAuthorityContactName(),
+                false
+            );
+            return true;
+        }
+
+        for msg in this.messages {
+            messengerController.PushMessageCustom(
+                msg,
+                MessageViewType.Received,
+                APConstants.GetDistrictAuthorityContactName(),
+                false
+            );
+        }
+        return true;
+    }
+
+    public func AddMessage(message: String) -> Void {
+        ArrayPush(this.messages, message);
+        this.lastPreview = message;
+    }
+
+    public func GetMessageCount() -> Int32 {
+        return ArraySize(this.messages);
+    }
+}
+
 // ===== COORDINATOR =====
 // Owns the contact listener and exposes methods for registration and notifications.
 //
@@ -101,9 +167,11 @@ public class APPhoneContact extends PhoneEventsListener {
 public class APPhoneSystem extends IScriptable {
 
     private let contact: ref<APPhoneContact>;
+    private let districtContact: ref<APDistrictAuthorityContact>;
 
     public func Initialize() -> Void {
         this.contact = new APPhoneContact();
+        this.districtContact = new APDistrictAuthorityContact();
         APLogger.LogDebug("APPhoneSystem: Initialized, contact created");
     }
 
@@ -120,6 +188,7 @@ public class APPhoneSystem extends IScriptable {
             return;
         }
         phoneSystem.Register(this.contact);
+        phoneSystem.Register(this.districtContact);
         APLogger.LogDebug("APPhoneSystem: Archipelago contact registered");
     }
 
@@ -149,6 +218,34 @@ public class APPhoneSystem extends IScriptable {
             APConstants.GetArchipelagoContactHash(),
             senderName,
             s"Sent you \(itemDisplayName)"
+        );
+    }
+
+    public func SendDistrictRestrictionNotification(player: ref<GameObject>, districtDisplayName: String) -> Void {
+        if !IsDefined(this.districtContact) {
+            APLogger.LogDebug("APPhoneSystem: District contact not initialized");
+            return;
+        }
+
+        let messageText: String = s"You do not have the correct pass to enter \(districtDisplayName) district";
+        this.districtContact.AddMessage(messageText);
+
+        if !IsDefined(player) {
+            APLogger.LogDebug("APPhoneSystem: Player is null, skipping district HUD notification");
+            return;
+        }
+
+        let phoneSystem: ref<PhoneExtensionSystem> = PhoneExtensionSystem.GetInstance(player);
+        if !IsDefined(phoneSystem) {
+            APLogger.LogDebug("APPhoneSystem: PhoneExtensionSystem is null, skipping district HUD notification");
+            return;
+        }
+
+        APLogger.LogDebug(s"APPhoneSystem: Pushing district HUD notification for \(districtDisplayName)");
+        phoneSystem.NotifyNewMessageCustom(
+            APConstants.GetDistrictAuthorityContactHash(),
+            APConstants.GetDistrictAuthorityContactName(),
+            messageText
         );
     }
 }

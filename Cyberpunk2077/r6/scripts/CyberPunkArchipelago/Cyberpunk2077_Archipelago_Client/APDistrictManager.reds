@@ -77,6 +77,15 @@ public class APDistrictManager extends ScriptableSystem {
 
         APLogger.LogInfo(s"District locked. Requires Access Token");
         APLogger.LogDebug(s"Locked district: \(districtId)");
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if IsDefined(gameState) {
+            let phoneSystem: ref<APPhoneSystem> = gameState.GetPhoneSystem();
+            if IsDefined(phoneSystem) {
+                let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+                let districtDisplayName: String = this.districtEnforcer.ParseEnumToDistrictDisplayName(district);
+                phoneSystem.SendDistrictRestrictionNotification(player, districtDisplayName);
+            }
+        }
         // District is locked - teleport player to nearest safe point
         this.TeleportToSafeZone();
     }

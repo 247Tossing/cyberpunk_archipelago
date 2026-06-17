@@ -205,6 +205,29 @@ public class APDistrictEnforcer extends ScriptableSystem {
                 return "unknown";
         }
     }
+
+    public func ParseEnumToDistrictDisplayName(districtEnum: APDistrict) -> String {
+        switch districtEnum {
+            case APDistrict.Watson:
+                return "Watson";
+            case APDistrict.Westbrook:
+                return "Westbrook";
+            case APDistrict.CityCenter:
+                return "City Center";
+            case APDistrict.Heywood:
+                return "Heywood";
+            case APDistrict.SantoDomingo:
+                return "Santo Domingo";
+            case APDistrict.Pacifica:
+                return "Pacifica";
+            case APDistrict.Badlands:
+                return "Badlands";
+            case APDistrict.Dogtown:
+                return "Dogtown";
+            default:
+                return "this";
+        }
+    }
 }
 
 public class APSafePosition {

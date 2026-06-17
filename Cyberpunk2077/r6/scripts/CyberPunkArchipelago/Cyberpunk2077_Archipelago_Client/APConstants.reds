@@ -189,6 +189,10 @@ public class APConstants {
 
     // ===== PHONE EXTENSION =====
     public static func GetArchipelagoContactHash() -> Int32 { return 20777702; }
+    public static func GetDistrictAuthorityContactHash() -> Int32 { return 20777703; }
+    public static func GetDistrictAuthorityContactName() -> String { return "NC District Authority"; }
+    public static func GetDistrictAuthorityContactId() -> String { return "NCDistrictAuthorityContact"; }
+    public static func GetDistrictAuthorityContactShortId() -> String { return "NCDAUTH"; }
 
     // ===== DEBUG LOGGING =====
     // Set quest fact "ap_enable_debug_logs" to 1 in CET console to enable verbose logging
