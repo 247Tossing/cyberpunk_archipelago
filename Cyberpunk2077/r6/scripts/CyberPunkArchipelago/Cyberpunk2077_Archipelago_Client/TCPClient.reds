@@ -177,6 +177,22 @@ public class TCPClient extends ScriptableService {
                     }
                 }
 
+                let weaponConfigChanged: Bool = gameState.SetWeaponRestrictionConfig(
+                    AP_GetWeaponRestrictionType(),
+                    AP_GetWeaponRestrictPistol(),
+                    AP_GetWeaponRestrictMelee(),
+                    AP_GetWeaponRestrictRifle(),
+                    AP_GetWeaponRestrictSniper(),
+                    AP_GetWeaponRestrictLmg(),
+                    AP_GetWeaponRestrictShotgun(),
+                    AP_GetWeaponRestrictSmg()
+                );
+                if weaponConfigChanged {
+                    APLogger.LogInfo(
+                        s"Weapon restriction config received: type=\(gameState.weaponRestrictionType), pistol=\(gameState.weaponRestrictPistol), melee=\(gameState.weaponRestrictMelee), rifle=\(gameState.weaponRestrictRifle), sniper=\(gameState.weaponRestrictSniper), lmg=\(gameState.weaponRestrictLmg), shotgun=\(gameState.weaponRestrictShotgun), smg=\(gameState.weaponRestrictSmg)"
+                    );
+                }
+
                 let vendorChanged: Bool = gameState.SetVendorSanityData(
                     AP_GetVendorSanityEnabled(),
                     AP_GetVendorSanityStockLine()
