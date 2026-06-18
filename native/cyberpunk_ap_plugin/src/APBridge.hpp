@@ -28,6 +28,7 @@ public:
 
     bool SendLocationCheck(int64_t locationId);
     bool SendDeathLink(const std::string& cause);
+    bool SendSay(const std::string& text);
     bool StoryComplete();
 
     bool PollReceivedItemId(int64_t& outItemId);
@@ -35,6 +36,7 @@ public:
     std::string GetPolledItemNotifyDisplayName() const;
     bool IsDeathLinkPending() const;
     void ClearDeathLink();
+    bool GetDeathLinkEnabled() const;
 
     bool GetRestrictByMajorDistrict() const;
     bool GetRestrictBySubDistrict() const;
@@ -51,6 +53,7 @@ private:
     static void OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify);
     static void OnLocationChecked(int64_t locationId);
     static void OnDeathLinkReceived();
+    static void OnSlotDataDeathLink(int value);
     static void OnSlotDataRestrictByMajorDistrict(int value);
     static void OnSlotDataRestrictBySubDistrict(int value);
     static void OnSlotDataDistrictTokenGatedMajorMask(int value);
@@ -69,6 +72,7 @@ private:
         bool shouldNotify;
     };
     void MarkDeathLinkPending();
+    void SetDeathLinkEnabled(bool value);
     void SetRestrictByMajorDistrict(bool value);
     void SetRestrictBySubDistrict(bool value);
     void SetDistrictTokenGatedMajorMask(int32_t value);
@@ -79,6 +83,7 @@ private:
     bool m_initialized{false};
     bool m_started{false};
     bool m_deathLinkPending{false};
+    bool m_deathLinkEnabled{false};
     bool m_restrictByMajorDistrict{false};
     bool m_restrictBySubDistrict{false};
     int32_t m_districtTokenGatedMajorMask{0};

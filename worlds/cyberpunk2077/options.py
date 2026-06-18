@@ -197,7 +197,6 @@ class QuickHacksAsItems(Toggle):
     display_name = "Quick Hacks as Items"
     default = 1
 
-
 class EnableTraps(Toggle):
     display_name = "Enable Traps"
     default = 1
@@ -216,11 +215,17 @@ class EnableDeathLink(Toggle):
     display_name = "Death Link"
     default = 0
 
+class DeathLinkAmnesty(Range):
+    """Deaths forgiven before sending a DeathLink. 0 means every death sends."""
+    display_name = "Death Link Amnesty"
+    range_start = 0
+    range_end = 20
+    default = 0
+
 class OopsAllTraps(Toggle):
     """Replaces all Useful and Filler items with traps"""
     display_name = "Oops! All Traps!"
     default = 0
-
 
 class VendorSanity(Toggle):
     display_name = "Vendor Sanity"
@@ -258,7 +263,6 @@ class VendorNetrunners(Toggle):
 # - Randomize enemy difficulty
 # - Include crafting materials
 # - Enable/disable specific content packs
-
 
 # ===== OPTIONS DATACLASS =====
 # This combines all options into a single configuration object
@@ -300,6 +304,7 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     district_tokens_from_other_worlds: DistrictTokensFromOtherWorlds
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
     death_link: EnableDeathLink
+    death_link_amnesty: DeathLinkAmnesty
     include_gigs: IncludeGigs
     include_tarot: IncludeTarot
     include_cyber_psycho_sighting: IncludeCyberPsychoSighting
@@ -379,6 +384,7 @@ cyberpunk_option_groups = [
     ]),
     OptionGroup("Extra Challenge", [
         EnableDeathLink,
+        DeathLinkAmnesty,
         OopsAllTraps
     ], start_collapsed=True),
 ]

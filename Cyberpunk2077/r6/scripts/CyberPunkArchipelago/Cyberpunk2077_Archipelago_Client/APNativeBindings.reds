@@ -9,6 +9,7 @@ public static native func AP_GetConnectionStatus() -> Int32
 public static native func AP_GetLastConnectionError() -> String
 public static native func AP_SendLocationCheck(locationId: Int64) -> Bool
 public static native func AP_SendDeathLink(cause: String) -> Bool
+public static native func AP_Say(text: String) -> Bool
 public static native func AP_StoryComplete() -> Bool
 public static native func AP_IsDeathLinkPending() -> Bool
 public static native func AP_ClearDeathLink() -> Void
@@ -20,6 +21,7 @@ public static native func AP_GetRestrictBySubDistrict() -> Bool
 public static native func AP_GetDistrictTokenGatedMajorMask() -> Int32
 public static native func AP_GetVendorSanityEnabled() -> Bool
 public static native func AP_GetVendorSanityStockLine() -> String
+public static native func AP_GetDeathLinkEnabled() -> Bool
 
 // Thin wrappers around the generated APArchipelagoIdMappings class.
 // The actual id <-> string tables live in APArchipelagoIdMappings.reds, which is

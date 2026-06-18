@@ -122,7 +122,25 @@ public class TCPClient extends ScriptableService {
     }
 
     public func SendDeathLink() -> Void {
-        AP_SendDeathLink("");
+        let message: String = s"\(this.slotName) died in Night City";
+        if !this.IsConnected() {
+            APLogger.LogInfo("DeathLink: SendDeathLink aborted — not connected to Archipelago");
+            return;
+        }
+        let said: Bool = AP_Say(message);
+        if said {
+            APLogger.LogInfo("DeathLink: announced death in chat");
+        } else {
+            APLogger.LogInfo("DeathLink: chat announce failed — not connected");
+        }
+
+        APLogger.LogDebug(s"DeathLink: SendDeathLink calling native — cause=\"\(message)\", slot=\"\(this.slotName)\"");
+        let sent: Bool = AP_SendDeathLink(message);
+        if sent {
+            APLogger.LogInfo(s"DeathLink: AP_SendDeathLink returned true (cause=\"\(message)\")");
+        } else {
+            APLogger.LogInfo("DeathLink: AP_SendDeathLink returned false — native bridge not ready");
+        }
     }
 
     public func SendReadySignal() -> Void {
@@ -168,6 +186,12 @@ public class TCPClient extends ScriptableService {
                         s"Vendor sanity data received: enabled=\(gameState.vendorSanityEnabled), slots=\(ToString(ArraySize(gameState.vendorSanityItems)))"
                     );
                 }
+
+                let nativeDeathLinkEnabled: Bool = AP_GetDeathLinkEnabled();
+                let deathLinkChanged: Bool = gameState.SetEnableDeathLink(nativeDeathLinkEnabled);
+                if deathLinkChanged {
+                    APLogger.LogInfo(s"DeathLink: config synced from slot_data — enabled=\(gameState.enableDeathLink)");
+                }
             }
         }
 
@@ -197,11 +221,16 @@ public class TCPClient extends ScriptableService {
         }
 
         if AP_IsDeathLinkPending() {
+            APLogger.LogDebug("DeathLink: inbound pending — attempting HandleDeathLink");
             let gameSystemDL: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-            if IsDefined(gameSystemDL) {
-                gameSystemDL.HandleDeathLink();
+            if !IsDefined(gameSystemDL) {
+                APLogger.LogDebug("DeathLink: inbound deferred — APGameSystem undefined");
+            } else if gameSystemDL.HandleDeathLink() {
+                APLogger.LogInfo("DeathLink: inbound applied — clearing pending flag");
+                AP_ClearDeathLink();
+            } else {
+                APLogger.LogDebug("DeathLink: inbound deferred — player or APGameState not ready");
             }
-            AP_ClearDeathLink();
         }
     }
 }

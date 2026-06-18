@@ -190,17 +190,27 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     //Deathlink    
-    public func HandleDeathLink() -> Void {
+    public func HandleDeathLink() -> Bool {
         let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject() as PlayerPuppet;
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-        if IsDefined(player) {
-            if IsDefined(APGameState) {
-                if !APGameState.diedFromDeathLink {
-                    APGameState.DiedFromDeathLink();
-                    StatusEffectHelper.ApplyStatusEffect(player, t"BaseStatusEffect.ForceKill");
-                }
-            }
+        if !IsDefined(player) {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — player puppet not available");
+            return false;
         }
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — APGameState not available");
+            return false;
+        }
+
+        if APGameState.diedFromDeathLink {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — already marked diedFromDeathLink, skipping ForceKill");
+            return true;
+        }
+
+        APLogger.LogInfo("DeathLink: HandleDeathLink — applying ForceKill");
+        APGameState.DiedFromDeathLink();
+        StatusEffectHelper.ApplyStatusEffect(player, t"BaseStatusEffect.ForceKill");
+        return true;
     }
 
     // For when the player receives a quest item from the Archipelago server.
@@ -436,23 +446,33 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
 // For sending DeathLinks
 @wrapMethod(MenuScenario_Idle)
 protected cb func OnShowDeathMenu() -> Bool {
-    //if deathlink is disabled, just return
+    APLogger.LogDebug("DeathLink: OnShowDeathMenu hook fired");
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-    if IsDefined(APGameState) && !APGameState.enableDeathLink {
+    if !IsDefined(APGameState) {
+        APLogger.LogInfo("DeathLink: OnShowDeathMenu — APGameState undefined, cannot evaluate enableDeathLink");
+        return wrappedMethod();
+    }
+
+    if !APGameState.enableDeathLink {
+        APLogger.LogInfo(
+            s"DeathLink: outbound blocked — enableDeathLink=false (native slot_data=\(AP_GetDeathLinkEnabled()))"
+        );
         return wrappedMethod();
     }
 
     let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-    if IsDefined(APGameState) && APGameState.diedFromDeathLink {
-        APLogger.LogInfo( "Death caused by Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
+    if APGameState.diedFromDeathLink {
+        APLogger.LogInfo("DeathLink: outbound skipped — death was caused by inbound DeathLink");
         return wrappedMethod();
     }
 
-    if IsDefined(tcpService) {
-        //APLogger.LogInfo( "Sending DeathLink");
-        tcpService.SendDeathLink();
+    if !IsDefined(tcpService) {
+        APLogger.LogInfo("DeathLink: outbound blocked — TCPClient undefined");
+        return wrappedMethod();
     }
 
+    APLogger.LogInfo("DeathLink: OnShowDeathMenu — attempting outbound send");
+    tcpService.SendDeathLink();
     return wrappedMethod();
 }
 

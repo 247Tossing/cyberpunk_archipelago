@@ -454,6 +454,7 @@ class Cyberpunk2077World(World):
             "world_version": 2,  # Version of your world implementation
             # Configuration options sent to RedScript client via SYNC_CONFIG
             "death_link": bool(self.options.death_link.value),
+            "death_link_amnesty": int(self.options.death_link_amnesty.value),
             # Weapon restriction settings
             # 0 = none (no restriction), 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
             "weapon_restriction_type": int(self.options.weapon_restriction_type.value),

@@ -60,6 +60,12 @@ public class APGameState extends ScriptableService {
         this.diedFromDeathLink = true;
     }
 
+    public func SetEnableDeathLink(value: Bool) -> Bool {
+        let changed: Bool = (this.enableDeathLink && !value) || (!this.enableDeathLink && value);
+        this.enableDeathLink = value;
+        return changed;
+    }
+
     public func SetRestrictByMajorDistrict(value: Bool) -> Void {
         this.restrictByMajorDistrict = value;
     }

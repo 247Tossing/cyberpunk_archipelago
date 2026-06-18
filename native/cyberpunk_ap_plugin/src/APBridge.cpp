@@ -1,5 +1,7 @@
 #include "APBridge.hpp"
 
+#include <cstdio>
+
 namespace
 {
 std::string NormalizeSlotDataRawString(std::string rawValue)
@@ -89,6 +91,7 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_SetLocationCheckedCallback(&APBridge::OnLocationChecked);
     AP_SetDeathLinkSupported(true);
     AP_SetDeathLinkRecvCallback(&APBridge::OnDeathLinkReceived);
+    AP_RegisterSlotDataIntCallback("death_link", &APBridge::OnSlotDataDeathLink);
     AP_RegisterSlotDataIntCallback("restrict_by_major_district", &APBridge::OnSlotDataRestrictByMajorDistrict);
     AP_RegisterSlotDataIntCallback("restrict_by_sub_district", &APBridge::OnSlotDataRestrictBySubDistrict);
     AP_RegisterSlotDataIntCallback("district_token_gated_major_mask", &APBridge::OnSlotDataDistrictTokenGatedMajorMask);
@@ -132,6 +135,7 @@ void APBridge::Shutdown()
     m_initialized = false;
     m_started = false;
     m_deathLinkPending = false;
+    m_deathLinkEnabled = false;
     m_restrictByMajorDistrict = false;
     m_restrictBySubDistrict = false;
     m_districtTokenGatedMajorMask = 0;
@@ -199,10 +203,24 @@ bool APBridge::SendDeathLink(const std::string& cause)
     std::lock_guard<std::mutex> lock(m_mutex);
     if (!IsReadyLocked())
     {
+        std::fprintf(stderr, "CyberpunkAP: SendDeathLink rejected — bridge not ready\n");
         return false;
     }
 
+    std::fprintf(stderr, "CyberpunkAP: SendDeathLink invoking APCpp (cause=\"%s\")\n", cause.c_str());
     AP_DeathLinkSend(cause);
+    return true;
+}
+
+bool APBridge::SendSay(const std::string& text)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (!IsReadyLocked())
+    {
+        return false;
+    }
+
+    AP_Say(text);
     return true;
 }
 
@@ -266,6 +284,12 @@ void APBridge::ClearDeathLink()
     }
 }
 
+bool APBridge::GetDeathLinkEnabled() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_deathLinkEnabled;
+}
+
 bool APBridge::GetRestrictByMajorDistrict() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -316,7 +340,14 @@ void APBridge::OnLocationChecked(int64_t)
 
 void APBridge::OnDeathLinkReceived()
 {
+    std::fprintf(stderr, "CyberpunkAP: inbound DeathLink received — marked pending\n");
     APBridge::Get().MarkDeathLinkPending();
+}
+
+void APBridge::OnSlotDataDeathLink(int value)
+{
+    std::fprintf(stderr, "CyberpunkAP: slot_data death_link=%d\n", value);
+    APBridge::Get().SetDeathLinkEnabled(value != 0);
 }
 
 void APBridge::OnSlotDataRestrictByMajorDistrict(int value)
@@ -360,6 +391,12 @@ void APBridge::SetRestrictByMajorDistrict(bool value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_restrictByMajorDistrict = value;
+}
+
+void APBridge::SetDeathLinkEnabled(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_deathLinkEnabled = value;
 }
 
 void APBridge::SetRestrictBySubDistrict(bool value)

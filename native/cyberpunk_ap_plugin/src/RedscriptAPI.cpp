@@ -99,6 +99,17 @@ void APSendDeathLink(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* 
     }
 }
 
+void APSay(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    RED4ext::CString text;
+    RED4ext::GetParameter(aFrame, &text);
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().SendSay(text.c_str());
+    }
+}
+
 void APStoryComplete(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -204,6 +215,15 @@ void APGetVendorSanityStockLine(RED4ext::IScriptable*, RED4ext::CStackFrame* aFr
     }
 }
 
+void APGetDeathLinkEnabled(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetDeathLinkEnabled();
+    }
+}
+
 template <typename TFunc>
 void RegisterNative(RED4ext::CRTTISystem* rtti, const char* fullName, const char* shortName, TFunc fn)
 {
@@ -237,6 +257,7 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_GetLastConnectionError", "AP_GetLastConnectionError", &APGetLastConnectionError);
     RegisterNative(rtti, "Archipelago.AP_SendLocationCheck", "AP_SendLocationCheck", &APSendLocationCheck);
     RegisterNative(rtti, "Archipelago.AP_SendDeathLink", "AP_SendDeathLink", &APSendDeathLink);
+    RegisterNative(rtti, "Archipelago.AP_Say", "AP_Say", &APSay);
     RegisterNative(rtti, "Archipelago.AP_StoryComplete", "AP_StoryComplete", &APStoryComplete);
     RegisterNative(rtti, "Archipelago.AP_IsDeathLinkPending", "AP_IsDeathLinkPending", &APIsDeathLinkPending);
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
@@ -248,6 +269,7 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);
     RegisterNative(rtti, "Archipelago.AP_GetVendorSanityEnabled", "AP_GetVendorSanityEnabled", &APGetVendorSanityEnabled);
     RegisterNative(rtti, "Archipelago.AP_GetVendorSanityStockLine", "AP_GetVendorSanityStockLine", &APGetVendorSanityStockLine);
+    RegisterNative(rtti, "Archipelago.AP_GetDeathLinkEnabled", "AP_GetDeathLinkEnabled", &APGetDeathLinkEnabled);
 
     if (g_sdk && g_sdk->logger)
     {
