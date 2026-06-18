@@ -41,6 +41,14 @@ public:
     bool GetRestrictByMajorDistrict() const;
     bool GetRestrictBySubDistrict() const;
     int32_t GetDistrictTokenGatedMajorMask() const;
+    int32_t GetWeaponRestrictionType() const;
+    bool GetWeaponRestrictPistol() const;
+    bool GetWeaponRestrictMelee() const;
+    bool GetWeaponRestrictRifle() const;
+    bool GetWeaponRestrictSniper() const;
+    bool GetWeaponRestrictLmg() const;
+    bool GetWeaponRestrictShotgun() const;
+    bool GetWeaponRestrictSmg() const;
     bool GetVendorSanityEnabled() const;
     std::string GetVendorSanityStockLine() const;
 
@@ -57,6 +65,14 @@ private:
     static void OnSlotDataRestrictByMajorDistrict(int value);
     static void OnSlotDataRestrictBySubDistrict(int value);
     static void OnSlotDataDistrictTokenGatedMajorMask(int value);
+    static void OnSlotDataWeaponRestrictionType(int value);
+    static void OnSlotDataWeaponRestrictPistol(int value);
+    static void OnSlotDataWeaponRestrictMelee(int value);
+    static void OnSlotDataWeaponRestrictRifle(int value);
+    static void OnSlotDataWeaponRestrictSniper(int value);
+    static void OnSlotDataWeaponRestrictLmg(int value);
+    static void OnSlotDataWeaponRestrictShotgun(int value);
+    static void OnSlotDataWeaponRestrictSmg(int value);
     static void OnSlotDataVendorSanity(int value);
     static void OnSlotDataVendorSanityStock(std::string value);
 
@@ -76,6 +92,14 @@ private:
     void SetRestrictByMajorDistrict(bool value);
     void SetRestrictBySubDistrict(bool value);
     void SetDistrictTokenGatedMajorMask(int32_t value);
+    void SetWeaponRestrictionType(int32_t value);
+    void SetWeaponRestrictPistol(bool value);
+    void SetWeaponRestrictMelee(bool value);
+    void SetWeaponRestrictRifle(bool value);
+    void SetWeaponRestrictSniper(bool value);
+    void SetWeaponRestrictLmg(bool value);
+    void SetWeaponRestrictShotgun(bool value);
+    void SetWeaponRestrictSmg(bool value);
     void SetVendorSanityEnabled(bool value);
     void SetVendorSanityStockLine(const std::string& value);
 
@@ -87,6 +111,14 @@ private:
     bool m_restrictByMajorDistrict{false};
     bool m_restrictBySubDistrict{false};
     int32_t m_districtTokenGatedMajorMask{0};
+    int32_t m_weaponRestrictionType{0};
+    bool m_weaponRestrictPistol{false};
+    bool m_weaponRestrictMelee{false};
+    bool m_weaponRestrictRifle{false};
+    bool m_weaponRestrictSniper{false};
+    bool m_weaponRestrictLmg{false};
+    bool m_weaponRestrictShotgun{false};
+    bool m_weaponRestrictSmg{false};
     bool m_vendorSanityEnabled{false};
     std::string m_vendorSanityStockLine;
     std::queue<ReceivedItemEntry> m_receivedItems;

@@ -73,17 +73,25 @@ public class APWeaponRestrictionEnforcer extends ScriptableService {
 public final func EquipItem(itemId: ItemID, slot: Int32) -> Void {
     APLogger.LogDebug(s"Incoming Item equip attempt");
     let weaponEnforcer = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APWeaponRestrictionEnforcer") as APWeaponRestrictionEnforcer;
-    if IsDefined(weaponEnforcer) {
-        let incomingItem = itemId.GetTDBID();
-        let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(incomingItem);
-        let itemType = itemRecord.ItemType().Type();
-        APLogger.LogDebug(s"Item Type is: \(itemType)");
-        if weaponEnforcer.CanEquipWeapon(itemType) {
-                APLogger.LogDebug("Weapon equip allowed");
-                wrappedMethod(itemId, slot); // Proceed with the equip action
-            } else {
-                APLogger.LogDebug("Weapon equip blocked by Archipelago restrictions");
-                return; // Block the equip action
-        }
+    if !IsDefined(weaponEnforcer) {
+        wrappedMethod(itemId, slot);
+        return;
+    }
+
+    let incomingItem = itemId.GetTDBID();
+    let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(incomingItem);
+    if !IsDefined(itemRecord) {
+        wrappedMethod(itemId, slot);
+        return;
+    }
+
+    let itemType = itemRecord.ItemType().Type();
+    APLogger.LogDebug(s"Item Type is: \(itemType)");
+    if weaponEnforcer.CanEquipWeapon(itemType) {
+        APLogger.LogDebug("Weapon equip allowed");
+        wrappedMethod(itemId, slot); // Proceed with the equip action
+    } else {
+        APLogger.LogDebug("Weapon equip blocked by Archipelago restrictions");
+        return; // Block the equip action
     }
 }

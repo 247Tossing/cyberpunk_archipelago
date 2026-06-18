@@ -95,6 +95,14 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_RegisterSlotDataIntCallback("restrict_by_major_district", &APBridge::OnSlotDataRestrictByMajorDistrict);
     AP_RegisterSlotDataIntCallback("restrict_by_sub_district", &APBridge::OnSlotDataRestrictBySubDistrict);
     AP_RegisterSlotDataIntCallback("district_token_gated_major_mask", &APBridge::OnSlotDataDistrictTokenGatedMajorMask);
+    AP_RegisterSlotDataIntCallback("weapon_restriction_type", &APBridge::OnSlotDataWeaponRestrictionType);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_pistol", &APBridge::OnSlotDataWeaponRestrictPistol);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_melee", &APBridge::OnSlotDataWeaponRestrictMelee);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_rifle", &APBridge::OnSlotDataWeaponRestrictRifle);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_sniper", &APBridge::OnSlotDataWeaponRestrictSniper);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_lmg", &APBridge::OnSlotDataWeaponRestrictLmg);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_shotgun", &APBridge::OnSlotDataWeaponRestrictShotgun);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_smg", &APBridge::OnSlotDataWeaponRestrictSmg);
     AP_RegisterSlotDataIntCallback("vendor_sanity", &APBridge::OnSlotDataVendorSanity);
     AP_RegisterSlotDataRawCallback("vendor_sanity_stock", &APBridge::OnSlotDataVendorSanityStock);
 
@@ -139,6 +147,14 @@ void APBridge::Shutdown()
     m_restrictByMajorDistrict = false;
     m_restrictBySubDistrict = false;
     m_districtTokenGatedMajorMask = 0;
+    m_weaponRestrictionType = 0;
+    m_weaponRestrictPistol = false;
+    m_weaponRestrictMelee = false;
+    m_weaponRestrictRifle = false;
+    m_weaponRestrictSniper = false;
+    m_weaponRestrictLmg = false;
+    m_weaponRestrictShotgun = false;
+    m_weaponRestrictSmg = false;
     m_vendorSanityEnabled = false;
     m_vendorSanityStockLine.clear();
     std::queue<ReceivedItemEntry> empty;
@@ -308,6 +324,54 @@ int32_t APBridge::GetDistrictTokenGatedMajorMask() const
     return m_districtTokenGatedMajorMask;
 }
 
+int32_t APBridge::GetWeaponRestrictionType() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictionType;
+}
+
+bool APBridge::GetWeaponRestrictPistol() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictPistol;
+}
+
+bool APBridge::GetWeaponRestrictMelee() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictMelee;
+}
+
+bool APBridge::GetWeaponRestrictRifle() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictRifle;
+}
+
+bool APBridge::GetWeaponRestrictSniper() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictSniper;
+}
+
+bool APBridge::GetWeaponRestrictLmg() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictLmg;
+}
+
+bool APBridge::GetWeaponRestrictShotgun() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictShotgun;
+}
+
+bool APBridge::GetWeaponRestrictSmg() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictSmg;
+}
+
 bool APBridge::GetVendorSanityEnabled() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -365,6 +429,46 @@ void APBridge::OnSlotDataDistrictTokenGatedMajorMask(int value)
     APBridge::Get().SetDistrictTokenGatedMajorMask(value);
 }
 
+void APBridge::OnSlotDataWeaponRestrictionType(int value)
+{
+    APBridge::Get().SetWeaponRestrictionType(value);
+}
+
+void APBridge::OnSlotDataWeaponRestrictPistol(int value)
+{
+    APBridge::Get().SetWeaponRestrictPistol(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictMelee(int value)
+{
+    APBridge::Get().SetWeaponRestrictMelee(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictRifle(int value)
+{
+    APBridge::Get().SetWeaponRestrictRifle(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictSniper(int value)
+{
+    APBridge::Get().SetWeaponRestrictSniper(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictLmg(int value)
+{
+    APBridge::Get().SetWeaponRestrictLmg(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictShotgun(int value)
+{
+    APBridge::Get().SetWeaponRestrictShotgun(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictSmg(int value)
+{
+    APBridge::Get().SetWeaponRestrictSmg(value != 0);
+}
+
 void APBridge::OnSlotDataVendorSanity(int value)
 {
     APBridge::Get().SetVendorSanityEnabled(value != 0);
@@ -409,6 +513,54 @@ void APBridge::SetDistrictTokenGatedMajorMask(int32_t value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_districtTokenGatedMajorMask = value;
+}
+
+void APBridge::SetWeaponRestrictionType(int32_t value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictionType = value;
+}
+
+void APBridge::SetWeaponRestrictPistol(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictPistol = value;
+}
+
+void APBridge::SetWeaponRestrictMelee(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictMelee = value;
+}
+
+void APBridge::SetWeaponRestrictRifle(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictRifle = value;
+}
+
+void APBridge::SetWeaponRestrictSniper(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictSniper = value;
+}
+
+void APBridge::SetWeaponRestrictLmg(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictLmg = value;
+}
+
+void APBridge::SetWeaponRestrictShotgun(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictShotgun = value;
+}
+
+void APBridge::SetWeaponRestrictSmg(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictSmg = value;
 }
 
 void APBridge::SetVendorSanityEnabled(bool value)

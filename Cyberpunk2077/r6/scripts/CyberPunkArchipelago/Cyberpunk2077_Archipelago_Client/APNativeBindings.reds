@@ -19,6 +19,14 @@ public static native func AP_GetPolledItemNotifyDisplayName() -> String
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
 public static native func AP_GetRestrictBySubDistrict() -> Bool
 public static native func AP_GetDistrictTokenGatedMajorMask() -> Int32
+public static native func AP_GetWeaponRestrictionType() -> Int32
+public static native func AP_GetWeaponRestrictPistol() -> Bool
+public static native func AP_GetWeaponRestrictMelee() -> Bool
+public static native func AP_GetWeaponRestrictRifle() -> Bool
+public static native func AP_GetWeaponRestrictSniper() -> Bool
+public static native func AP_GetWeaponRestrictLmg() -> Bool
+public static native func AP_GetWeaponRestrictShotgun() -> Bool
+public static native func AP_GetWeaponRestrictSmg() -> Bool
 public static native func AP_GetVendorSanityEnabled() -> Bool
 public static native func AP_GetVendorSanityStockLine() -> String
 public static native func AP_GetDeathLinkEnabled() -> Bool
