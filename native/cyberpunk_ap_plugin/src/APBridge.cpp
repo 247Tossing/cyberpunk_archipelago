@@ -163,6 +163,7 @@ void APBridge::Shutdown()
     m_lastPolledShouldNotify = false;
     m_lastPolledNotifySender.clear();
     m_lastPolledNotifyDisplayName.clear();
+    m_lastPolledChatMessageJson.clear();
 }
 
 bool APBridge::IsReady() const
@@ -276,6 +277,34 @@ bool APBridge::PollReceivedItemId(int64_t& outItemId)
     m_lastPolledNotifySender = entry.senderName;
     m_lastPolledNotifyDisplayName = entry.itemDisplayName;
     return true;
+}
+
+bool APBridge::PollChatMessage()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_lastPolledChatMessageJson.clear();
+    if (!IsReadyLocked())
+    {
+        return false;
+    }
+
+    if (!AP_PollChatMessage())
+    {
+        return false;
+    }
+
+    const char* json = AP_GetPolledChatMessageJson();
+    if (json)
+    {
+        m_lastPolledChatMessageJson = json;
+    }
+    return !m_lastPolledChatMessageJson.empty();
+}
+
+std::string APBridge::GetPolledChatMessageJson() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledChatMessageJson;
 }
 
 int32_t APBridge::GetPolledItemNetworkIndex() const
@@ -411,6 +440,7 @@ void APBridge::OnItemClear()
     APBridge::Get().m_lastPolledShouldNotify = false;
     APBridge::Get().m_lastPolledNotifySender.clear();
     APBridge::Get().m_lastPolledNotifyDisplayName.clear();
+    APBridge::Get().m_lastPolledChatMessageJson.clear();
 }
 
 void APBridge::OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify, int32_t networkIndex)

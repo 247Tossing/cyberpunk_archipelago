@@ -149,6 +149,25 @@ void APPollItemQueue(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int64_
     }
 }
 
+void APPollChatMessage(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().PollChatMessage();
+    }
+}
+
+void APGetPolledChatMessageJson(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledChatMessageJson().c_str());
+        *aOut = result;
+    }
+}
+
 void APGetPolledItemNotifySender(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
 {
     aFrame->code++;
@@ -352,6 +371,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_IsDeathLinkPending", "AP_IsDeathLinkPending", &APIsDeathLinkPending);
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
+    RegisterNative(rtti, "Archipelago.AP_PollChatMessage", "AP_PollChatMessage", &APPollChatMessage);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledChatMessageJson", "AP_GetPolledChatMessageJson", &APGetPolledChatMessageJson);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifySender", "AP_GetPolledItemNotifySender", &APGetPolledItemNotifySender);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifyDisplayName", "AP_GetPolledItemNotifyDisplayName", &APGetPolledItemNotifyDisplayName);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNetworkIndex", "AP_GetPolledItemNetworkIndex", &APGetPolledItemNetworkIndex);

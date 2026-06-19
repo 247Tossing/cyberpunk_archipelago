@@ -1,6 +1,10 @@
 ﻿/.idea/*
 /.venv/*
 /Cyberpunk2077/.redscript
+# CET runtime files when using dev junctions (live next to init.lua)
+/Cyberpunk2077/bin/x64/plugins/cyber_engine_tweaks/mods/Cyberpunk_Archipelago_Bridge/config.json
+/Cyberpunk2077/bin/x64/plugins/cyber_engine_tweaks/mods/Cyberpunk_Archipelago_Bridge/db.sqlite3
+/Cyberpunk2077/bin/x64/plugins/cyber_engine_tweaks/mods/Cyberpunk_Archipelago_Bridge/*.log
 /native/build/
 # Vendored dependency archives (large binaries, not needed in source control)
 /native/APCpp/mbedtls-*.tar.bz2

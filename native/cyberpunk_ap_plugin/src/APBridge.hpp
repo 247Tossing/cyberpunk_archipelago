@@ -32,6 +32,8 @@ public:
     bool StoryComplete();
 
     bool PollReceivedItemId(int64_t& outItemId);
+    bool PollChatMessage();
+    std::string GetPolledChatMessageJson() const;
     int32_t GetPolledItemNetworkIndex() const;
     bool GetPolledItemShouldNotify() const;
     std::string GetPolledItemNotifySender() const;
@@ -129,5 +131,6 @@ private:
     bool m_lastPolledShouldNotify{false};
     std::string m_lastPolledNotifySender;
     std::string m_lastPolledNotifyDisplayName;
+    std::string m_lastPolledChatMessageJson;
 };
 } // namespace CyberpunkArchipelago

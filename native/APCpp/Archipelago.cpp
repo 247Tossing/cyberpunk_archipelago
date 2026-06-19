@@ -57,7 +57,10 @@ int cur_deathlink_amnesty = 0;
 
 // Message System
 std::deque<AP_Message*> messageQueue;
+std::deque<std::string> chatMessageQueue;
+std::string polledChatMessageJson;
 bool queueitemrecvmsg = true;
+constexpr size_t AP_CHAT_MESSAGE_LIMIT = 1000;
 
 // Data Maps
 std::map<int, AP_NetworkPlayer> map_players;
@@ -125,6 +128,10 @@ AP_NetworkPlayer getPlayer(int team, int slot);
 bool loadDataPkg(const std::string& game, const std::string& hash);
 void cacheDataPkgs(Json::Value& serverPkgs);
 Json::Value getDataPkgRequest(void);
+std::string getColorForItemFlags(int flags);
+std::string getColorForHintStatus(int hintStatus);
+int64_t getNodeNumericValue(const Json::Value& valueNode, int64_t fallback);
+void appendChatMessageFromPrintJson(const Json::Value& packet);
 // PRIV Func Declarations End
 
 void AP_Init(const char* ip, const char* game, const char* player_name, const char* passwd) {
@@ -288,6 +295,8 @@ void AP_Shutdown() {
     gifting_autoReject = true;
     gifting_supported = false;
     while (AP_IsMessagePending()) AP_ClearLatestMessage();
+    chatMessageQueue.clear();
+    polledChatMessageJson.clear();
     queueitemrecvmsg = true;
     map_players.clear();
     map_location_id_name.clear();
@@ -502,6 +511,21 @@ void AP_ClearLatestMessage() {
         delete messageQueue.front();
         messageQueue.pop_front();
     }
+}
+
+bool AP_PollChatMessage() {
+    if (chatMessageQueue.empty()) {
+        polledChatMessageJson.clear();
+        return false;
+    }
+
+    polledChatMessageJson = chatMessageQueue.front();
+    chatMessageQueue.pop_front();
+    return true;
+}
+
+const char* AP_GetPolledChatMessageJson() {
+    return polledChatMessageJson.c_str();
 }
 
 void AP_Say(std::string text) {
@@ -921,6 +945,7 @@ bool parse_response(std::string msg, std::string &request) {
                 setreplyfunc(setreply);
             }
         } else if (cmd == "PrintJSON") {
+            appendChatMessageFromPrintJson(root[i]);
             const std::string printType = root[i].get("type","").asString();
             if (printType == "ItemSend" || printType == "ItemCheat") {
                 // Filter out itemrecv messages, which would otherwise be duplicated from the itemrecv callback
@@ -1187,6 +1212,103 @@ std::string getItemName(std::string game, int64_t id) {
 std::string getLocationName(std::string game, int64_t id) {
     std::pair<std::string,int64_t> location = {game,id};
     return map_location_id_name.count(location) ? map_location_id_name.at(location) : std::string("Unknown Location") + std::to_string(id) + " from " + game;
+}
+
+std::string getColorForItemFlags(int flags) {
+    if (flags == 0) return "cyan";
+    if ((flags & 0b001) != 0) return "plum";
+    if ((flags & 0b010) != 0) return "slateblue";
+    if ((flags & 0b100) != 0) return "salmon";
+    return "cyan";
+}
+
+std::string getColorForHintStatus(int hintStatus) {
+    if (hintStatus == 30) return "green";
+    if (hintStatus == 20) return "plum";
+    if (hintStatus == 10) return "yellow";
+    return "red";
+}
+
+int64_t getNodeNumericValue(const Json::Value& valueNode, int64_t fallback) {
+    if (valueNode.isInt64()) return valueNode.asInt64();
+    if (valueNode.isInt()) return static_cast<int64_t>(valueNode.asInt());
+    if (valueNode.isUInt64()) return static_cast<int64_t>(valueNode.asUInt64());
+    if (valueNode.isString()) {
+        try {
+            return std::stoll(valueNode.asString());
+        } catch (...) {
+            return fallback;
+        }
+    }
+    return fallback;
+}
+
+void appendChatMessageFromPrintJson(const Json::Value& packet) {
+    Json::Value output;
+    output["type"] = packet.get("type", "").asString();
+    output["segments"] = Json::arrayValue;
+    const Json::Value data = packet.get("data", Json::arrayValue);
+
+    for (const auto& node : data) {
+        Json::Value segment;
+        const std::string nodeType = node.get("type", "text").asString();
+        std::string color;
+        std::string text;
+
+        if (nodeType == "player_id") {
+            const int slot = static_cast<int>(getNodeNumericValue(node["text"], 0));
+            AP_NetworkPlayer player = getPlayer(0, slot);
+            text = player.alias;
+            color = (slot == ap_player_id) ? "magenta" : "yellow";
+        } else if (nodeType == "player_name") {
+            text = node.get("text", "").asString();
+            color = "yellow";
+        } else if (nodeType == "item_name") {
+            text = node.get("text", "").asString();
+            color = getColorForItemFlags(node.get("flags", 0).asInt());
+        } else if (nodeType == "item_id") {
+            const int playerSlot = static_cast<int>(getNodeNumericValue(node["player"], ap_player_id));
+            AP_NetworkPlayer player = getPlayer(0, playerSlot);
+            const int64_t itemId = getNodeNumericValue(node["text"], 0);
+            text = getItemName(player.game, itemId);
+            color = getColorForItemFlags(node.get("flags", 0).asInt());
+        } else if (nodeType == "location_name") {
+            text = node.get("text", "").asString();
+            color = "green";
+        } else if (nodeType == "location_id") {
+            const int playerSlot = static_cast<int>(getNodeNumericValue(node["player"], ap_player_id));
+            AP_NetworkPlayer player = getPlayer(0, playerSlot);
+            const int64_t locationId = getNodeNumericValue(node["text"], 0);
+            text = getLocationName(player.game, locationId);
+            color = "green";
+        } else if (nodeType == "entrance_name") {
+            text = node.get("text", "").asString();
+            color = "blue";
+        } else if (nodeType == "hint_status") {
+            text = node.get("text", "").asString();
+            color = getColorForHintStatus(node.get("hint_status", 0).asInt());
+        } else if (nodeType == "color") {
+            text = node.get("text", "").asString();
+            color = node.get("color", "").asString();
+        } else {
+            text = node.get("text", "").asString();
+        }
+
+        if (text.empty()) {
+            continue;
+        }
+
+        segment["text"] = text;
+        segment["color"] = color;
+        output["segments"].append(segment);
+    }
+
+    if (!output["segments"].empty()) {
+        chatMessageQueue.push_back(writer.write(output));
+        while (chatMessageQueue.size() > AP_CHAT_MESSAGE_LIMIT) {
+            chatMessageQueue.pop_front();
+        }
+    }
 }
 
 AP_NetworkPlayer getPlayer(int team, int slot) {

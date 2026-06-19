@@ -1,12 +1,13 @@
 module Archipelago
 
 public class TCPClient extends ScriptableService {
-    private let serverAddress: String = "127.0.0.1:38281";
+    private let serverAddress: String = "archipelago.gg:38281";
     private let gameName: String = "Cyberpunk 2077";
     private let slotName: String = "Player1";
     private let password: String = "";
     private let initialized: Bool = false;
     private let lastConnectionError: String = "";
+    private let chatMessages: array<String>;
 
     public func Configure(server: String, game: String, slot: String, pass: String) -> Void {
         this.serverAddress = server;
@@ -29,6 +30,7 @@ public class TCPClient extends ScriptableService {
         AP_Disconnect();
         this.initialized = false;
         this.lastConnectionError = "";
+        this.ClearChatMessages();
 
         if port < 0 || port > 65535 {
             this.lastConnectionError = "Invalid port number. Must be between 0 and 65535.";
@@ -61,6 +63,7 @@ public class TCPClient extends ScriptableService {
         AP_Disconnect();
         this.initialized = false;
         this.lastConnectionError = "";
+        this.ClearChatMessages();
     }
 
     public func IsConnected() -> Bool {
@@ -150,6 +153,51 @@ public class TCPClient extends ScriptableService {
     }
 
     public func SendSyncCompleteResponse(currentCount: Int32) -> Void {
+    }
+
+    private func ClearChatMessages() -> Void {
+        let empty: array<String>;
+        this.chatMessages = empty;
+    }
+
+    private func PushChatMessage(rawMessageJson: String) -> Void {
+        let currentCount: Int32 = ArraySize(this.chatMessages);
+        if currentCount < 1000 {
+            ArrayPush(this.chatMessages, rawMessageJson);
+            return;
+        }
+
+        let trimmed: array<String>;
+        let idx: Int32 = 1;
+        while idx < currentCount {
+            ArrayPush(trimmed, this.chatMessages[idx]);
+            idx += 1;
+        }
+        ArrayPush(trimmed, rawMessageJson);
+        this.chatMessages = trimmed;
+    }
+
+    public func GetChatMessageCount() -> Int32 {
+        return ArraySize(this.chatMessages);
+    }
+
+    public func GetChatMessageJson(index: Int32) -> String {
+        if index < 0 || index >= ArraySize(this.chatMessages) {
+            return "";
+        }
+        return this.chatMessages[index];
+    }
+
+    public func SendChatFromCET(text: String) -> Bool {
+        if !this.IsConnected() {
+            return false;
+        }
+
+        if StrLen(text) == 0 {
+            return false;
+        }
+
+        return AP_Say(text);
     }
 
     public func Pump() -> Void {
@@ -259,6 +307,13 @@ public class TCPClient extends ScriptableService {
                 }
             } else {
                 APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");
+            }
+        }
+
+        while AP_PollChatMessage() {
+            let chatMessageJson: String = AP_GetPolledChatMessageJson();
+            if StrLen(chatMessageJson) > 0 {
+                this.PushChatMessage(chatMessageJson);
             }
         }
 

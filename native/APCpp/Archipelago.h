@@ -128,6 +128,8 @@ struct AP_CountdownMessage : AP_Message {
 bool AP_IsMessagePending();
 void AP_ClearLatestMessage();
 AP_Message* AP_GetLatestMessage();
+bool AP_PollChatMessage();
+const char* AP_GetPolledChatMessageJson();
 
 void AP_Say(std::string);
 
