@@ -32,6 +32,8 @@ public:
     bool StoryComplete();
 
     bool PollReceivedItemId(int64_t& outItemId);
+    int32_t GetPolledItemNetworkIndex() const;
+    bool GetPolledItemShouldNotify() const;
     std::string GetPolledItemNotifySender() const;
     std::string GetPolledItemNotifyDisplayName() const;
     bool IsDeathLinkPending() const;
@@ -58,7 +60,7 @@ private:
     APBridge& operator=(const APBridge&) = delete;
 
     static void OnItemClear();
-    static void OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify);
+    static void OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify, int32_t networkIndex);
     static void OnLocationChecked(int64_t locationId);
     static void OnDeathLinkReceived();
     static void OnSlotDataDeathLink(int value);
@@ -78,7 +80,7 @@ private:
 
     bool IsReadyLocked() const; // caller must hold m_mutex
 
-    void PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify);
+    void PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify, int32_t networkIndex);
 
     struct ReceivedItemEntry
     {
@@ -86,6 +88,7 @@ private:
         std::string senderName;
         std::string itemDisplayName;
         bool shouldNotify;
+        int32_t networkIndex;
     };
     void MarkDeathLinkPending();
     void SetDeathLinkEnabled(bool value);
@@ -122,6 +125,8 @@ private:
     bool m_vendorSanityEnabled{false};
     std::string m_vendorSanityStockLine;
     std::queue<ReceivedItemEntry> m_receivedItems;
+    int32_t m_lastPolledNetworkIndex{-1};
+    bool m_lastPolledShouldNotify{false};
     std::string m_lastPolledNotifySender;
     std::string m_lastPolledNotifyDisplayName;
 };

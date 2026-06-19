@@ -166,6 +166,7 @@ public class APConstants {
     public static func GetNGPlusActiveFact() -> String { return "ngplus_active"; }
     public static func GetNGPlusQ001StartFact() -> String { return "ngplus_q001_start"; }
     public static func GetNGPlusStandaloneQ101StartFact() -> String { return "ngplus_standalone_q101_start"; }
+    public static func GetNetworkItemIndexFact() -> String { return "ap_network_item_index"; }
 
     // ===== SERVICE NAMES =====
     // CNames for retrieving services from the game engine

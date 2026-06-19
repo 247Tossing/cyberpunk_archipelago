@@ -169,6 +169,24 @@ void APGetPolledItemNotifyDisplayName(RED4ext::IScriptable*, RED4ext::CStackFram
     }
 }
 
+void APGetPolledItemNetworkIndex(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetPolledItemNetworkIndex();
+    }
+}
+
+void APGetPolledItemShouldNotify(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetPolledItemShouldNotify();
+    }
+}
+
 void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -336,6 +354,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifySender", "AP_GetPolledItemNotifySender", &APGetPolledItemNotifySender);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifyDisplayName", "AP_GetPolledItemNotifyDisplayName", &APGetPolledItemNotifyDisplayName);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNetworkIndex", "AP_GetPolledItemNetworkIndex", &APGetPolledItemNetworkIndex);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemShouldNotify", "AP_GetPolledItemShouldNotify", &APGetPolledItemShouldNotify);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictBySubDistrict", "AP_GetRestrictBySubDistrict", &APGetRestrictBySubDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);

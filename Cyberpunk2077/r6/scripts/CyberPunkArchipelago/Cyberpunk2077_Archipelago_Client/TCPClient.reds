@@ -219,17 +219,43 @@ public class TCPClient extends ScriptableService {
             if StrLen(itemId) > 0 {
                 let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
                 if IsDefined(gameSystem) {
-                    gameSystem.HandleItemReceived(itemId);
-                    let senderName: String = AP_GetPolledItemNotifySender();
-                    if StrLen(senderName) == 0 {
-                        senderName = "Archipelago";
+                    let networkIndex: Int32 = AP_GetPolledItemNetworkIndex();
+                    let shouldNotify: Bool = AP_GetPolledItemShouldNotify();
+                    let shouldGrant: Bool = true;
+                    let inventoryHandler: ref<APInventoryHandler> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
+                    let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
+                    if networkIndex >= 0 && IsDefined(inventoryHandler) {
+                        let lastProcessedIndex: Int32 = inventoryHandler.GetLastNetworkItemIndex();
+                        if networkIndex < lastProcessedIndex {
+                            shouldGrant = false;
+                            if IsDefined(gameState) && gameState.totalNetworkItemsReceived < lastProcessedIndex {
+                                gameSystem.HandleItemSync(itemId, gameState);
+                            }
+                        }
                     }
-                    let itemDisplayName: String = AP_GetPolledItemNotifyDisplayName();
-                    if StrLen(itemDisplayName) == 0 {
-                        itemDisplayName = itemId;
+
+                    if shouldGrant {
+                        gameSystem.HandleItemReceived(itemId);
+                        if networkIndex >= 0 && IsDefined(inventoryHandler) {
+                            inventoryHandler.SetLastNetworkItemIndex(networkIndex + 1);
+                        }
+
+                        if shouldNotify {
+                            let senderName: String = AP_GetPolledItemNotifySender();
+                            if StrLen(senderName) == 0 {
+                                senderName = "Archipelago";
+                            }
+                            let itemDisplayName: String = AP_GetPolledItemNotifyDisplayName();
+                            if StrLen(itemDisplayName) == 0 {
+                                itemDisplayName = itemId;
+                            }
+                            APLogger.LogDebug(s"TCPClient: Dispatching item notification - sender: \(senderName), item: \(itemDisplayName)");
+                            gameSystem.HandleItemReceivedNotification(senderName, itemDisplayName);
+                        }
+                    } else {
+                        APLogger.LogDebug(s"TCPClient: Skipped already-processed AP item at network index \(ToString(networkIndex))");
                     }
-                    APLogger.LogDebug(s"TCPClient: Dispatching item notification - sender: \(senderName), item: \(itemDisplayName)");
-                    gameSystem.HandleItemReceivedNotification(senderName, itemDisplayName);
                 }
             } else {
                 APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");

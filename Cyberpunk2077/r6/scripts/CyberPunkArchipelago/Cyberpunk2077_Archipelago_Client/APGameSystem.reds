@@ -330,7 +330,11 @@ public class APGameSystem extends ScriptableSystem {
         }
     }
 
-    private func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+    public func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+        if !IsDefined(gameState) || !IsDefined(gameState.items) {
+            return;
+        }
+
         if !APItemParser.IsValidAPItem(item) {
             return;
         }
@@ -345,6 +349,10 @@ public class APGameSystem extends ScriptableSystem {
             // Quest keys are tracked even though they're binary (0 or 1)
             gameState.items.AddItem(item, 1);
             this.AddQuestKey(item);
+        }
+        else if APItemParser.IsTrap(item) {
+            // Re-sync should not re-trigger traps.
+            APLogger.LogDebug(s"APGameSystem: Skipping trap replay during sync: \(item)");
         }
         else if APItemParser.IsEddies(item) {
             let amount: Int32 = APItemParser.ParseEddiesAmount(item);
