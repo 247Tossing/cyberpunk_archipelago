@@ -45,6 +45,44 @@ public class APQuestLocationLookup {
         return questId;
     }
 
+    // Extract a quest id from a journal path-like string.
+    // Supports both slash styles because journal paths can be serialized either way.
+    public static func ExtractQuestIdFromPath(pathValue: String) -> String {
+        if StrLen(pathValue) == 0 {
+            return "";
+        }
+
+        let questId: String = StrAfterLast(pathValue, "/");
+        if StrLen(questId) > 0 {
+            return questId;
+        }
+
+        return StrAfterLast(pathValue, "\\");
+    }
+
+    // Guards against sending unknown/non-world checks.
+    public static func IsKnownLocationId(locationId: String) -> Bool {
+        return APArchipelagoIdMappings.ResolveLocationAddress(locationId) >= 0l;
+    }
+
+    // Unified completion handler used by all quest completion hooks.
+    public static func HandleSucceededQuest(questSystem: ref<QuestsSystem>, tcpService: ref<TCPClient>, questId: String) -> Void {
+        if StrLen(questId) == 0 {
+            return;
+        }
+
+        let locationId: String = APQuestLocationLookup.ResolveLocationId(questId);
+        if StrLen(locationId) == 0 {
+            return;
+        }
+
+        if !APQuestLocationLookup.IsKnownLocationId(locationId) {
+            return;
+        }
+
+        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+    }
+
     // Send a location check once (idempotent via ap_<locationId> quest facts).
     public static func SendLocationCheck(questSystem: ref<QuestsSystem>, tcpService: ref<TCPClient>, locationId: String) -> Void {
         if !IsDefined(questSystem) || !IsDefined(tcpService) || StrLen(locationId) == 0 {

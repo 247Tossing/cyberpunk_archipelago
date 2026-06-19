@@ -374,7 +374,7 @@ location_table: Dict[str, LocationData] = {
     "ma_pac_cvi_12": LocationData(display_name="Suspected Organized Crime Activity: Wipe the Gonk, Take the Implants", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
     "ma_pac_cvi_13": LocationData(display_name="Reported Crime: Honey, Where are You?", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
     "ma_std_arr_07": LocationData(display_name="Reported Crime: Disloyal Employee", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_arr_10": LocationData(display_name="Reported Crime: Ooh, Awkward", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    "ma_std_arr_10": LocationData(display_name="Reported Crime: Ooh, Awkward", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
     "ma_std_arr_14": LocationData(display_name="Reported Crime: Supply Management", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
     "ma_std_rcr_10": LocationData(display_name="Reported Crime: Welcome to Night City", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
     "ma_std_rcr_12": LocationData(display_name="Reported Crime: A Stroke of Luck", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),

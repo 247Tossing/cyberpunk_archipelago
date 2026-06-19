@@ -179,6 +179,32 @@ public class APGameSystem extends ScriptableSystem {
         this.SendTarotFound(value);
     }
 
+    private func HandleNCPDHustleFactResolved(value: Int32, locationId: String, factLabel: String) -> Void {
+        if value < 1 {
+            return;
+        }
+
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if !IsDefined(questSystem) || !IsDefined(tcpService) {
+            return;
+        }
+
+        APLogger.LogDebug(s"NCPD fact completion detected: fact=\(factLabel), location=\(locationId), value=\(value)");
+        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+    }
+
+    // Organized Crime callbacks (fact listeners registered in APNCPDHustleFacts).
+    public func HandleNCPDHustleHeyGle02(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_hey_gle_02", "ma_hey_gle_02_*"); }
+    public func HandleNCPDHustleHeySpr11(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_hey_spr_11", "ma_hey_spr_11_*"); }
+    public func HandleNCPDHustlePacCvi12(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_pac_cvi_12", "ma_pac_cvi_12_*"); }
+    public func HandleNCPDHustleWatLch01(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wat_lch_01", "ma_wat_lch_01_*"); }
+    public func HandleNCPDHustleWatLch08(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wat_lch_08", "ma_wat_lch_08_*"); }
+    public func HandleNCPDHustleWatNid01(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wat_nid_01", "ma_wat_nid_01_*"); }
+    public func HandleNCPDHustleWatNid02(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wat_nid_02", "ma_wat_nid_02_*"); }
+    public func HandleNCPDHustleWatNid06(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wat_nid_06", "ma_wat_nid_06_*"); }
+    public func HandleNCPDHustleWbrNok05(value: Int32) -> Void { this.HandleNCPDHustleFactResolved(value, "ma_wbr_nok_05", "ma_wbr_nok_05_*"); }
+
     //Progressive Items
     public func HandleProgressiveItem(item: String) -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
@@ -443,7 +469,10 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     }
 
     let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
-    questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
+    if IsDefined(questSystem) {
+        questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
+        APNCPDHustleFacts.RegisterOrganizedCrimeListeners(questSystem, APGameSystem);
+    }
     
     return result;
 }
@@ -517,18 +546,39 @@ protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: 
         }
 
         if Equals(state, gameJournalEntryState.Succeeded) {
-            // Resolve to a stable location ID using explicit quest lookup aliases.
-            let locationId: String = APQuestLocationLookup.ResolveLocationId(questStringId);
-            //APLogger.LogInfo( "Quest Completed: " + questStringId);
-
-            // Send to the Archipelago server when this quest maps to a tracked location.
-            if StrLen(locationId) > 0 {
-                APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
-            }
+            APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questStringId);
         }
     }
     
     return result;
+}
+
+// More reliable completion signal than JournalNotificationQueue UI updates.
+@wrapMethod(JournalManager)
+protected cb func ChangeEntryState(uniquePath: script_ref<gameJournalPath>, className: CName, state: gameJournalEntryState, notifyOption: JournalNotifyOption) -> Void {
+    wrappedMethod(uniquePath, className, state, notifyOption);
+
+    if !Equals(state, gameJournalEntryState.Succeeded) {
+        return;
+    }
+    if !Equals(className, n"gameJournalQuest") {
+        return;
+    }
+
+    let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+    let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+    if !IsDefined(questSystem) || !IsDefined(tcpService) {
+        return;
+    }
+
+    let uniquePathString: String = ToString(uniquePath);
+    let questId: String = APQuestLocationLookup.ExtractQuestIdFromPath(uniquePathString);
+    if StrLen(questId) == 0 {
+        return;
+    }
+
+    APLogger.LogDebug(s"JournalManager.ChangeEntryState completion: path=\(uniquePathString), questId=\(questId)");
+    APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
 }
 
 

@@ -107,10 +107,6 @@ class CompletionGoal(Choice):
     option_complete_only_phantom_liberty_questline = 2
     default = 0
 
-class IncludeContracts(Toggle):
-    display_name = "Include Contracts"
-    default = 1
-
 class IncludeNCPDHustles(Toggle):
     display_name = "Include NCPD Hustles"
     default = 1
@@ -308,7 +304,6 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     include_gigs: IncludeGigs
     include_tarot: IncludeTarot
     include_cyber_psycho_sighting: IncludeCyberPsychoSighting
-    include_contracts: IncludeContracts
     quick_hacks_as_items: QuickHacksAsItems
     include_ncpd_hustles: IncludeNCPDHustles
     include_minor_quests: IncludeMinorQuests
@@ -337,7 +332,6 @@ cyberpunk_option_groups = [
         IncludeGigs,
         IncludeTarot,
         IncludeCyberPsychoSighting,
-        IncludeContracts,
         IncludeNCPDHustles,
         IncludeMinorQuests,
     ]),
