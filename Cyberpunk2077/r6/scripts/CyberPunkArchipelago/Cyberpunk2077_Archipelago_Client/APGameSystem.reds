@@ -17,6 +17,13 @@ public class APGameSystem extends ScriptableSystem {
         APLogger.LogInfo("Cyberpunk 2077 Archipelago System Ready");
     }
 
+    public func OnDetach() -> Void {
+        let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(this.GetGameInstance());
+        if IsDefined(journalManager) {
+            journalManager.UnregisterScriptCallback(this, n"HandleJournalStateChange");
+        }
+    }
+
     public func SendSyncChecks() -> Void {
         let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
         if !IsDefined(tcpClient){
@@ -177,6 +184,48 @@ public class APGameSystem extends ScriptableSystem {
 
     public func HandleTarotCollected(value: Int32) -> Void {
         this.SendTarotFound(value);
+    }
+
+    public cb func HandleJournalStateChange(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
+        if !Equals(className, n"gameJournalQuest") {
+            return true;
+        }
+
+        let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(this.GetGameInstance());
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if !IsDefined(journalManager) || !IsDefined(questSystem) || !IsDefined(tcpService) {
+            return true;
+        }
+
+        let entry: wref<JournalEntry> = journalManager.GetEntry(hash);
+        let quest: wref<JournalQuest> = entry as JournalQuest;
+        if !IsDefined(quest) {
+            return true;
+        }
+
+        let questId: String = ToString(quest.id);
+        let state: gameJournalEntryState = journalManager.GetEntryState(entry);
+
+        // Phantom Liberty path split: Songbird path — Killing Moon started -> Split Quest 1.
+        if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Active) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_1");
+            return true;
+        }
+
+        // Phantom Liberty path split: Songbird path — Killing Moon completed -> Split Quest 2 + 3.
+        if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Succeeded) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_2");
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_3");
+            return true;
+        }
+
+        if Equals(state, gameJournalEntryState.Succeeded) {
+            APLogger.LogDebug(s"HandleJournalStateChange completion: questId=\(questId)");
+            APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
+        }
+
+        return true;
     }
 
     //Progressive Items
@@ -446,6 +495,12 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     if IsDefined(questSystem) {
         questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
     }
+
+    let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
+    if IsDefined(journalManager) && IsDefined(APGameSystem) {
+        journalManager.UnregisterScriptCallback(APGameSystem, n"HandleJournalStateChange");
+        journalManager.RegisterScriptCallback(APGameSystem, n"HandleJournalStateChange", gameJournalListenerType.State);
+    }
     
     return result;
 }
@@ -482,45 +537,4 @@ protected cb func OnShowDeathMenu() -> Bool {
     tcpService.SendDeathLink();
     return wrappedMethod();
 }
-
-// Canonical quest completion signal for Archipelago checks.
-@wrapMethod(JournalManager)
-protected cb func ChangeEntryState(uniquePath: script_ref<gameJournalPath>, className: CName, state: gameJournalEntryState, notifyOption: JournalNotifyOption) -> Void {
-    wrappedMethod(uniquePath, className, state, notifyOption);
-
-    if !Equals(className, n"gameJournalQuest") {
-        return;
-    }
-
-    let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
-    let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-    if !IsDefined(questSystem) || !IsDefined(tcpService) {
-        return;
-    }
-
-    let uniquePathString: String = ToString(uniquePath);
-    let questId: String = APQuestLocationLookup.ExtractQuestIdFromPath(uniquePathString);
-    if StrLen(questId) == 0 {
-        return;
-    }
-
-    // Phantom Liberty path split: Songbird path — Killing Moon started -> Split Quest 1.
-    if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Active) {
-        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_1");
-        return;
-    }
-
-    // Phantom Liberty path split: Songbird path — Killing Moon completed -> Split Quest 2 + 3.
-    if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Succeeded) {
-        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_2");
-        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_3");
-        return;
-    }
-
-    if Equals(state, gameJournalEntryState.Succeeded) {
-        APLogger.LogDebug(s"JournalManager.ChangeEntryState completion: path=\(uniquePathString), questId=\(questId)");
-        APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
-    }
-}
-
 

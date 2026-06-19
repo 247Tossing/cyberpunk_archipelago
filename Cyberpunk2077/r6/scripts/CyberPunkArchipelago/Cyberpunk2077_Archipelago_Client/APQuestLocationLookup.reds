@@ -37,7 +37,7 @@ public class APQuestLocationLookup {
             return "pl_split_quest_3";
         }
 
-        // Songbird path: Killing Moon uses Active/Succeeded handlers in OnJournalUpdate.
+        // Songbird path: Killing Moon uses Active/Succeeded handlers in HandleJournalStateChange (APGameSystem).
         if StrCmp(questId, "q306_devils_bargain") == 0 {
             return "";
         }
