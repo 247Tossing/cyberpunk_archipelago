@@ -88,6 +88,10 @@ public class APGameSystem extends ScriptableSystem {
                     // District unlock tokens (binary - just unlock)
                     this.HandleDistrictUnlock(item.itemID);
                 }
+                else if APItemParser.IsWeaponAuthorization(item.itemID) {
+                    // Weapon passes are quest-key style unlocks
+                    this.HandleWeaponUnlock(item.itemID);
+                }
                 else {
                     // Regular inventory items
                     this.inventoryHandler.GiveInventoryItem(item.itemID, difference);
@@ -257,6 +261,7 @@ public class APGameSystem extends ScriptableSystem {
         }
         else if APItemParser.IsWeaponAuthorization(item) {
             gameState.items.AddItem(item, 1);
+            this.HandleWeaponUnlock(item);
         }
         // Note: Skill points and traps not added as they're not fully implemented
     }

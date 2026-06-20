@@ -147,6 +147,78 @@ void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* a
     }
 }
 
+void APGetWeaponRestrictionType(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictionType();
+    }
+}
+
+void APGetWeaponRestrictPistol(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictPistol();
+    }
+}
+
+void APGetWeaponRestrictMelee(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictMelee();
+    }
+}
+
+void APGetWeaponRestrictRifle(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictRifle();
+    }
+}
+
+void APGetWeaponRestrictSniper(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictSniper();
+    }
+}
+
+void APGetWeaponRestrictLmg(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictLmg();
+    }
+}
+
+void APGetWeaponRestrictShotgun(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictShotgun();
+    }
+}
+
+void APGetWeaponRestrictSmg(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetWeaponRestrictSmg();
+    }
+}
+
 template <typename TFunc>
 void RegisterNative(RED4ext::CRTTISystem* rtti, const char* fullName, const char* shortName, TFunc fn)
 {
@@ -185,6 +257,14 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictionType", "AP_GetWeaponRestrictionType", &APGetWeaponRestrictionType);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictPistol", "AP_GetWeaponRestrictPistol", &APGetWeaponRestrictPistol);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictMelee", "AP_GetWeaponRestrictMelee", &APGetWeaponRestrictMelee);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictRifle", "AP_GetWeaponRestrictRifle", &APGetWeaponRestrictRifle);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictSniper", "AP_GetWeaponRestrictSniper", &APGetWeaponRestrictSniper);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictLmg", "AP_GetWeaponRestrictLmg", &APGetWeaponRestrictLmg);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictShotgun", "AP_GetWeaponRestrictShotgun", &APGetWeaponRestrictShotgun);
+    RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictSmg", "AP_GetWeaponRestrictSmg", &APGetWeaponRestrictSmg);
 
     if (g_sdk && g_sdk->logger)
     {

@@ -351,7 +351,7 @@ class Cyberpunk2077World(World):
         # This data is accessible to the game bridge via self.slot_data
         slot_data: Dict[str, Any] = {
             "world_version": 1,  # Version of your world implementation
-            # Configuration options sent to RedScript client via SYNC_CONFIG
+            # Configuration options sent to RedScript client via slot_data
             "death_link": bool(self.options.death_link.value),
             # Weapon restriction settings
             # 0 = none (no restriction), 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
