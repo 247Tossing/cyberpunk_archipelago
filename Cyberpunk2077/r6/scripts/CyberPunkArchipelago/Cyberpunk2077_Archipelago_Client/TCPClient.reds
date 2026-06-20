@@ -201,6 +201,16 @@ public class TCPClient extends ScriptableService {
     }
 
     public func Pump() -> Void {
+        AP_ProcessConnectionAttempt();
+        if this.initialized {
+            let status: Int32 = AP_GetConnectionStatus();
+            let nativeError: String = AP_GetLastConnectionError();
+            if status == 0 && StrLen(nativeError) > 0 {
+                this.lastConnectionError = nativeError;
+                this.initialized = false;
+            }
+        }
+
         // Apply slot config received from the server (e.g. district restriction).
         // The native bridge captures these from the Connected packet's slot_data;
         // mirror them into APGameState so enforcement can read them.

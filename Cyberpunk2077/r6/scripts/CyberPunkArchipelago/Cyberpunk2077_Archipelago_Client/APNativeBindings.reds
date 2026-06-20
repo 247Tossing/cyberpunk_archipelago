@@ -3,6 +3,7 @@ module Archipelago
 // RED4ext native bindings exposed by CyberpunkAP.dll
 public static native func AP_Initialize(server: String, gameName: String, slotName: String, password: String) -> Bool
 public static native func AP_Connect() -> Bool
+public static native func AP_ProcessConnectionAttempt() -> Void
 public static native func AP_Disconnect() -> Void
 public static native func AP_IsConnected() -> Bool
 public static native func AP_GetConnectionStatus() -> Int32

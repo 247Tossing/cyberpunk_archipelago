@@ -43,6 +43,12 @@ void APConnect(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, 
     }
 }
 
+void APProcessConnectionAttempt(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, void*, int64_t)
+{
+    aFrame->code++;
+    CyberpunkArchipelago::APBridge::Get().ProcessConnectionAttempt();
+}
+
 void APDisconnect(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, void*, int64_t)
 {
     aFrame->code++;
@@ -360,6 +366,7 @@ void PostRegisterTypes()
 
     RegisterNative(rtti, "Archipelago.AP_Initialize", "AP_Initialize", &APInitialize);
     RegisterNative(rtti, "Archipelago.AP_Connect", "AP_Connect", &APConnect);
+    RegisterNative(rtti, "Archipelago.AP_ProcessConnectionAttempt", "AP_ProcessConnectionAttempt", &APProcessConnectionAttempt);
     RegisterNative(rtti, "Archipelago.AP_Disconnect", "AP_Disconnect", &APDisconnect);
     RegisterNative(rtti, "Archipelago.AP_IsConnected", "AP_IsConnected", &APIsConnected);
     RegisterNative(rtti, "Archipelago.AP_GetConnectionStatus", "AP_GetConnectionStatus", &APGetConnectionStatus);

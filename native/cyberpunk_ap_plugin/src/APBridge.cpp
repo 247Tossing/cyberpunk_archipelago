@@ -1,9 +1,13 @@
 #include "APBridge.hpp"
 
+#include <chrono>
 #include <cstdio>
 
 namespace
 {
+constexpr auto kConnectAttemptTimeout = std::chrono::seconds(10);
+constexpr char kConnectTimeoutMessage[] = "Connection timed out. Verify host, port, and slot.";
+
 std::string NormalizeSlotDataRawString(std::string rawValue)
 {
     while (!rawValue.empty() && (rawValue.back() == '\n' || rawValue.back() == '\r'))
@@ -110,6 +114,8 @@ bool APBridge::Initialize(const std::string& serverAddress,
     // returns true after AP_Start() is called, so we track init state ourselves.
     m_initialized = true;
     m_started = false;
+    m_connectAttemptActive = false;
+    m_localConnectionError.clear();
     return true;
 }
 
@@ -129,12 +135,46 @@ bool APBridge::Connect()
         m_started = true;
     }
 
+    m_connectAttemptActive = true;
+    m_connectAttemptStart = std::chrono::steady_clock::now();
+    m_localConnectionError.clear();
+
     return true;
+}
+
+void APBridge::ProcessConnectionAttempt()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (!m_connectAttemptActive)
+    {
+        return;
+    }
+
+    const auto status = AP_GetConnectionStatus();
+    if (status == AP_ConnectionStatus::Authenticated || status == AP_ConnectionStatus::ConnectionRefused)
+    {
+        m_connectAttemptActive = false;
+        return;
+    }
+
+    const auto elapsed = std::chrono::steady_clock::now() - m_connectAttemptStart;
+    if (elapsed < kConnectAttemptTimeout)
+    {
+        return;
+    }
+
+    m_localConnectionError = kConnectTimeoutMessage;
+    ShutdownLocked(false);
 }
 
 void APBridge::Shutdown()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+    ShutdownLocked(true);
+}
+
+void APBridge::ShutdownLocked(bool clearConnectionError)
+{
     if (AP_IsInit())
     {
         AP_Shutdown();
@@ -142,6 +182,11 @@ void APBridge::Shutdown()
 
     m_initialized = false;
     m_started = false;
+    m_connectAttemptActive = false;
+    if (clearConnectionError)
+    {
+        m_localConnectionError.clear();
+    }
     m_deathLinkPending = false;
     m_deathLinkEnabled = false;
     m_restrictByMajorDistrict = false;
@@ -195,6 +240,10 @@ int32_t APBridge::GetConnectionStatus() const
 std::string APBridge::GetLastConnectionError() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+    if (!m_localConnectionError.empty())
+    {
+        return m_localConnectionError;
+    }
     if (!m_initialized) return "";
     const char* error = AP_GetLastConnectionError();
     if (error)

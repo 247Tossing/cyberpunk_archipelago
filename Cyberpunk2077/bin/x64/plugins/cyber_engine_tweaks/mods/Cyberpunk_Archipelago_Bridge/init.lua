@@ -17,7 +17,7 @@ local isOverlayOpen = false
 local connectionStatus = "DISCONNECTED"
 local statusMessage = "Not connected"
 local connectAttemptStartedAt = nil
-local connectTimeoutSeconds = 45
+local connectTimeoutSeconds = 10
 
 local pumpAccumulator = 0.0
 local pumpIntervalSeconds = 0.05
@@ -268,6 +268,9 @@ local function updateConnectionStatus(apService)
         else
             local elapsedSeconds = connectAttemptStartedAt and (os.clock() - connectAttemptStartedAt) or 0
             if elapsedSeconds >= connectTimeoutSeconds then
+                pcall(function()
+                    apService:DisconnectFromCET()
+                end)
                 connectionStatus = "DISCONNECTED"
                 connectAttemptStartedAt = nil
                 statusMessage = "Connection timed out. Verify host, port, and slot."
@@ -394,7 +397,6 @@ registerForEvent("onDraw", function()
     end
 
     local apService = Game.GetScriptableServiceContainer():GetService("Archipelago.TCPClient")
-    updateConnectionStatus(apService)
     syncChatFromService(apService)
 
     ImGui.SetNextWindowSize(560, 520, ImGuiCond.FirstUseEver)
@@ -539,6 +541,8 @@ registerForEvent("onUpdate", function(deltaTime)
     pcall(function()
         apService:Pump()
     end)
+
+    updateConnectionStatus(apService)
 end)
 
 registerForEvent("onInit", function()

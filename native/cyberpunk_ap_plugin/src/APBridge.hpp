@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <mutex>
 #include <queue>
@@ -19,6 +20,7 @@ public:
                     const std::string& slotName,
                     const std::string& password);
     bool Connect();
+    void ProcessConnectionAttempt();
     void Shutdown();
 
     bool IsReady() const;
@@ -107,10 +109,14 @@ private:
     void SetWeaponRestrictSmg(bool value);
     void SetVendorSanityEnabled(bool value);
     void SetVendorSanityStockLine(const std::string& value);
+    void ShutdownLocked(bool clearConnectionError); // caller must hold m_mutex
 
     mutable std::mutex m_mutex;
     bool m_initialized{false};
     bool m_started{false};
+    bool m_connectAttemptActive{false};
+    std::chrono::steady_clock::time_point m_connectAttemptStart{};
+    std::string m_localConnectionError;
     bool m_deathLinkPending{false};
     bool m_deathLinkEnabled{false};
     bool m_restrictByMajorDistrict{false};

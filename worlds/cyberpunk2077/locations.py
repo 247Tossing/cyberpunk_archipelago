@@ -738,33 +738,6 @@ location_table: Dict[str, LocationData] = {
     "VendorCheck_CzConNetrunner_1": LocationData(display_name="Dogtown Netrunner 1", regions=("Dogtown",), category=LocationCategory.VENDOR, dlc_only=True, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="netrunner"),
     "VendorCheck_CzConNetrunner_2": LocationData(display_name="Dogtown Netrunner 2", regions=("Dogtown",), category=LocationCategory.VENDOR, dlc_only=True, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="netrunner"),
     "VendorCheck_CzConNetrunner_3": LocationData(display_name="Dogtown Netrunner 3", regions=("Dogtown",), category=LocationCategory.VENDOR, dlc_only=True, progress_type=LocationProgressType.PRIORITY, vendor_subtype="netrunner"),
-
-    # =================================
-    # Event Locations
-    # =================================
-    # Event locations have code=None and represent milestones or quest completions
-    # They auto-complete when accessible and are used for internal logic
-
-    # ===== STORY PROGRESSION EVENT LOCATIONS =====
-    # These mark major milestones in the story progression
-    # Event items with matching names are automatically placed here by regions.py
-    # NOTE: Dictionary keys MUST match the item names in items.py exactly!
-
-    # NOTE: Prologue milestone event locations removed - these were orphaned and not
-    # used by any rules. Quest completion tracked via location access directly.
-
-    # NOTE: Branch completion event locations removed - Nocturne Op55N1 checks quest
-    # locations directly instead of using event items to avoid circular dependencies
-
-    # NOTE: Side quest event locations removed - side quest progression is tracked
-    # directly by quest location access rules instead of using events
-
-    # NOTE: Phantom Liberty event locations removed - DLC progression tracked directly
-    # via quest location access rules, not through event items
-
-    # NOTE: Victory event location is created manually in regions.py, NOT here
-    # Event locations created through location_table may get auto-assigned addresses
-    # which prevents them from being properly filtered as events
 }
 
 
