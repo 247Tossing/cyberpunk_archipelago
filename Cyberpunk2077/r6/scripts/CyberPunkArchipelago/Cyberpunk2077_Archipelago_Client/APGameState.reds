@@ -9,7 +9,7 @@ public class APGameState extends ScriptableService {
     public let enableDeathLink: Bool;
     public let restrictByMajorDistrict: Bool;
 
-    // Weapon restriction settings (synced from APWorld options via SYNC_CONFIG)
+    // Weapon restriction settings (synced from APWorld options via slot_data)
     // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
     public let weaponRestrictionType: Int32;
     public let weaponRestrictPistol: Bool;
@@ -19,6 +19,7 @@ public class APGameState extends ScriptableService {
     public let weaponRestrictLmg: Bool;
     public let weaponRestrictShotgun: Bool;
     public let weaponRestrictSmg: Bool;
+    public let weaponRestrictionConfigInitialized: Bool;
 
     // Item tracking
     public let items: ref<APItemList>;
@@ -56,6 +57,46 @@ public class APGameState extends ScriptableService {
 
     public func SetRestrictByMajorDistrict(value: Bool) -> Void {
         this.restrictByMajorDistrict = value;
+    }
+
+    public func SetWeaponRestrictionConfig(
+        restrictionType: Int32,
+        restrictPistol: Bool,
+        restrictMelee: Bool,
+        restrictRifle: Bool,
+        restrictSniper: Bool,
+        restrictLmg: Bool,
+        restrictShotgun: Bool,
+        restrictSmg: Bool
+    ) -> Bool {
+        let changed: Bool = !this.weaponRestrictionConfigInitialized
+            || this.weaponRestrictionType < restrictionType
+            || this.weaponRestrictionType > restrictionType
+            || (this.weaponRestrictPistol && !restrictPistol)
+            || (!this.weaponRestrictPistol && restrictPistol)
+            || (this.weaponRestrictMelee && !restrictMelee)
+            || (!this.weaponRestrictMelee && restrictMelee)
+            || (this.weaponRestrictRifle && !restrictRifle)
+            || (!this.weaponRestrictRifle && restrictRifle)
+            || (this.weaponRestrictSniper && !restrictSniper)
+            || (!this.weaponRestrictSniper && restrictSniper)
+            || (this.weaponRestrictLmg && !restrictLmg)
+            || (!this.weaponRestrictLmg && restrictLmg)
+            || (this.weaponRestrictShotgun && !restrictShotgun)
+            || (!this.weaponRestrictShotgun && restrictShotgun)
+            || (this.weaponRestrictSmg && !restrictSmg)
+            || (!this.weaponRestrictSmg && restrictSmg);
+
+        this.weaponRestrictionType = restrictionType;
+        this.weaponRestrictPistol = restrictPistol;
+        this.weaponRestrictMelee = restrictMelee;
+        this.weaponRestrictRifle = restrictRifle;
+        this.weaponRestrictSniper = restrictSniper;
+        this.weaponRestrictLmg = restrictLmg;
+        this.weaponRestrictShotgun = restrictShotgun;
+        this.weaponRestrictSmg = restrictSmg;
+        this.weaponRestrictionConfigInitialized = true;
+        return changed;
     }
 
     public func HandlePlayerRespawn() -> Void {

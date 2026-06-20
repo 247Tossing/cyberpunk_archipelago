@@ -142,6 +142,21 @@ public class TCPClient extends ScriptableService {
             let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
             if IsDefined(gameState) {
                 gameState.SetRestrictByMajorDistrict(AP_GetRestrictByMajorDistrict());
+                let weaponConfigChanged: Bool = gameState.SetWeaponRestrictionConfig(
+                    AP_GetWeaponRestrictionType(),
+                    AP_GetWeaponRestrictPistol(),
+                    AP_GetWeaponRestrictMelee(),
+                    AP_GetWeaponRestrictRifle(),
+                    AP_GetWeaponRestrictSniper(),
+                    AP_GetWeaponRestrictLmg(),
+                    AP_GetWeaponRestrictShotgun(),
+                    AP_GetWeaponRestrictSmg()
+                );
+                if weaponConfigChanged {
+                    APLogger.LogInfo(
+                        s"Weapon restriction config received: type=\(ToString(gameState.weaponRestrictionType)), pistol=\(gameState.weaponRestrictPistol), melee=\(gameState.weaponRestrictMelee), rifle=\(gameState.weaponRestrictRifle), sniper=\(gameState.weaponRestrictSniper), lmg=\(gameState.weaponRestrictLmg), shotgun=\(gameState.weaponRestrictShotgun), smg=\(gameState.weaponRestrictSmg)"
+                    );
+                }
             }
         }
 

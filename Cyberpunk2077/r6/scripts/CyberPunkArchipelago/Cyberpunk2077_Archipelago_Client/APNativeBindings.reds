@@ -14,6 +14,14 @@ public static native func AP_IsDeathLinkPending() -> Bool
 public static native func AP_ClearDeathLink() -> Void
 public static native func AP_PollItemQueue() -> Int64
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
+public static native func AP_GetWeaponRestrictionType() -> Int32
+public static native func AP_GetWeaponRestrictPistol() -> Bool
+public static native func AP_GetWeaponRestrictMelee() -> Bool
+public static native func AP_GetWeaponRestrictRifle() -> Bool
+public static native func AP_GetWeaponRestrictSniper() -> Bool
+public static native func AP_GetWeaponRestrictLmg() -> Bool
+public static native func AP_GetWeaponRestrictShotgun() -> Bool
+public static native func AP_GetWeaponRestrictSmg() -> Bool
 
 // Thin wrappers around the generated APArchipelagoIdMappings class.
 // The actual id <-> string tables live in APArchipelagoIdMappings.reds, which is
