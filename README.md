@@ -24,7 +24,7 @@ First, familiarize yourself with Archipelago by reading [The Archipelago FAQ](ht
 
 ---
 
-## Installation
+# Installation
 
 ### Requirements
 
@@ -58,14 +58,14 @@ These mods are **not** required but have been tested for compatibility and enhan
 
 ---
 
-## Usage
+# Usage
 
 ### Using the Mod
 
 1. Start Cyberpunk 2077
 2. Set a keybind for the CET overlay (if you haven't already). Refer to [Cyber Engine Tweaks documentation](https://github.com/maximegmd/CyberEngineTweaks) if needed
 3. From the CET overlay, enter your:
-   - Archipelago IP/URL
+   - Archipelago IP/URL ( i.e. ```archipelago.gg``` or your self-hosted instance IP )
    - Port
    - Slot Name
    
@@ -118,7 +118,7 @@ Before anything else, follow this guide: [Cyber Engine Tweaks Linux Instructions
 
 ---
 
-## Troubleshooting
+# Troubleshooting
 
 ### Something's broken?
 
@@ -128,17 +128,17 @@ Please include a **Clear description** of the issue. I can't help if I don't kno
 
 Depending on the nature of your issue, please include the following:
 
-For issue with AP World seed generation:
+### For issue with AP World seed generation:
 **spoiler.txt** - found in `{archipelago install dir}\output\(zip used in generation)\spoiler.txt`
 
-For issues with checks not sending, connection issues, game specific bugs:
+### For issues with checks not sending, connection issues, game specific bugs:
 **CET logs** - found in `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
 
-For issues with textures not loading, icons not displaying, odd text:
+### For issues with textures not loading, icons not displaying, odd text:
 **Archive XL Logs** -  found in `{game dir}\red4ext\plugins\ArchiveXL`
 **Tweak XL Logs** - found in `{game dir}\red4ext\plugins\TweakXL`
 
-For issues that appear to be caused by the AP World itself in the server during gameplay (very rare):
+### For issues that appear to be caused by the AP World itself in the server during gameplay (very rare):
 **Server Logs** - if hosting locally, found in `{archipelago install dir}\logs\Server*.log`
 
 ---
