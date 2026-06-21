@@ -5,8 +5,7 @@ Runs the full pipeline that produces release artifacts:
 
     1. Fetch native submodules (skippable; CI uses ``actions/checkout`` instead).
     2. Build the RED4ext native plugin (CyberpunkAP.dll) with CMake (Release).
-    3. Build the WolvenKit project payload and sync it into Cyberpunk2077/
-       (with optional fallback to committed packed/ artifacts).
+    3. Build the WolvenKit project payload and sync it into Cyberpunk2077/.
     4. Locate the Archipelago checkout and expose worlds/cyberpunk2077 inside it
        via a directory junction (Windows) or symlink (POSIX).
     5. Install Archipelago's runtime requirements non-interactively.
@@ -212,12 +211,10 @@ def build_poptracker(ap_root: Path, version: str) -> None:
     )
 
 
-def build_wolvenkit(*, skip_build: bool, allow_fallback: bool, require_cli: bool) -> None:
+def build_wolvenkit(*, skip_build: bool, require_cli: bool) -> None:
     cmd = [sys.executable, str(TOOLS_DIR / "build_wolvenkit_project.py")]
     if skip_build:
         cmd.append("--skip-build")
-    if allow_fallback:
-        cmd.append("--allow-fallback")
     if require_cli:
         cmd.append("--require-cli")
     run(cmd)
@@ -260,11 +257,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         help="Skip WolvenKit CLI build+sync (use existing overlay payload as-is).",
     )
     parser.add_argument(
-        "--allow-wolvenkit-fallback",
-        action="store_true",
-        help="If WolvenKit CLI build fails, fall back to committed packed/ artifacts.",
-    )
-    parser.add_argument(
         "--require-wolvenkit-cli",
         action="store_true",
         help="Fail immediately if WolvenKit CLI command is not available.",
@@ -300,7 +292,6 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     build_wolvenkit(
         skip_build=args.skip_wolvenkit,
-        allow_fallback=args.allow_wolvenkit_fallback,
         require_cli=args.require_wolvenkit_cli,
     )
 

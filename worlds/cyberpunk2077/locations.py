@@ -139,7 +139,7 @@ class LocationCategory:
 # Location codes are AUTO-ASSIGNED sequentially (0, 1, 2, ...) at module load
 # by _assign_location_codes() below the table. The full Archipelago ID for each
 # location is BASE_ID + code (e.g., 2077000 + 0 = 2077000).
-#
+
 # WARNING: Codes are assigned by insertion order. Appending new entries at the
 # end of a section is safe. Inserting in the middle or reordering will shift all
 # subsequent codes and invalidate any previously generated seeds/games.
@@ -156,36 +156,36 @@ location_table: Dict[str, LocationData] = {
     # Player only completes ONE lifepath per playthrough (can't restart to get all 3)
     # This ensures player doesn't need to replay game 3 times to complete all checks
     # The 3 internal IDs are manually mapped to this location below
-    "Lifepath Chosen": LocationData(display_name="Lifepath Chosen", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "Ending Reached" : LocationData(display_name="Ending Reached", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
+    "Lifepath Chosen": LocationData(display_name="Lifepath Chosen", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "Ending Reached" : LocationData(display_name="Ending Reached", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
     # Tutorial might get re-added if requested
     #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q001_intro": LocationData(display_name="Prologue - The Rescue", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q001_01_victor": LocationData(display_name="Prologue - The Ripperdoc", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q001_02_dex": LocationData(display_name="Prologue - The Ride", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q003_maelstrom": LocationData(display_name="Prologue - The Pickup", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q004_braindance": LocationData(display_name="Prologue - The Information", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q005_heist": LocationData(display_name="Prologue - The Heist", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
+    "q001_intro": LocationData(display_name="Prologue - The Rescue", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q001_01_victor": LocationData(display_name="Prologue - The Ripperdoc", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q001_02_dex": LocationData(display_name="Prologue - The Ride", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q003_maelstrom": LocationData(display_name="Prologue - The Pickup", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q004_braindance": LocationData(display_name="Prologue - The Information", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q005_heist": LocationData(display_name="Prologue - The Heist", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
     "q101_01_firestorm": LocationData(display_name="Prologue - Love Like Fire", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
 
     # =================================
     # Post-Heist Main Story
     # =================================
-    "q101_resurrection": LocationData(display_name="Main - Playing for Time", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q103_warhead": LocationData(display_name="Main - Ghost Town", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q104_02_av_chase": LocationData(display_name="Main - Life During Wartime", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
-    "q105_dollhouse": LocationData(display_name="Main - Automatic Love", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q105_02_jigjig": LocationData(display_name="Main - The Space in Between", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q105_03_braindance_studio": LocationData(display_name="Main - Disasterpiece", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q105_04_judys": LocationData(display_name="Main - Double Life", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
-    "q110_01_voodooboys": LocationData(display_name="Main - M'ap Tann Pèlen", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q110_voodoo": LocationData(display_name="Main - I Walk the Line", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
+    "q101_resurrection": LocationData(display_name="Main - Playing for Time", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q103_warhead": LocationData(display_name="Main - Ghost Town", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
+    "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
+    "q104_02_av_chase": LocationData(display_name="Main - Life During Wartime", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
+    "q105_dollhouse": LocationData(display_name="Main - Automatic Love", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
+    "q105_02_jigjig": LocationData(display_name="Main - The Space in Between", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
+    "q105_03_braindance_studio": LocationData(display_name="Main - Disasterpiece", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST),
+    "q105_04_judys": LocationData(display_name="Main - Double Life", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q110_01_voodooboys": LocationData(display_name="Main - M'ap Tann Pèlen", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
+    "q110_voodoo": LocationData(display_name="Main - I Walk the Line", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
     "q110_03_cyberspace": LocationData(display_name="Main - Transmission", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
-    "q108_johnny": LocationData(display_name="Main - Never Fade Away", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q112_01_old_friend": LocationData(display_name="Main - Down on the Street", regions=("City Center",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.EXCLUDED),
+    "q108_johnny": LocationData(display_name="Main - Never Fade Away", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
+    "q112_01_old_friend": LocationData(display_name="Main - Down on the Street", regions=("City Center",), category=LocationCategory.MAIN_QUEST),
+    "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST),
+    "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
     "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", regions=("Heywood",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
     "02_sickness": LocationData(display_name="Point of No Return - Nocturne Op55N1", regions=("Heywood",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
 
@@ -193,23 +193,23 @@ location_table: Dict[str, LocationData] = {
     # Phantom Liberty Checks
     # (Only applicable w/DLC)
     # =====================================
-    "q300_phantom_liberty": LocationData(display_name="Phantom Liberty - Phantom Liberty", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "q300_phantom_liberty": LocationData(display_name="Phantom Liberty - Phantom Liberty", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
     "q301_crash": LocationData(display_name="Phantom Liberty - Dog Eat Dog", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
-    "q301_finding_myers": LocationData(display_name="Phantom Liberty - Hole in the Sky", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "q301_q302_rescue_myers": LocationData(display_name="Phantom Liberty - Spider and the Fly", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "q301_finding_myers": LocationData(display_name="Phantom Liberty - Hole in the Sky", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
+    "q301_q302_rescue_myers": LocationData(display_name="Phantom Liberty - Spider and the Fly", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
     "q302_reed": LocationData(display_name="Phantom Liberty - Lucretia My Reflection", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
-    "q303_baron": LocationData(display_name="Phantom Liberty - The Damned", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "q303_hands": LocationData(display_name="Phantom Liberty - Get It Together", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "q303_songbird": LocationData(display_name="Phantom Liberty - You Know My Name", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "q304_stadium": LocationData(display_name="Phantom Liberty - Birds with Broken Wings", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "q304_netrunners": LocationData(display_name="Phantom Liberty - I've Seen That Face Before", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "q303_baron": LocationData(display_name="Phantom Liberty - The Damned", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
+    "q303_hands": LocationData(display_name="Phantom Liberty - Get It Together", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
+    "q303_songbird": LocationData(display_name="Phantom Liberty - You Know My Name", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
+    "q304_stadium": LocationData(display_name="Phantom Liberty - Birds with Broken Wings", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
+    "q304_netrunners": LocationData(display_name="Phantom Liberty - I've Seen That Face Before", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
     "q304_deal": LocationData(display_name="Phantom Liberty - Firestarter", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
     # Firestarter splits the finale into Reed vs Songbird paths; only one branch is
     # playable per run. Three abstract checks cover both paths (see APQuestLocationLookup).
     "pl_split_quest_1": LocationData(display_name="PL - Split Quest 1", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
     "pl_split_quest_2": LocationData(display_name="PL - Split Quest 2", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
     "pl_split_quest_3": LocationData(display_name="PL - Split Quest 3", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
-    "q307_before_tomorrow": LocationData(display_name="Phantom Liberty - Who Wants to Live Forever", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
+    "q307_before_tomorrow": LocationData(display_name="Phantom Liberty - Who Wants to Live Forever", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
 
     # =================================
     # Major Companion Arcs

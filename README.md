@@ -93,7 +93,13 @@ Below is a list of options that add location checks and their counts:
 | Include Melee Vendors | 21 (requires Vendor Sanity) |
 | Include Netrunners | 21 (requires Vendor Sanity) |
 
-### Linux Users
+Some notes about the YAML Options:
+
+Vendor Sanity adds a substantial amount of checks when all vendors are enabled. I highly advise against enabling all of the vendors in smaller groups (less then 5 worlds) as it will hog your Multiworld items.
+
+The tuning of the various quest options have been tuned as such that the ending of major quest chains (should) have progression/useful items attached to them.
+
+### Linux Users (Like me!)
 
 Before anything else, follow this guide: [Cyber Engine Tweaks Linux Instructions](https://wiki.redmodding.org/cyber-engine-tweaks/getting-started/installing/linux-proton)
 
@@ -102,7 +108,7 @@ Before anything else, follow this guide: [Cyber Engine Tweaks Linux Instructions
 2. Go to **Advanced**
 3. Scroll down to **Environment Variables**
 4. Set `Variable Name` to `WINEDLLOVERRIDES`
-5. Set `Value` to `"version,winmm=n,b"`
+5. Set `Value` to `version,winmm=n,b`
 
 #### For Steam:
 1. Right-click the game in Steam
@@ -115,13 +121,24 @@ Before anything else, follow this guide: [Cyber Engine Tweaks Linux Instructions
 
 ### Something's broken?
 
-[Open an issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose) and include:
+[Open an issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose)
 
-1. **spoiler.txt** — found in `{archipelago install dir}\output\(zip used in generation)\spoiler.txt`
-2. **CET logs** — found in `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
-3. **Client Logs** — found in `{archipelago install dir}\logs\Cyperpunk2077Client*.log`
-4. **Server Logs** — if hosting locally, found in `{archipelago install dir}\logs\Server*.log`
-5. **Clear description** of the issue — I can't help if I don't know what to look for
+Please include a **Clear description** of the issue. I can't help if I don't know what to look for.
+
+Depending on the nature of your issue, please include the following:
+
+For issue with AP World seed generation:
+**spoiler.txt** - found in `{archipelago install dir}\output\(zip used in generation)\spoiler.txt`
+
+For issues with checks not sending, connection issues, game specific bugs:
+**CET logs** - found in `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
+
+For issues with textures not loading, icons not displaying, odd text:
+**Archive XL Logs** -  found in `{game dir}\red4ext\plugins\ArchiveXL`
+**Tweak XL Logs** - found in `{game dir}\red4ext\plugins\TweakXL`
+
+For issues that appear to be caused by the AP World itself in the server during gameplay (very rare):
+**Server Logs** - if hosting locally, found in `{archipelago install dir}\logs\Server*.log`
 
 ---
 

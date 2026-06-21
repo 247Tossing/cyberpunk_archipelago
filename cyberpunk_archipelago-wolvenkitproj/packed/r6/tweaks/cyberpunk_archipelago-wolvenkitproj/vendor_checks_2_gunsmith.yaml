@@ -9,7 +9,7 @@ Items.VendorCheck_2ndAmendment_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_2ndAmendment_1
@@ -23,7 +23,7 @@ Items.VendorCheck_2ndAmendment_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_2ndAmendment_2
@@ -37,7 +37,7 @@ Items.VendorCheck_2ndAmendment_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_2ndAmendment_3
@@ -86,7 +86,7 @@ Items.VendorCheck_CctDtnGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnGunsmith_1
@@ -99,7 +99,7 @@ Items.VendorCheck_CctDtnGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnGunsmith_2
@@ -112,7 +112,7 @@ Items.VendorCheck_CctDtnGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnGunsmith_3
@@ -125,7 +125,7 @@ Items.VendorCheck_HeyGleGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyGleGunsmith_1
@@ -138,7 +138,7 @@ Items.VendorCheck_HeyGleGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyGleGunsmith_2
@@ -151,7 +151,7 @@ Items.VendorCheck_HeyGleGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyGleGunsmith_3
@@ -164,7 +164,7 @@ Items.VendorCheck_HeyReyGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyGunsmith_1
@@ -177,7 +177,7 @@ Items.VendorCheck_HeyReyGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyGunsmith_2
@@ -190,7 +190,7 @@ Items.VendorCheck_HeyReyGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyGunsmith_3
@@ -203,7 +203,7 @@ Items.VendorCheck_HeySprGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprGunsmith_1
@@ -216,7 +216,7 @@ Items.VendorCheck_HeySprGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprGunsmith_2
@@ -229,7 +229,7 @@ Items.VendorCheck_HeySprGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprGunsmith_3
@@ -242,7 +242,7 @@ Items.VendorCheck_PacWwdGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdGunsmith_1
@@ -255,7 +255,7 @@ Items.VendorCheck_PacWwdGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdGunsmith_2
@@ -268,7 +268,7 @@ Items.VendorCheck_PacWwdGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdGunsmith_3
@@ -281,7 +281,7 @@ Items.VendorCheck_StdArrGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdArrGunsmith_1
@@ -294,7 +294,7 @@ Items.VendorCheck_StdArrGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdArrGunsmith_2
@@ -307,7 +307,7 @@ Items.VendorCheck_StdArrGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdArrGunsmith_3
@@ -320,7 +320,7 @@ Items.VendorCheck_StdRcrGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrGunsmith_1
@@ -333,7 +333,7 @@ Items.VendorCheck_StdRcrGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrGunsmith_2
@@ -346,7 +346,7 @@ Items.VendorCheck_StdRcrGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrGunsmith_3
@@ -359,7 +359,7 @@ Items.VendorCheck_WatNidGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidGunsmith_1
@@ -372,7 +372,7 @@ Items.VendorCheck_WatNidGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidGunsmith_2
@@ -385,7 +385,7 @@ Items.VendorCheck_WatNidGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidGunsmith_3
@@ -398,7 +398,7 @@ Items.VendorCheck_WbrJpnGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnGunsmith_1
@@ -411,7 +411,7 @@ Items.VendorCheck_WbrJpnGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnGunsmith_2
@@ -424,7 +424,7 @@ Items.VendorCheck_WbrJpnGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnGunsmith_3
@@ -437,7 +437,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith01a_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith01a_1
@@ -450,7 +450,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith01a_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith01a_2
@@ -463,7 +463,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith01a_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith01a_3
@@ -476,7 +476,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith02_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith02_1
@@ -489,7 +489,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith02_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith02_2
@@ -502,7 +502,7 @@ Items.VendorCheck_BlsInaSe1Gunsmith02_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Gunsmith02_3
@@ -515,7 +515,7 @@ Items.VendorCheck_BlsInaSe5Gunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe5Gunsmith_1
@@ -528,7 +528,7 @@ Items.VendorCheck_BlsInaSe5Gunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe5Gunsmith_2
@@ -541,7 +541,7 @@ Items.VendorCheck_BlsInaSe5Gunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe5Gunsmith_3
@@ -554,7 +554,7 @@ Items.VendorCheck_CzConGunsmith_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConGunsmith_1
@@ -567,7 +567,7 @@ Items.VendorCheck_CzConGunsmith_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConGunsmith_2
@@ -580,7 +580,7 @@ Items.VendorCheck_CzConGunsmith_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConGunsmith_3

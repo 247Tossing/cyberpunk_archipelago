@@ -11,7 +11,7 @@ Items.VendorCheck_HeyReyNetrunner_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyNetrunner_1
@@ -24,7 +24,7 @@ Items.VendorCheck_HeyReyNetrunner_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyNetrunner_2
@@ -37,7 +37,7 @@ Items.VendorCheck_HeyReyNetrunner_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeyReyNetrunner_3
@@ -50,7 +50,7 @@ Items.VendorCheck_WatLchNetrunner_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchNetrunner_1
@@ -63,7 +63,7 @@ Items.VendorCheck_WatLchNetrunner_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchNetrunner_2
@@ -76,7 +76,7 @@ Items.VendorCheck_WatLchNetrunner_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchNetrunner_3
@@ -89,7 +89,7 @@ Items.VendorCheck_WatKabNetrunner_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabNetrunner_1
@@ -102,7 +102,7 @@ Items.VendorCheck_WatKabNetrunner_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabNetrunner_2
@@ -115,7 +115,7 @@ Items.VendorCheck_WatKabNetrunner_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabNetrunner_3
@@ -128,7 +128,7 @@ Items.VendorCheck_WbrJpnNetrunner01_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner01_1
@@ -141,7 +141,7 @@ Items.VendorCheck_WbrJpnNetrunner01_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner01_2
@@ -154,7 +154,7 @@ Items.VendorCheck_WbrJpnNetrunner01_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner01_3
@@ -167,7 +167,7 @@ Items.VendorCheck_WbrJpnNetrunner02_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner02_1
@@ -180,7 +180,7 @@ Items.VendorCheck_WbrJpnNetrunner02_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner02_2
@@ -193,7 +193,7 @@ Items.VendorCheck_WbrJpnNetrunner02_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnNetrunner02_3
@@ -206,7 +206,7 @@ Items.VendorCheck_CzConNetrunner_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConNetrunner_1
@@ -219,7 +219,7 @@ Items.VendorCheck_CzConNetrunner_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConNetrunner_2
@@ -232,7 +232,7 @@ Items.VendorCheck_CzConNetrunner_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConNetrunner_3
@@ -245,7 +245,7 @@ Items.VendorCheck_PacCviNetrunner_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviNetrunner_1
@@ -258,7 +258,7 @@ Items.VendorCheck_PacCviNetrunner_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviNetrunner_2
@@ -271,7 +271,7 @@ Items.VendorCheck_PacCviNetrunner_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviNetrunner_3

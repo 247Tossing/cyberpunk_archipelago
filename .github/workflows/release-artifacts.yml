@@ -77,7 +77,7 @@ jobs:
           if ("${{ github.ref_type }}" -eq "tag") {
             $tagArg = @("--require-tag-version", "${{ github.ref_name }}")
           }
-          python tools/build_release.py --skip-submodules --skip-native --allow-wolvenkit-fallback --require-wolvenkit-cli @tagArg
+          python tools/build_release.py --skip-submodules --skip-native --require-wolvenkit-cli @tagArg
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

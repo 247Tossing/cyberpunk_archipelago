@@ -1,7 +1,7 @@
 """
 Build and stage WolvenKit project outputs for release packaging.
 
-This script optionally runs ``wolvenkit.cli build`` for the project's
+This script optionally runs ``wolvenkit.cli import`` then ``wolvenkit.cli pack`` for the project's
 ``.cpmodproj``, validates the generated ``packed/`` payload, and syncs
 WolvenKit-managed files into ``Cyberpunk2077/`` so zip packaging includes:
 
@@ -32,12 +32,66 @@ REQUIRED_PACKED_FILES = (
     PACKED_DIR / "archive" / "pc" / "mod" / "cyberpunk_archipelago-wolvenkitproj.archive.xl",
 )
 REQUIRED_TWEAK_GLOB = "r6/tweaks/cyberpunk_archipelago-wolvenkitproj/vendor_checks_*.yaml"
+REQUIRED_ARCHIVE_DEPOT_PATHS = (
+    r"base\gameplay\gui\fullscreen\main_menu\menu_background.xbm",
+    r"archipelago\ap-icons.inkatlas",
+    r"localization\en-us\ap-strings.json",
+)
 
 
 def run(cmd: list[str], *, cwd: Path | None = None) -> None:
     printable = " ".join(str(part) for part in cmd)
     print(f"[wolvenkit] $ {printable}" + (f"  (cwd={cwd})" if cwd else ""))
     subprocess.check_call(cmd, cwd=str(cwd) if cwd else None)
+
+
+def run_import(cmd: list[str], *, cwd: Path | None = None) -> None:
+    printable = " ".join(str(part) for part in cmd)
+    print(f"[wolvenkit] $ {printable}" + (f"  (cwd={cwd})" if cwd else ""))
+    result = subprocess.run(
+        cmd,
+        cwd=str(cwd) if cwd else None,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.stdout:
+        print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+    if result.stderr:
+        print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
+    if result.returncode == 0:
+        return
+
+    output = f"{result.stdout}\n{result.stderr}"
+    no_redfile = "No existing redfile found to rebuild for" in output
+    imported_summary = "Imported " in output
+    hard_error = ": Error" in output or "Unhandled exception" in output
+    if imported_summary and not hard_error:
+        if no_redfile:
+            print(
+                "[wolvenkit] warning: import reported unmapped raw files (no matching redfile); "
+                "continuing with successfully imported files."
+            )
+        else:
+            print(
+                "[wolvenkit] warning: import returned a non-zero code despite reporting imported files; "
+                "continuing."
+            )
+        return
+
+    if no_redfile and not hard_error:
+        print(
+            "[wolvenkit] warning: import reported unmapped raw files (no matching redfile); "
+            "continuing with successfully imported files."
+        )
+        return
+
+    raise subprocess.CalledProcessError(
+        result.returncode,
+        cmd,
+        output=result.stdout,
+        stderr=result.stderr,
+    )
 
 
 def _dotnet_tools_dir() -> Path:
@@ -100,7 +154,38 @@ def run_wolvenkit_build(project_dir: Path, *, require_cli: bool) -> None:
         raise FileNotFoundError(f"No .cpmodproj found in {project_dir}")
 
     cli = resolve_cli_command(required=require_cli)
-    run([*cli, "build", str(project_dir)], cwd=MOD_ROOT)
+    raw_dir = project_dir / "source" / "raw"
+    archive_dir = project_dir / "source" / "archive"
+    resources_dir = project_dir / "source" / "resources"
+    if not raw_dir.is_dir():
+        raise FileNotFoundError(f"WolvenKit raw source directory does not exist: {raw_dir}")
+    if not archive_dir.is_dir():
+        raise FileNotFoundError(f"WolvenKit archive source directory does not exist: {archive_dir}")
+    if not resources_dir.is_dir():
+        raise FileNotFoundError(f"WolvenKit resources directory does not exist: {resources_dir}")
+    run_import([*cli, "import", "-p", "source/raw", "-o", "source/archive", "-k"], cwd=project_dir)
+    packed_archive_dir = project_dir / "packed" / "archive" / "pc" / "mod"
+    packed_archive_dir.mkdir(parents=True, exist_ok=True)
+    run([*cli, "pack", "-p", "source/archive", "-o", "packed/archive/pc/mod"], cwd=project_dir)
+    generated_archive = packed_archive_dir / "archive.archive"
+    target_archive = packed_archive_dir / "cyberpunk_archipelago-wolvenkitproj.archive"
+    if generated_archive.is_file():
+        if target_archive.is_file():
+            target_archive.unlink()
+        generated_archive.rename(target_archive)
+    if not target_archive.is_file():
+        raise FileNotFoundError(f"Expected packed archive not found after pack step: {target_archive}")
+    tweaks_src = resources_dir / "r6" / "tweaks"
+    if not tweaks_src.is_dir():
+        raise FileNotFoundError(f"WolvenKit tweak resources directory does not exist: {tweaks_src}")
+    copy_tree(tweaks_src, project_dir / "packed" / "r6" / "tweaks")
+
+    xl_src = resources_dir / "cyberpunk_archipelago-wolvenkitproj.archive.xl"
+    xl_dst = packed_archive_dir / "cyberpunk_archipelago-wolvenkitproj.archive.xl"
+    if not xl_src.is_file():
+        raise FileNotFoundError(f"WolvenKit archive.xl resource is missing: {xl_src}")
+    xl_dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(xl_src, xl_dst)
 
 
 def validate_packed_payload(packed_dir: Path) -> None:
@@ -113,6 +198,55 @@ def validate_packed_payload(packed_dir: Path) -> None:
     if not tweak_matches:
         raise FileNotFoundError(
             f"Missing vendor tweak YAMLs in {packed_dir / 'r6/tweaks/cyberpunk_archipelago-wolvenkitproj'}"
+        )
+
+
+def list_archive_entries(cli: list[str], archive_path: Path) -> list[str]:
+    cmd = [*cli, "archive", str(archive_path), "--list"]
+    printable = " ".join(str(part) for part in cmd)
+    print(f"[wolvenkit] $ {printable}")
+    result = subprocess.run(cmd, text=True, capture_output=True, check=False)
+    if result.stderr:
+        print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(
+            result.returncode,
+            cmd,
+            output=result.stdout,
+            stderr=result.stderr,
+        )
+    lines = (line.strip() for line in result.stdout.splitlines())
+    return [line.replace("/", "\\") for line in lines if line and not line.startswith("[")]
+
+
+def validate_archive_internal_paths(packed_dir: Path, *, require_cli: bool) -> None:
+    archive_path = packed_dir / "archive" / "pc" / "mod" / "cyberpunk_archipelago-wolvenkitproj.archive"
+    if not archive_path.is_file():
+        raise FileNotFoundError(f"Expected packed archive not found: {archive_path}")
+    cli = resolve_cli_command(required=require_cli)
+    entries = list_archive_entries(cli, archive_path)
+    lowered = [entry.lower() for entry in entries]
+
+    prefixed = [
+        entry
+        for entry in entries
+        if entry.lower().startswith("source\\archive\\") or entry.lower().startswith(".projectfiles\\")
+    ]
+    if prefixed:
+        sample = ", ".join(prefixed[:3])
+        raise ValueError(
+            "Packed archive contains invalid internal paths (expected depot paths relative to source/archive): "
+            f"{sample}"
+        )
+
+    missing = [
+        depot_path
+        for depot_path in REQUIRED_ARCHIVE_DEPOT_PATHS
+        if depot_path.lower() not in lowered
+    ]
+    if missing:
+        raise FileNotFoundError(
+            "Packed archive is missing required depot paths: " + ", ".join(missing)
         )
 
 
@@ -191,6 +325,7 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     packed_dir = args.project_dir.resolve() / "packed"
     validate_packed_payload(packed_dir)
+    validate_archive_internal_paths(packed_dir, require_cli=args.require_cli)
     sync_packed_to_overlay(packed_dir)
     print(f"[wolvenkit] done (minimum recommended CLI version: {WOLVENKIT_CLI_MIN_VERSION})")
     return 0

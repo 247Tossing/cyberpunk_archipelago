@@ -11,7 +11,7 @@ Items.VendorCheck_CctCpzClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctCpzClothing_1
@@ -24,7 +24,7 @@ Items.VendorCheck_CctCpzClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctCpzClothing_2
@@ -37,7 +37,7 @@ Items.VendorCheck_CctCpzClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctCpzClothing_3
@@ -50,7 +50,7 @@ Items.VendorCheck_CctDtnClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnClothing_1
@@ -63,7 +63,7 @@ Items.VendorCheck_CctDtnClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnClothing_2
@@ -76,7 +76,7 @@ Items.VendorCheck_CctDtnClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CctDtnClothing_3
@@ -89,7 +89,7 @@ Items.VendorCheck_HeySprClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprClothing_1
@@ -102,7 +102,7 @@ Items.VendorCheck_HeySprClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprClothing_2
@@ -115,7 +115,7 @@ Items.VendorCheck_HeySprClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_HeySprClothing_3
@@ -128,7 +128,7 @@ Items.VendorCheck_PacCviClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviClothing_1
@@ -141,7 +141,7 @@ Items.VendorCheck_PacCviClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviClothing_2
@@ -154,7 +154,7 @@ Items.VendorCheck_PacCviClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacCviClothing_3
@@ -167,7 +167,7 @@ Items.VendorCheck_PacWwdClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdClothing_1
@@ -180,7 +180,7 @@ Items.VendorCheck_PacWwdClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdClothing_2
@@ -193,7 +193,7 @@ Items.VendorCheck_PacWwdClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_PacWwdClothing_3
@@ -206,7 +206,7 @@ Items.VendorCheck_StdRcrClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrClothing_1
@@ -219,7 +219,7 @@ Items.VendorCheck_StdRcrClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrClothing_2
@@ -232,7 +232,7 @@ Items.VendorCheck_StdRcrClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_StdRcrClothing_3
@@ -245,7 +245,7 @@ Items.VendorCheck_WatKabClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabClothing_1
@@ -258,7 +258,7 @@ Items.VendorCheck_WatKabClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabClothing_2
@@ -271,7 +271,7 @@ Items.VendorCheck_WatKabClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatKabClothing_3
@@ -284,7 +284,7 @@ Items.VendorCheck_WatLchClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchClothing_1
@@ -297,7 +297,7 @@ Items.VendorCheck_WatLchClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchClothing_2
@@ -310,7 +310,7 @@ Items.VendorCheck_WatLchClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatLchClothing_3
@@ -323,7 +323,7 @@ Items.VendorCheck_WatNidClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidClothing_1
@@ -336,7 +336,7 @@ Items.VendorCheck_WatNidClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidClothing_2
@@ -349,7 +349,7 @@ Items.VendorCheck_WatNidClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WatNidClothing_3
@@ -362,7 +362,7 @@ Items.VendorCheck_WbrHilClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrHilClothing_1
@@ -375,7 +375,7 @@ Items.VendorCheck_WbrHilClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrHilClothing_2
@@ -388,7 +388,7 @@ Items.VendorCheck_WbrHilClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrHilClothing_3
@@ -401,7 +401,7 @@ Items.VendorCheck_WbrJpnClothing01_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing01_1
@@ -414,7 +414,7 @@ Items.VendorCheck_WbrJpnClothing01_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing01_2
@@ -427,7 +427,7 @@ Items.VendorCheck_WbrJpnClothing01_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing01_3
@@ -440,7 +440,7 @@ Items.VendorCheck_WbrJpnClothing02_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing02_1
@@ -453,7 +453,7 @@ Items.VendorCheck_WbrJpnClothing02_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing02_2
@@ -466,7 +466,7 @@ Items.VendorCheck_WbrJpnClothing02_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_WbrJpnClothing02_3
@@ -479,7 +479,7 @@ Items.VendorCheck_BlsInaSe1Clothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Clothing_1
@@ -492,7 +492,7 @@ Items.VendorCheck_BlsInaSe1Clothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Clothing_2
@@ -505,7 +505,7 @@ Items.VendorCheck_BlsInaSe1Clothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_BlsInaSe1Clothing_3
@@ -518,7 +518,7 @@ Items.VendorCheck_CzConClothing_1:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConClothing_1
@@ -531,7 +531,7 @@ Items.VendorCheck_CzConClothing_2:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConClothing_2
@@ -544,7 +544,7 @@ Items.VendorCheck_CzConClothing_3:
   displayName: "LocKey#VendorCheck_Fallback_1_Name"
   localizedDescription: "LocKey#VendorCheck_Fallback_1_Desc"
   icon:
-    atlasResourcePath: Archipelago\ap-icons.inkatlas
+    atlasResourcePath: archipelago\ap-icons.inkatlas
     atlasPartName: color-icon
   tags:
     - VendorCheck_CzConClothing_3

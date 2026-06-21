@@ -31,9 +31,7 @@ Useful flags:
 - `--skip-submodules` - CI already checked out submodules (`actions/checkout`).
 - `--skip-native` - reuse an already-built `CyberpunkAP.dll`.
 - `--skip-wolvenkit` - skip WolvenKit CLI build/sync (uses overlay as-is).
-- `--allow-wolvenkit-fallback` - if WolvenKit CLI build fails, fall back to
-  committed `cyberpunk_archipelago-wolvenkitproj/packed/` artifacts.
-- `--require-wolvenkit-cli` - fail fast if WolvenKit CLI command is missing (build may still fall back when combined with `--allow-wolvenkit-fallback`).
+- `--require-wolvenkit-cli` - fail fast if WolvenKit CLI command is missing.
 - `--skip-requirements` - Archipelago deps already installed.
 - `--skip-poptracker` - skip the generated PopTracker pack.
 - `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.7.0`) matches
@@ -56,7 +54,8 @@ DLLs.
 The release pipeline uses `tools/build_wolvenkit_project.py` to run:
 
 ```cmd
-wolvenkit.cli build cyberpunk_archipelago-wolvenkitproj
+wolvenkit.cli import -p cyberpunk_archipelago-wolvenkitproj\source\raw -o cyberpunk_archipelago-wolvenkitproj\source\archive -k
+wolvenkit.cli pack -p source/archive -o packed/archive/pc/mod
 ```
 
 The script auto-detects either `wolvenkit.cli` or `cp77tools` (the default
@@ -68,6 +67,57 @@ Then it validates `cyberpunk_archipelago-wolvenkitproj/packed/` and syncs:
 - `packed/r6/tweaks/` -> `Cyberpunk2077/r6/tweaks/`
 
 so `package_cyberpunk_mod_zip.py` includes ArchiveXL + TweakXL payloads.
+
+For v0.7+ release builds, WolvenKit fallback is intentionally disabled in
+`build_release.py` and GitHub Actions. A failing WolvenKit import/pack now
+fails the release, so broken menu/icon/localization payloads are caught before
+publishing.
+
+The WolvenKit sync script also validates the packed archive's internal depot
+paths and fails if entries are prefixed with `source\archive\` or
+`.projectFiles\`.
+
+Quick check command:
+
+```cmd
+cp77tools archive cyberpunk_archipelago-wolvenkitproj\packed\archive\pc\mod\cyberpunk_archipelago-wolvenkitproj.archive --list
+```
+
+Required entries (exact internal paths):
+
+- `base\gameplay\gui\fullscreen\main_menu\menu_background.xbm`
+- `archipelago\ap-icons.inkatlas`
+- `localization\en-us\ap-strings.json`
+
+If the list shows `source\archive\...`, the build artifact is invalid even if
+the archive file exists and is ~6 MB.
+
+### ArchiveXL + TweakXL troubleshooting (v0.7)
+
+If testers report missing vendor icons or raw fallback LocKey text, use logs in:
+
+- `red4ext/plugins/TweakXL/TweakXL-*.log`
+- `red4ext/plugins/ArchiveXL/ArchiveXL-*.log`
+
+Expected healthy state:
+
+- No `atlasResourcePath refers to a non-existent resource` for vendor check items.
+- No `Resource "localization\en-us\ap-strings.json" failed to load`.
+
+Current asset intent:
+
+- Vendor check YAMLs use `atlasResourcePath: archipelago\ap-icons.inkatlas`.
+- `source/archive/localization/en-us/ap-strings.json` must remain present as the
+  fallback localization source for `LocKey#VendorCheck_Fallback_*`.
+
+Menu logo verification:
+
+1. Temporarily disable known menu-overriding mods (for example PreemMenu).
+2. Launch and confirm custom logo appears.
+3. Re-enable the other menu mods.
+
+This avoids false negatives where another mod loads later and overrides
+`menu_background.xbm`.
 
 Local prerequisites:
 
