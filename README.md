@@ -3,7 +3,7 @@
 An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
 > [!WARNING]
-> ⚠️ **Experimental Release**
+> **Experimental Release**
 > 
 > While most generation issues have been resolved, there is a possibility that certain quirks exist in the new features being added.
 
@@ -13,9 +13,10 @@ First, familiarize yourself with Archipelago by reading [The Archipelago FAQ](ht
 
 **Checks (Locations)** include story and DLC quest beats, gigs, tarot paintings, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs and weapon vendors.
 
-**Items** include progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks as items**. Optional **district access tokens** can require you to unlock specific regions in Night City.
+**Items** include progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks**.
 
-**Weapon Restrictions** let you hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+**Weapon Restrictions** Hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+**District Restrictions** Restrict access to districts in Night City until their access token is obtained from the multiworld.
 
 **Extras** include:
 - **Death Link** — share deaths with the multiworld when enabled
@@ -46,7 +47,7 @@ These mods are **not** required but have been tested for compatibility and enhan
 | Mod | Links | Notes |
 |-----|-------|-------|
 | New Game Plus - Native | [GitHub](https://github.com/alphanin9/CyberpunkNewGamePlus) · [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) | When installed, this AP mod can auto-release skip flags |
-| Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | **If you use Vendor Sanity**, you **MUST** disable Randomize Vendors in mod options or this **WILL** cause softlocks |
+| Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | **If you use Vendor Sanity**, you **MUST** disable Randomize Vendors in mod options or this **WILL** cause softlocks. It is also reccomended to disable Loot Randomization |
 
 ### Mod Installation Steps
 
