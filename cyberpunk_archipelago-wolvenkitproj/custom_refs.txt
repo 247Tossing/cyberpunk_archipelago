@@ -1,3 +1,5 @@
+ap-icons_1080.xbm
+ap-icons.xbm
 archipelago\ap-icons_1080.xbm
 archipelago\ap-icons.inkatlas
 archipelago\ap-icons.xbm
@@ -5,4 +7,6 @@ archipelago\black-icon.xbm
 archipelago\blue-icon.xbm
 archipelago\color-icon.xbm
 archipelago\white-icon.xbm
+cyberpunk_archipelago-wolvenkitproj_icons_1080.xbm
+cyberpunk_archipelago-wolvenkitproj_icons.xbm
 localization\en-us\ap-strings.json

@@ -6,7 +6,7 @@ from collections.abc import Iterable
 from test.general import setup_multiworld
 
 from .. import Cyberpunk2077World
-from ..locations import location_table
+from ..locations import get_regular_locations, location_table
 from ..rules import PrereqAny, Prerequisite, get_active_location_prerequisites
 
 
@@ -78,4 +78,18 @@ class TestLocationGraph(unittest.TestCase):
             self.assertIn(child, location_names, f"Unknown location in prerequisites: {child}")
             for dep in _iter_prereq_names(required):
                 self.assertIn(dep, location_names, f"Unknown prerequisite location: {dep}")
+
+    def test_removed_data_quests_are_not_regular_locations(self) -> None:
+        self.assertNotIn("mq033_tarot", location_table)
+        self.assertNotIn("mq043_cyberpsychos", location_table)
+        regular_ids = set(get_regular_locations())
+        self.assertNotIn("mq033_tarot", regular_ids)
+        self.assertNotIn("mq043_cyberpsychos", regular_ids)
+
+    def test_mapp_tann_pelen_depends_on_automatic_love_chain(self) -> None:
+        edges = self._edges_for_options({})
+        self.assertEqual(edges["Main - M'ap Tann Pèlen"], "Main - Double Life")
+        self.assertEqual(edges["Main - Double Life"], "Main - Disasterpiece")
+        self.assertEqual(edges["Main - Disasterpiece"], "Main - The Space in Between")
+        self.assertEqual(edges["Main - The Space in Between"], "Main - Automatic Love")
 

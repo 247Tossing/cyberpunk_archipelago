@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, TypeAlias
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
 from .locations import location_table, LocationCategory
-from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc, is_goal_all_side_quests
+from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
@@ -27,19 +27,8 @@ def any_of(*names: str) -> PrereqAny:
     return PrereqAny(tuple(names))
 
 
-# Base questline + default ending dependencies.
+# Overlay prerequisites used in normal (non-PL-only) goals.
 BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
-    "Prologue - The Ripperdoc": "Prologue - The Rescue",
-    "Prologue - The Ride": "Prologue - The Ripperdoc",
-    "Prologue - The Heist": ("Prologue - The Pickup", "Prologue - The Information"),
-    "Prologue - Love Like Fire": "Prologue - The Heist",
-    "Main - Playing for Time": "Prologue - Love Like Fire",
-    "Main - Automatic Love": "Main - Playing for Time",
-    "Main - Transmission": "Main - Automatic Love",
-    "Main - Ghost Town": "Main - Playing for Time",
-    "Main - Life During Wartime": "Main - Ghost Town",
-    "Main - Down on the Street": "Main - Playing for Time",
-    "Main - Search and Destroy": "Main - Down on the Street",
     "Point of No Return - Nocturne Op55N1": (
         "Main - Transmission",
         "Main - Life During Wartime",
@@ -48,13 +37,8 @@ BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
     "Ending Reached": "Point of No Return - Nocturne Op55N1",
 }
 
-# Additional requirements only used in "all side quests" goal mode.
-SIDE_QUEST_GOAL_PREREQUISITES: dict[str, Prerequisite] = {
-    "Riders on the Storm": "Main - Life During Wartime",
-    "Queen of the Highway": "Riders on the Storm",
-    "Chippin' In": "Main - Search and Destroy",
-    "Blistering Love": "Chippin' In",
-}
+# Side chains now live on LocationData.prerequisite and apply in all goals.
+SIDE_QUEST_GOAL_PREREQUISITES: dict[str, Prerequisite] = {}
 
 # Phantom Liberty-only questline requirements.
 PHANTOM_LIBERTY_ONLY_PREREQUISITES: dict[str, Prerequisite] = {
@@ -81,9 +65,19 @@ PHANTOM_LIBERTY_ONLY_PREREQUISITES: dict[str, Prerequisite] = {
 }
 
 
-# Stable exported prerequisite catalog (source of truth for tests and rules).
+def _collect_location_prerequisites() -> dict[str, Prerequisite]:
+    """Collect per-location prerequisite edges from LocationData rows."""
+    edges: dict[str, Prerequisite] = {}
+    for data in location_table.values():
+        if data.code is None or data.prerequisite is None:
+            continue
+        edges[data.display_name] = data.prerequisite
+    return edges
+
+
+# Stable exported prerequisite catalog for tests and debugging.
 LOCATION_PREREQUISITES: dict[str, dict[str, Prerequisite]] = {
-    "base": BASE_LOCATION_PREREQUISITES,
+    "base": {**_collect_location_prerequisites(), **BASE_LOCATION_PREREQUISITES},
     "all_side_quests": SIDE_QUEST_GOAL_PREREQUISITES,
     "phantom_liberty_only": PHANTOM_LIBERTY_ONLY_PREREQUISITES,
 }
@@ -124,10 +118,7 @@ def _get_goal_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, P
     if goal == CompletionGoal.option_complete_only_phantom_liberty_questline:
         return dict(LOCATION_PREREQUISITES["phantom_liberty_only"])
 
-    edges = dict(LOCATION_PREREQUISITES["base"])
-    if is_goal_all_side_quests(world.options):
-        edges.update(LOCATION_PREREQUISITES["all_side_quests"])
-    return edges
+    return dict(LOCATION_PREREQUISITES["base"])
 
 
 def get_active_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:

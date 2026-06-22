@@ -108,8 +108,10 @@ class CompletionGoal(Choice):
     default = 0
 
 class IncludeNCPDHustles(Toggle):
+    """Temporarily disabled: client detection is unreliable. Set via YAML to test."""
     display_name = "Include NCPD Hustles"
-    default = 1
+    default = 0
+    visibility = Visibility.none  # Temporary
 
 class IncludeMinorQuests(Toggle):
     display_name = "Include Minor Quests"

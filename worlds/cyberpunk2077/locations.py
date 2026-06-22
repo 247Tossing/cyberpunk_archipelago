@@ -18,7 +18,7 @@ reachable when the player can enter the required gated districts. See
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 from BaseClasses import Location, LocationProgressType
 
 # Base ID for Cyberpunk 2077 location/item IDs
@@ -34,6 +34,10 @@ class Cyberpunk2077Location(Location):
     Each instance represents one check/location where an item can be placed.
     """
     game: str = "Cyberpunk 2077"  # Must match the game name in __init__.py
+
+
+if TYPE_CHECKING:
+    from .rules import Prerequisite
 
 
 @dataclass
@@ -75,6 +79,10 @@ class LocationData:
                  reachable hub (e.g. ``Watson``) while ``regions`` still records
                  the districts the quest actually requires; rules.py adds gated
                  major-district reachability predicates in that case.
+        prerequisite: Optional prerequisite edge for this location's display_name.
+                 Use display_name strings only and only point to real checks.
+                 ``str`` requires one parent check; ``tuple[str, ...]`` requires all
+                 listed checks (AND); ``PrereqAny`` requires any one check (OR).
     """
     display_name: str
     regions: Tuple[str, ...]  # Districts this location touches; first entry is the default parent
@@ -84,6 +92,7 @@ class LocationData:
     progress_type: LocationProgressType = LocationProgressType.DEFAULT  # Controls fill priority (DEFAULT, PRIORITY, EXCLUDED)
     placement_region: Optional[str] = None  # Override of which region this location is parented to in the Archipelago graph
     vendor_subtype: str = ""  # Vendor category for sub-option filtering: "ripperdoc", "gunsmith", "clothing", "melee", "netrunner"
+    prerequisite: Optional["Prerequisite"] = None  # Optional dependency by display_name
 
     def __post_init__(self) -> None:
         # Allow callers to pass a list or single string for ergonomics; normalize to tuple
@@ -143,6 +152,8 @@ class LocationCategory:
 # WARNING: Codes are assigned by insertion order. Appending new entries at the
 # end of a section is safe. Inserting in the middle or reordering will shift all
 # subsequent codes and invalidate any previously generated seeds/games.
+# Recent cleanup removed non-trackable data quests (mq033_tarot, mq043_cyberpsychos),
+# which intentionally renumbered all subsequent location IDs.
 # Organize locations by region/district for easier management
 location_table: Dict[str, LocationData] = {
     # =================================
@@ -161,32 +172,32 @@ location_table: Dict[str, LocationData] = {
     # Tutorial might get re-added if requested
     #"q000_tutorial": LocationData(display_name="Prologue - Practice Makes Perfect", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
     "q001_intro": LocationData(display_name="Prologue - The Rescue", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q001_01_victor": LocationData(display_name="Prologue - The Ripperdoc", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q001_02_dex": LocationData(display_name="Prologue - The Ride", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
+    "q001_01_victor": LocationData(display_name="Prologue - The Ripperdoc", regions=("Watson",), category=LocationCategory.MAIN_QUEST, prerequisite="Prologue - The Rescue"),
+    "q001_02_dex": LocationData(display_name="Prologue - The Ride", regions=("Watson",), category=LocationCategory.MAIN_QUEST, prerequisite="Prologue - The Ripperdoc"),
     "q003_maelstrom": LocationData(display_name="Prologue - The Pickup", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
     "q004_braindance": LocationData(display_name="Prologue - The Information", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q005_heist": LocationData(display_name="Prologue - The Heist", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q101_01_firestorm": LocationData(display_name="Prologue - Love Like Fire", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
+    "q005_heist": LocationData(display_name="Prologue - The Heist", regions=("Watson",), category=LocationCategory.MAIN_QUEST, prerequisite=("Prologue - The Pickup", "Prologue - The Information")),
+    "q101_01_firestorm": LocationData(display_name="Prologue - Love Like Fire", regions=("Watson",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Prologue - The Heist"),
 
     # =================================
     # Post-Heist Main Story
     # =================================
-    "q101_resurrection": LocationData(display_name="Main - Playing for Time", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q103_warhead": LocationData(display_name="Main - Ghost Town", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
-    "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
-    "q104_02_av_chase": LocationData(display_name="Main - Life During Wartime", regions=("Badlands",), category=LocationCategory.MAIN_QUEST),
-    "q105_dollhouse": LocationData(display_name="Main - Automatic Love", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
-    "q105_02_jigjig": LocationData(display_name="Main - The Space in Between", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
-    "q105_03_braindance_studio": LocationData(display_name="Main - Disasterpiece", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST),
-    "q105_04_judys": LocationData(display_name="Main - Double Life", regions=("Watson",), category=LocationCategory.MAIN_QUEST),
-    "q110_01_voodooboys": LocationData(display_name="Main - M'ap Tann Pèlen", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
-    "q110_voodoo": LocationData(display_name="Main - I Walk the Line", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
-    "q110_03_cyberspace": LocationData(display_name="Main - Transmission", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
-    "q108_johnny": LocationData(display_name="Main - Never Fade Away", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST),
-    "q112_01_old_friend": LocationData(display_name="Main - Down on the Street", regions=("City Center",), category=LocationCategory.MAIN_QUEST),
-    "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST),
-    "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST),
-    "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", regions=("Heywood",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
+    "q101_resurrection": LocationData(display_name="Main - Playing for Time", regions=("Watson",), category=LocationCategory.MAIN_QUEST, prerequisite="Prologue - Love Like Fire"),
+    "q103_warhead": LocationData(display_name="Main - Ghost Town", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Playing for Time"),
+    "q104_01_sabotage": LocationData(display_name="Main - Lightning Breaks", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Ghost Town"),
+    "q104_02_av_chase": LocationData(display_name="Main - Life During Wartime", regions=("Badlands",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Lightning Breaks"),
+    "q105_dollhouse": LocationData(display_name="Main - Automatic Love", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Playing for Time"),
+    "q105_02_jigjig": LocationData(display_name="Main - The Space in Between", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Automatic Love"),
+    "q105_03_braindance_studio": LocationData(display_name="Main - Disasterpiece", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST, prerequisite="Main - The Space in Between"),
+    "q105_04_judys": LocationData(display_name="Main - Double Life", regions=("Watson",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Disasterpiece"),
+    "q110_01_voodooboys": LocationData(display_name="Main - M'ap Tann Pèlen", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Double Life"),
+    "q110_voodoo": LocationData(display_name="Main - I Walk the Line", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - M'ap Tann Pèlen"),
+    "q110_03_cyberspace": LocationData(display_name="Main - Transmission", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Main - I Walk the Line"),
+    "q108_johnny": LocationData(display_name="Main - Never Fade Away", regions=("Pacifica",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Playing for Time"),
+    "q112_01_old_friend": LocationData(display_name="Main - Down on the Street", regions=("City Center",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Playing for Time"),
+    "q112_02_industrial_park": LocationData(display_name="Main - Gimme Danger", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Down on the Street"),
+    "q112_03_dashi_parade": LocationData(display_name="Main - Play It Safe", regions=("Westbrook",), category=LocationCategory.MAIN_QUEST, prerequisite="Main - Gimme Danger"),
+    "q112_04_hideout": LocationData(display_name="Main - Search and Destroy", regions=("Heywood",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Main - Play It Safe"),
     "02_sickness": LocationData(display_name="Point of No Return - Nocturne Op55N1", regions=("Heywood",), category=LocationCategory.MAIN_QUEST, progress_type=LocationProgressType.PRIORITY),
 
     # =====================================
@@ -216,36 +227,36 @@ location_table: Dict[str, LocationData] = {
     # =================================
 
     # --- Panam Palmer (The Star Ending Arc) ---
-    "sq004_riders_on_the_storm": LocationData(display_name="Riders on the Storm", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq027_01_basilisk_convoy": LocationData(display_name="With a Little Help from My Friends", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq027_02_raffen_shiv_attack": LocationData(display_name="Queen of the Highway", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq004_riders_on_the_storm": LocationData(display_name="Riders on the Storm", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Life During Wartime"),
+    "sq027_01_basilisk_convoy": LocationData(display_name="With a Little Help from My Friends", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Riders on the Storm"),
+    "sq027_02_raffen_shiv_attack": LocationData(display_name="Queen of the Highway", regions=("Badlands",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="With a Little Help from My Friends"), # CAPSTONE
 
     # --- Judy Alvarez Arc ---
-    "sq026_01_suicide": LocationData(display_name="Both Sides, Now", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq026_02_maiko": LocationData(display_name="Ex-Factor", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq026_03_pizza": LocationData(display_name="Talkin' 'bout a Revolution", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq026_04_hiromi": LocationData(display_name="Pisces", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq030_judy_romance": LocationData(display_name="Pyramid Song", regions=("Badlands", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq026_01_suicide": LocationData(display_name="Both Sides, Now", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq026_02_maiko": LocationData(display_name="Ex-Factor", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Both Sides, Now"),
+    "sq026_03_pizza": LocationData(display_name="Talkin' 'bout a Revolution", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Ex-Factor"),
+    "sq026_04_hiromi": LocationData(display_name="Pisces", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Talkin' 'bout a Revolution"),
+    "sq030_judy_romance": LocationData(display_name="Pyramid Song", regions=("Badlands", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Pisces"), # CAPSTONE
 
     # --- River Ward & Peralez Arcs ---
-    "sq012_lost_girl": LocationData(display_name="I Fought the Law", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED), # Branches to both River and Peralez
-    "sq006_dream_on": LocationData(display_name="Dream On", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # PERALEZ CAPSTONE
-    "sq021_sick_dreams": LocationData(display_name="The Hunt", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq029_sobchak_romance": LocationData(display_name="Following the River", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # RIVER CAPSTONE
+    "sq012_lost_girl": LocationData(display_name="I Fought the Law", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"), # Branches to both River and Peralez
+    "sq006_dream_on": LocationData(display_name="Dream On", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="I Fought the Law"), # PERALEZ CAPSTONE
+    "sq021_sick_dreams": LocationData(display_name="The Hunt", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="I Fought the Law"),
+    "sq029_sobchak_romance": LocationData(display_name="Following the River", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="The Hunt"), # RIVER CAPSTONE
 
     # --- Kerry Eurodyne & Samurai Arc ---
-    "sq011_kerry": LocationData(display_name="Holdin' On", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq011_johnny": LocationData(display_name="Second Conflict", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq011_concert": LocationData(display_name="A Like Supreme", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED), # End of Samurai reunion
-    "sq017_kerry": LocationData(display_name="Rebel! Rebel!", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq017_01_riot_club": LocationData(display_name="I Don't Wanna Hear It", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq017_02_lounge": LocationData(display_name="Off the Leash", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq028_kerry_romance": LocationData(display_name="Boat Drinks", regions=("Pacifica",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq011_kerry": LocationData(display_name="Holdin' On", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq011_johnny": LocationData(display_name="Second Conflict", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Holdin' On"),
+    "sq011_concert": LocationData(display_name="A Like Supreme", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Second Conflict"), # End of Samurai reunion
+    "sq017_kerry": LocationData(display_name="Rebel! Rebel!", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Never Fade Away"),
+    "sq017_01_riot_club": LocationData(display_name="I Don't Wanna Hear It", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Rebel! Rebel!"),
+    "sq017_02_lounge": LocationData(display_name="Off the Leash", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="I Don't Wanna Hear It"),
+    "sq028_kerry_romance": LocationData(display_name="Boat Drinks", regions=("Pacifica",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Off the Leash"), # CAPSTONE
 
     # --- Rogue & Johnny (The Sun Ending Arc) ---
-    "sq031_smack_my_bitch_up": LocationData(display_name="A Cool Metal Fire", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq031_rogue": LocationData(display_name="Chippin' In", regions=("Watson",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq031_cinema": LocationData(display_name="Blistering Love", regions=("Westbrook",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq031_smack_my_bitch_up": LocationData(display_name="A Cool Metal Fire", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq031_rogue": LocationData(display_name="Chippin' In", regions=("Watson",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Search and Destroy"),
+    "sq031_cinema": LocationData(display_name="Blistering Love", regions=("Westbrook",), category=LocationCategory.ENDING_SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Chippin' In"), # CAPSTONE
 
 
     # =================================
@@ -253,35 +264,45 @@ location_table: Dict[str, LocationData] = {
     # =================================
 
     # --- Delamain Arc ---
-    "sq025_0_pickup": LocationData(display_name="Human Nature", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025_compensation": LocationData(display_name="Tune Up", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025_delamain": LocationData(display_name="Epistrophy", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c01_angry": LocationData(display_name="Epistrophy: Wellsprings", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c02_sad": LocationData(display_name="Epistrophy: North Oak", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c03_mean": LocationData(display_name="Epistrophy: Coastview", regions=("Pacifica",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c04_manic": LocationData(display_name="Epistrophy: Rancho Coronado", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c05_scared": LocationData(display_name="Epistrophy: Northside", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c06_mean": LocationData(display_name="Epistrophy: Badlands", regions=("Badlands",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025c07_suicidal": LocationData(display_name="Epistrophy: The Glen", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq025b_delamain_insurgence": LocationData(display_name="Don't Lose Your Mind", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq025_0_pickup": LocationData(display_name="Human Nature", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq025_compensation": LocationData(display_name="Tune Up", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Human Nature"),
+    "sq025_delamain": LocationData(display_name="Epistrophy", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c01_angry": LocationData(display_name="Epistrophy: Wellsprings", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c02_sad": LocationData(display_name="Epistrophy: North Oak", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c03_mean": LocationData(display_name="Epistrophy: Coastview", regions=("Pacifica",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c04_manic": LocationData(display_name="Epistrophy: Rancho Coronado", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c05_scared": LocationData(display_name="Epistrophy: Northside", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c06_mean": LocationData(display_name="Epistrophy: Badlands", regions=("Badlands",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025c07_suicidal": LocationData(display_name="Epistrophy: The Glen", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Tune Up"),
+    "sq025b_delamain_insurgence": LocationData(display_name="Don't Lose Your Mind", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite=(
+        "Epistrophy",
+        "Epistrophy: Wellsprings",
+        "Epistrophy: North Oak",
+        "Epistrophy: Coastview",
+        "Epistrophy: Rancho Coronado",
+        "Epistrophy: Northside",
+        "Epistrophy: Badlands",
+        "Epistrophy: The Glen",
+    )),
 
     # --- Claire / The Beast in Me Arc ---
-    "07_nc_underground": LocationData(display_name="The Beast In Me", regions=("Badlands", "City Center", "Santo Domingo"), category=LocationCategory.SIDE_QUEST, placement_region="Watson", progress_type=LocationProgressType.EXCLUDED),
-    "sq024_badlands_race": LocationData(display_name="The Beast in Me: Badlands", regions=("Badlands",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq024_city_race": LocationData(display_name="The Beast in Me: City Center", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq024_santo_domingo_race": LocationData(display_name="The Beast in Me: Santo Domingo", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq024_the_big_race": LocationData(display_name="The Beast in Me: The Big Race", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "07_nc_underground": LocationData(display_name="The Beast In Me", regions=("Badlands", "City Center", "Santo Domingo"), category=LocationCategory.SIDE_QUEST, placement_region="Watson", progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq024_badlands_race": LocationData(display_name="The Beast in Me: Badlands", regions=("Badlands",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="The Beast In Me"),
+    "sq024_city_race": LocationData(display_name="The Beast in Me: City Center", regions=("City Center",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="The Beast In Me"),
+    "sq024_santo_domingo_race": LocationData(display_name="The Beast in Me: Santo Domingo", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="The Beast In Me"),
+    "sq024_the_big_race": LocationData(display_name="The Beast in Me: The Big Race", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="The Beast In Me"), # CAPSTONE
 
     # --- Joshua Stephenson / Sinnerman Arc ---
-    "sq023_hit_order": LocationData(display_name="Sinnerman", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq023_bd_passion": LocationData(display_name="There Is A Light That Never Goes Out", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "sq023_real_passion": LocationData(display_name="They Won't Go When I Go", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
+    "sq023_hit_order": LocationData(display_name="Sinnerman", regions=("Santo Domingo",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq023_bd_passion": LocationData(display_name="There Is A Light That Never Goes Out", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Sinnerman"),
+    "sq023_real_passion": LocationData(display_name="They Won't Go When I Go", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="There Is A Light That Never Goes Out"), # CAPSTONE
 
     # --- Early Game / Intro Standalones ---
     "sq018_jackie": LocationData(display_name="Heroes", regions=("Heywood",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED), # Great quest, but narratively early; excluded to keep priority pool tight
     "sq_q001_tbug": LocationData(display_name="The Gift", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "sq_q001_wakako": LocationData(display_name="The Gig", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "sq_q001_wilson": LocationData(display_name="The Gun", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED),
+
     # =================================
     # Gigs
     # =================================
@@ -359,59 +380,58 @@ location_table: Dict[str, LocationData] = {
     "sts_wbr_jpn_12": LocationData(display_name="Gig: Greed Never Pays", regions=("Westbrook",), category=LocationCategory.GIG),
 
     # ================================
-    # Contracts
+    # NCPD Hustle
     # ================================
-    "ma_bls_ina_se1_02": LocationData(display_name="Reported Crime: Comrade Red", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_bls_ina_se1_03": LocationData(display_name="Reported Crime: Blood in the Air", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_bls_ina_se1_06": LocationData(display_name="Reported Crime: Extremely Loud and Incredibly Close", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_bls_ina_se1_18": LocationData(display_name="Reported Crime: I Don't Like Sand", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_bls_ina_se5_33": LocationData(display_name="Reported Crime: Delivery From Above", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_cct_dtn_12": LocationData(display_name="Reported Crime: Turn Off the Tap", regions=("City Center",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_hey_gle_02": LocationData(display_name="Suspected Organized Crime Activity: Chapel", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_hey_gle_07": LocationData(display_name="Reported Crime: Smoking Kills", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_hey_spr_11": LocationData(display_name="Suspected Organized Crime Activity: Living the Big Life", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_pac_cvi_10": LocationData(display_name="Reported Crime: Roadside Picnic", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_pac_cvi_12": LocationData(display_name="Suspected Organized Crime Activity: Wipe the Gonk, Take the Implants", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_pac_cvi_13": LocationData(display_name="Reported Crime: Honey, Where are You?", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_arr_07": LocationData(display_name="Reported Crime: Disloyal Employee", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_arr_10": LocationData(display_name="Reported Crime: Ooh, Awkward", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_arr_14": LocationData(display_name="Reported Crime: Supply Management", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_rcr_10": LocationData(display_name="Reported Crime: Welcome to Night City", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_rcr_12": LocationData(display_name="Reported Crime: A Stroke of Luck", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_std_rcr_13": LocationData(display_name="Reported Crime: Justice Behind Bars", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_kab_05": LocationData(display_name="Reported Crime: Protect and Serve", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_lch_01": LocationData(display_name="Suspected Organized Crime Activity: Opposites Attract", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_lch_03": LocationData(display_name="Reported Crime: Worldly Possessions", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_lch_05": LocationData(display_name="Reported Crime: Paranoia", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_lch_08": LocationData(display_name="Suspected Organized Crime Activity: Tygers by the Tail", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_lch_15": LocationData(display_name="Reported Crime: Dangerous Currents", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_01": LocationData(display_name="Suspected Organized Crime Activity: Vice Control", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_02": LocationData(display_name="Suspected Organized Crime Activity: Just Say No", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_06": LocationData(display_name="Suspected Organized Crime Activity: No License, No Problem", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_10": LocationData(display_name="Reported Crime: Dredged Up", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_12": LocationData(display_name="Reported Crime: Needle in a Haystack", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_26": LocationData(display_name="Reported Crime: One Thing Led to Another", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wat_nid_27": LocationData(display_name="Reported Crime: Don't Forget the Parking Brake!", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_hil_05": LocationData(display_name="Reported Crime: You Play with Fire...", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_jpn_07": LocationData(display_name="Reported Crime: Lost and Found", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_jpn_09": LocationData(display_name="Reported Crime: Another Circle of Hell", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_nok_01": LocationData(display_name="Reported Crime: Crash Test", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_nok_03": LocationData(display_name="Reported Crime: Table Scraps", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
-    "ma_wbr_nok_05": LocationData(display_name="Suspected Organized Crime Activity: Privacy Policy Violation", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_bls_ina_se1_02": LocationData(display_name="Reported Crime: Comrade Red", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_bls_ina_se1_03": LocationData(display_name="Reported Crime: Blood in the Air", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_bls_ina_se1_06": LocationData(display_name="Reported Crime: Extremely Loud and Incredibly Close", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_bls_ina_se1_18": LocationData(display_name="Reported Crime: I Don't Like Sand", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_bls_ina_se5_33": LocationData(display_name="Reported Crime: Delivery From Above", regions=("Badlands",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_cct_dtn_12": LocationData(display_name="Reported Crime: Turn Off the Tap", regions=("City Center",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_hey_gle_02": LocationData(display_name="Suspected Organized Crime Activity: Chapel", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_hey_gle_07": LocationData(display_name="Reported Crime: Smoking Kills", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_hey_spr_11": LocationData(display_name="Suspected Organized Crime Activity: Living the Big Life", regions=("Heywood",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_pac_cvi_10": LocationData(display_name="Reported Crime: Roadside Picnic", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_pac_cvi_12": LocationData(display_name="Suspected Organized Crime Activity: Wipe the Gonk, Take the Implants", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_pac_cvi_13": LocationData(display_name="Reported Crime: Honey, Where are You?", regions=("Pacifica",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_arr_07": LocationData(display_name="Reported Crime: Disloyal Employee", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_arr_10": LocationData(display_name="Reported Crime: Ooh, Awkward", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_arr_14": LocationData(display_name="Reported Crime: Supply Management", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_rcr_10": LocationData(display_name="Reported Crime: Welcome to Night City", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_rcr_12": LocationData(display_name="Reported Crime: A Stroke of Luck", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_std_rcr_13": LocationData(display_name="Reported Crime: Justice Behind Bars", regions=("Santo Domingo",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_kab_05": LocationData(display_name="Reported Crime: Protect and Serve", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_lch_01": LocationData(display_name="Suspected Organized Crime Activity: Opposites Attract", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_lch_03": LocationData(display_name="Reported Crime: Worldly Possessions", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_lch_05": LocationData(display_name="Reported Crime: Paranoia", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_lch_08": LocationData(display_name="Suspected Organized Crime Activity: Tygers by the Tail", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_lch_15": LocationData(display_name="Reported Crime: Dangerous Currents", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_01": LocationData(display_name="Suspected Organized Crime Activity: Vice Control", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_02": LocationData(display_name="Suspected Organized Crime Activity: Just Say No", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_06": LocationData(display_name="Suspected Organized Crime Activity: No License, No Problem", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_10": LocationData(display_name="Reported Crime: Dredged Up", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_12": LocationData(display_name="Reported Crime: Needle in a Haystack", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_26": LocationData(display_name="Reported Crime: One Thing Led to Another", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wat_nid_27": LocationData(display_name="Reported Crime: Don't Forget the Parking Brake!", regions=("Watson",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_hil_05": LocationData(display_name="Reported Crime: You Play with Fire...", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_jpn_07": LocationData(display_name="Reported Crime: Lost and Found", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_jpn_09": LocationData(display_name="Reported Crime: Another Circle of Hell", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_nok_01": LocationData(display_name="Reported Crime: Crash Test", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_nok_03": LocationData(display_name="Reported Crime: Table Scraps", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
+    #"ma_wbr_nok_05": LocationData(display_name="Suspected Organized Crime Activity: Privacy Policy Violation", regions=("Westbrook",), category=LocationCategory.NCPD_HUSTLE),
 
     # =================================
     # Minor Quests
     # =================================
     "mq036_overload": LocationData(display_name="Sweet Dreams", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Inventory Wipe Risk
-    "mq010_barry": LocationData(display_name="Happy Together", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Timed Fail State
+    "mq010_barry": LocationData(display_name="Happy Together", regions=("Watson", "Westbrook"), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"), # Timed Fail State
     "mq001_scorpion": LocationData(display_name="I'll Fly Away", regions=("Badlands",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Highly Missable
     "mq041_corpo": LocationData(display_name="War Pigs", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Lifepath Exclusive
     "mq017_streetkid": LocationData(display_name="Small Man, Big Mouth", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Lifepath Exclusive
     "mq045_victor_debt": LocationData(display_name="Paid in Full", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # 21k Economy Block
-    "mq033_tarot": LocationData(display_name="Fool on the Hill", regions=("Night City",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Redundant with Tarot locations
     "q003_stout": LocationData(display_name="Venus in Furs", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "mq006_rollercoaster": LocationData(display_name="Love Rollercoaster", regions=("Pacifica",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
-    "mq011_wilson": LocationData(display_name="Shoot To Thrill", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
+    "mq011_wilson": LocationData(display_name="Shoot To Thrill", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
     "mq028_stalker": LocationData(display_name="Every Breath You Take", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
 
     # --- Beat on the Brat Arc ---
@@ -436,14 +456,14 @@ location_table: Dict[str, LocationData] = {
     "mq008_party": LocationData(display_name="Stadium Love", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq012_stud": LocationData(display_name="Burning Desire", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq013_punks": LocationData(display_name="A Day In The Life", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
-    "mq015_wizardbook": LocationData(display_name="Spellbound", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
+    "mq015_wizardbook": LocationData(display_name="Spellbound", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST, prerequisite="Main - Ghost Town"),
     "mq016_bartmoss": LocationData(display_name="KOLD MIRAGE", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq018_writer": LocationData(display_name="Killing In The Name", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
     "mq019_paparazzi": LocationData(display_name="Violence", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
     "mq021_guide": LocationData(display_name="Fortunate Son", regions=("Badlands",), category=LocationCategory.MINOR_QUEST),
     "mq022_ezekiel": LocationData(display_name="Ezekiel Saw the Wheel", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq023_bootleg": LocationData(display_name="The Ballad of Buck Ravers", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
-    "mq024_sandra": LocationData(display_name="Full Disclosure", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
+    "mq024_sandra": LocationData(display_name="Full Disclosure", regions=("Watson",), category=LocationCategory.MINOR_QUEST, prerequisite="Main - Double Life"),
     "mq026_conspiracy": LocationData(display_name="The Prophet's Song", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq029_tourist": LocationData(display_name="The Highwayman", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq030_melisa": LocationData(display_name="Bullets", regions=("City Center",), category=LocationCategory.MINOR_QUEST),
@@ -524,7 +544,6 @@ location_table: Dict[str, LocationData] = {
     # =================================
     # Cyber Psycho Sighting Locations
     # ==================================
-    "mq043_cyberpsychos": LocationData(display_name="Psycho Killer", regions=("Watson",),category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_22": LocationData(display_name="Cyberpsycho Sighting: Six Feet Under", regions=("Watson",), category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_15": LocationData(display_name="Cyberpsycho Sighting: Bloody Ritual", regions=("Watson",), category=LocationCategory.CYBERPSYCHO),
     "ma_wat_nid_03": LocationData(display_name="Cyberpsycho Sighting: Where the Bodies Hit the Floor", regions=("Watson",), category=LocationCategory.CYBERPSYCHO),

@@ -332,108 +332,108 @@ item_table: Dict[str, ItemData] = {
     # These items are helpful but not required
     "5000 Eddies": ItemData(
         name="ap_ed_Items.money_5000",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.CURRENCY
     ),
     "Progressive Overheat Quickhack": ItemData(
         name="ap_prog_overheat",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Short Circuit Quickhack": ItemData(
         name="ap_prog_shortCircuit",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Contagion Quickhack": ItemData(
         name="ap_prog_contagion",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Synapse Burnout Quickhack": ItemData(
         name="ap_prog_synapseBurnout",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Cripple Movement Quickhack": ItemData(
         name="ap_prog_crippleMovement",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Weapon Glitch Quickhack": ItemData(
         name="ap_prog_weaponGlitch",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 5
     ),
     "Progressive Ping Quickhack": ItemData(
         name="ap_prog_ping",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 4
     ),
     "Progressive Bait Quickhack": ItemData(
         name="ap_prog_bait",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity= 6
     ),
     "Progressive Request Backup Quickhack": ItemData(
         name="ap_prog_requestBackup",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Memory Wipe Quickhack": ItemData(
         name="ap_prog_memoryWipe",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=4
     ),
     "Progressive Sonic Shock Quickhack": ItemData(
         name="ap_prog_sonicShock",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Cyberpsychosis Quickhack": ItemData(
         name="ap_prog_madness",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Suicide Quickhack": ItemData(
         name="ap_prog_suicide",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive System Collapse Quickhack": ItemData(
         name="ap_prog_systemCollapse",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Detonate Grenade Quickhack": ItemData(
         name="ap_prog_grenadeExplode",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=3
     ),
     "Progressive Reboot Optics Quickhack": ItemData(
         name="ap_prog_rebootOptics",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
     "Progressive Cyberware Malfunction Quickhack": ItemData(
         name="ap_prog_cyberwareMalfunction",
-        classification=ItemClassification.useful,
+        classification=ItemClassification.filler,
         category=ItemCategory.QUICKHACK,
         quantity=5
     ),
