@@ -14,6 +14,7 @@ public class APGameState extends ScriptableService {
     public let vendorSanityEnabled: Bool;
     public let vendorSanityStockLine: String;
     public let vendorSanityItems: array<ref<APVendorItem>>;
+    public let vendorSanityConfigInitialized: Bool;
 
     // Weapon restriction settings (synced from APWorld options via slot_data)
     // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
@@ -88,13 +89,15 @@ public class APGameState extends ScriptableService {
     }
 
     public func SetVendorSanityData(enabled: Bool, stockLine: String) -> Bool {
-        let changed: Bool = (this.vendorSanityEnabled && !enabled)
+        let changed: Bool = !this.vendorSanityConfigInitialized
+            || (this.vendorSanityEnabled && !enabled)
             || (!this.vendorSanityEnabled && enabled)
             || StrCmp(this.vendorSanityStockLine, stockLine) != 0;
 
         this.vendorSanityEnabled = enabled;
         this.vendorSanityStockLine = stockLine;
         this.vendorSanityItems = APVendorItem.ParseStockLine(stockLine);
+        this.vendorSanityConfigInitialized = true;
         if changed {
             this.LogVendorSanitySlotDataDebug();
         }
@@ -300,6 +303,16 @@ public class APGameState extends ScriptableService {
             i += 1;
         }
         return false;
+    }
+
+    public func ShouldShowVendorCheckInInventory(locationId: String) -> Bool {
+        if !this.vendorSanityConfigInitialized {
+            return true;
+        }
+        if !this.vendorSanityEnabled {
+            return false;
+        }
+        return this.IsVendorCheckInRun(locationId);
     }
 
     public func HandlePlayerRespawn() -> Void {

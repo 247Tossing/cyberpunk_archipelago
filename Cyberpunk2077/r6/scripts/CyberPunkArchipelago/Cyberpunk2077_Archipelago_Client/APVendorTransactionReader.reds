@@ -24,9 +24,23 @@ public final func BuyItemFromVendor(item: wref<gameItemData>, quantity: Int32, o
 
     if StrLen(locationId) > 0 {
         APLogger.LogDebug(s"Buying VendorCheck item:\(locationId)");
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
-        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetTCPClientName()) as TCPClient;
-        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+        let shouldSendCheck: Bool = false;
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetAPGameStateName()) as APGameState;
+        if AP_IsConnected()
+            && IsDefined(gameState)
+            && gameState.vendorSanityConfigInitialized
+            && gameState.vendorSanityEnabled
+            && gameState.ShouldShowVendorCheckInInventory(locationId) {
+            shouldSendCheck = true;
+        }
+
+        if shouldSendCheck {
+            let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
+            let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetTCPClientName()) as TCPClient;
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+        } else {
+            APLogger.LogDebug(s"Skipping VendorCheck send for inactive location: \(locationId)");
+        }
 
         wrappedMethod(item, quantity, requestId);
     }

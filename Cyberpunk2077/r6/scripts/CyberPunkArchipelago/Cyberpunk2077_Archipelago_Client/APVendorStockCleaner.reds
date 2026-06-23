@@ -7,10 +7,9 @@ module Archipelago
 // "Already checked" is detected via the ap_VendorCheck_* quest facts written by
 // APVendorTransactionReader on purchase — no additional state is introduced.
 //
-// "Disabled category" is detected by checking whether the locationId appears in the
-// vendorSanityItems list (vendor_sanity_stock from slot_data). Items from vendor
-// categories that were not enabled for this seed are absent from that list and will
-// be removed from the live inventory so they never appear in the vendor UI.
+// "Disabled category/option" is detected by checking slot_data through APGameState:
+// if vendor_sanity is off, all VendorCheck_* items are hidden; if it is on, only
+// checks present in vendor_sanity_stock stay visible.
 
 @addMethod(FullscreenVendorGameController)
 private func APCleanCheckedVendorItems() -> Void {
@@ -60,10 +59,11 @@ private func APCleanCheckedVendorItems() -> Void {
                 shouldRemove = true;
             }
 
-            // Remove if connected and this check is not part of the active run's vendor stock
-            // (covers disabled sub-categories and checks not assigned to any vendor this seed)
-            if !shouldRemove && isConnected && IsDefined(gameState) && gameState.vendorSanityEnabled {
-                if !gameState.IsVendorCheckInRun(locationId) {
+            // Remove if connected and slot_data says this check should not be visible.
+            // This covers vendor_sanity disabled, disabled sub-categories, and checks
+            // not assigned to any vendor in this seed.
+            if !shouldRemove && isConnected && IsDefined(gameState) && gameState.vendorSanityConfigInitialized {
+                if !gameState.ShouldShowVendorCheckInInventory(locationId) {
                     shouldRemove = true;
                 }
             }
