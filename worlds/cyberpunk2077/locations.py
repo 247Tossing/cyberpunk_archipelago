@@ -245,10 +245,10 @@ location_table: Dict[str, LocationData] = {
     "sq029_sobchak_romance": LocationData(display_name="Following the River", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="The Hunt"), # RIVER CAPSTONE
 
     # --- Kerry Eurodyne & Samurai Arc ---
-    "sq011_kerry": LocationData(display_name="Holdin' On", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"),
+    "sq011_kerry": LocationData(display_name="Holdin' On", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite=("Chippin' In", "Blistering Love")),
     "sq011_johnny": LocationData(display_name="Second Conflict", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Holdin' On"),
-    "sq011_concert": LocationData(display_name="A Like Supreme", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Second Conflict"), # End of Samurai reunion
-    "sq017_kerry": LocationData(display_name="Rebel! Rebel!", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Never Fade Away"),
+    "sq011_concert": LocationData(display_name="A Like Supreme", regions=("Watson",), category=LocationCategory.SIDE_QUEST, prerequisite="Second Conflict"), # End of Samurai reunion
+    "sq017_kerry": LocationData(display_name="Rebel! Rebel!", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="A Like Supreme"),
     "sq017_01_riot_club": LocationData(display_name="I Don't Wanna Hear It", regions=("Watson",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Rebel! Rebel!"),
     "sq017_02_lounge": LocationData(display_name="Off the Leash", regions=("Westbrook",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="I Don't Wanna Hear It"),
     "sq028_kerry_romance": LocationData(display_name="Boat Drinks", regions=("Pacifica",), category=LocationCategory.SIDE_QUEST, progress_type=LocationProgressType.PRIORITY, prerequisite="Off the Leash"), # CAPSTONE
@@ -462,7 +462,6 @@ location_table: Dict[str, LocationData] = {
     "mq022_ezekiel": LocationData(display_name="Ezekiel Saw the Wheel", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq023_bootleg": LocationData(display_name="The Ballad of Buck Ravers", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
     "mq024_sandra": LocationData(display_name="Full Disclosure", regions=("Watson",), category=LocationCategory.MINOR_QUEST, prerequisite="Main - Double Life"),
-    "mq026_conspiracy": LocationData(display_name="The Prophet's Song", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq029_tourist": LocationData(display_name="The Highwayman", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq030_melisa": LocationData(display_name="Bullets", regions=("City Center",), category=LocationCategory.MINOR_QUEST),
     "mq032_sacrum": LocationData(display_name="Sacrum Profanum", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
