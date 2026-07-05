@@ -426,8 +426,6 @@ location_table: Dict[str, LocationData] = {
     "mq036_overload": LocationData(display_name="Sweet Dreams", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Inventory Wipe Risk
     "mq010_barry": LocationData(display_name="Happy Together", regions=("Watson", "Westbrook"), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED, prerequisite="Main - Playing for Time"), # Timed Fail State
     "mq001_scorpion": LocationData(display_name="I'll Fly Away", regions=("Badlands",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Highly Missable
-    "mq041_corpo": LocationData(display_name="War Pigs", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Lifepath Exclusive
-    "mq017_streetkid": LocationData(display_name="Small Man, Big Mouth", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # Lifepath Exclusive
     "mq045_victor_debt": LocationData(display_name="Paid in Full", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED), # 21k Economy Block
     "q003_stout": LocationData(display_name="Venus in Furs", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "mq006_rollercoaster": LocationData(display_name="Love Rollercoaster", regions=("Pacifica",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
@@ -443,7 +441,7 @@ location_table: Dict[str, LocationData] = {
     "mq025_psycho_brawl": LocationData(display_name="Beat on the Brat", regions=("Pacifica",), category=LocationCategory.MINOR_QUEST), # CAPSTONE
 
     # --- Zen Master Arc ---
-    "mq014_zen": LocationData(display_name="Imagine", regions=("Watson",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
+    "mq014_zen": LocationData(display_name="Imagine", regions=("City Center",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "mq014_02_second": LocationData(display_name="Stairway To Heaven", regions=("Heywood",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "mq014_03_third": LocationData(display_name="Poem Of The Atoms", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.EXCLUDED),
     "mq014_04_fourth": LocationData(display_name="Meetings Along The Edge", regions=("City Center",), category=LocationCategory.MINOR_QUEST, progress_type=LocationProgressType.PRIORITY), # CAPSTONE
@@ -473,13 +471,12 @@ location_table: Dict[str, LocationData] = {
     "mq038_neweridentity": LocationData(display_name="Big in Japan", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq040_biosculpt": LocationData(display_name="Raymond Chandler Evening", regions=("Heywood",), category=LocationCategory.MINOR_QUEST),
     "mq044_jakes_vehicle": LocationData(display_name="Sex On Wheels", regions=("Heywood",), category=LocationCategory.MINOR_QUEST),
-    "mq047_ad_vehicle": LocationData(display_name="Dressed to Kill", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
+    "mq047_ad_vehicle": LocationData(display_name="Dressed to Kill", regions=("Badlands",), category=LocationCategory.MINOR_QUEST),
     "mq049_edgerunners": LocationData(display_name="Over the Edge", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "mq050_ken_block_tribute": LocationData(display_name="I'm in Love with My Car", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
     "mq057_motorbreath": LocationData(display_name="Motorbreath", regions=("Santo Domingo", "Westbrook"), category=LocationCategory.MINOR_QUEST),
     "mq058_semimaru_crystalcoat": LocationData(display_name="Where Eagles Dare", regions=("Westbrook",), category=LocationCategory.MINOR_QUEST),
-    "mq059_freedom": LocationData(display_name="Freedom", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
-    "mq060_nitro": LocationData(display_name="Nitro (Youth Energy)", regions=("Watson",), category=LocationCategory.MINOR_QUEST),
+    "mq059_freedom": LocationData(display_name="Freedom", regions=("Santo Domingo",), category=LocationCategory.MINOR_QUEST),
     "archer_bandit": LocationData(display_name="Quartz 'Bandit'", regions=("Rancho Coronado", "Westbrook"), category=LocationCategory.MINOR_QUEST),
 
     # =================================
