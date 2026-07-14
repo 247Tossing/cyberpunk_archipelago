@@ -162,16 +162,46 @@ public class TCPClient extends ScriptableService {
 
         // Poll item queue from APCpp.
         // Item ID -> in-game mapping is handled in RedScript via APNativeMappings.ResolveItemId.
-        let nextItemId: Int64 = AP_PollItemQueue();
-        if nextItemId >= 0l {
-            let itemId: String = APNativeMappings.ResolveItemId(nextItemId);
-            if StrLen(itemId) > 0 {
-                let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-                if IsDefined(gameSystem) {
-                    gameSystem.HandleItemReceived(itemId);
+        //
+        // Only poll while APGameSystem is available (i.e. a save is loaded). Polling from the main
+        // menu or before the world is ready would pop the item off the native queue with nowhere to
+        // apply it, permanently losing it even though the server considers it delivered. Leaving it
+        // queued here means it's applied as soon as a save is loaded and Pump runs again.
+        let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        if IsDefined(gameSystem) {
+            let nextItemId: Int64 = AP_PollItemQueue();
+            if nextItemId >= 0l {
+                let itemId: String = APNativeMappings.ResolveItemId(nextItemId);
+                if StrLen(itemId) > 0 {
+                    let networkIndex: Int32 = AP_GetPolledItemNetworkIndex();
+                    let inventoryHandler: ref<APInventoryHandler> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
+                    let shouldGrant: Bool = true;
+
+                    // If this item's network index is older than the last one we already applied
+                    // live, the server is resending something we've already processed (typically on
+                    // reconnect). Route it through the sync path instead of granting it again, so
+                    // one-shot effects (traps) don't replay and inventory/eddies aren't duplicated -
+                    // while still letting durable state (quest keys, district tokens) reconcile.
+                    if networkIndex >= 0 && IsDefined(inventoryHandler) {
+                        let lastProcessedIndex: Int32 = inventoryHandler.GetLastNetworkItemIndex();
+                        if networkIndex < lastProcessedIndex {
+                            shouldGrant = false;
+                            let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+                            if IsDefined(gameState) {
+                                gameSystem.HandleItemSync(itemId, gameState);
+                            }
+                        }
+                    }
+
+                    if shouldGrant {
+                        gameSystem.HandleItemReceived(itemId);
+                        if networkIndex >= 0 && IsDefined(inventoryHandler) {
+                            inventoryHandler.SetLastNetworkItemIndex(networkIndex + 1);
+                        }
+                    }
+                } else {
+                    APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");
                 }
-            } else {
-                APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");
             }
         }
 

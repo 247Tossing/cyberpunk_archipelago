@@ -154,6 +154,11 @@ public class APConstants {
     public static func GetTarotCounterFact() -> String { return "mq033_grafitti_counter"; }
     public static func GetVPillsFact() -> String { return "q101_v_reached_pills"; }
 
+    // Persists how many network items (by server-stream index) have already been applied via a live
+    // grant, so reconnects can distinguish "new item" from "already-applied item being resent" and
+    // avoid re-triggering one-shot effects (e.g. traps) or duplicate grants.
+    public static func GetNetworkItemIndexFact() -> String { return "ap_network_item_index"; }
+
     // ===== SERVICE NAMES =====
     // CNames for retrieving services from the game engine
     public static func GetAPGameSystemName() -> CName { return n"Archipelago.APGameSystem"; }
