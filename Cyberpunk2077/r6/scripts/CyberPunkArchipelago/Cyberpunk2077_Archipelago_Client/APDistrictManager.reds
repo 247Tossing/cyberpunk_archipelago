@@ -40,8 +40,15 @@ public class APDistrictManager extends ScriptableSystem {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return;
         }
-        this.questHandler.SetQuestKey(districtId);
-        APLogger.LogInfo(s"District unlocked: \(districtId)");
+
+        // Only report success when the quest fact write actually succeeded - previously this logged
+        // "District unlocked" unconditionally, which was misleading when SetQuestKey failed (e.g. the
+        // quest system wasn't available yet), leaving the district silently still locked.
+        if this.questHandler.SetQuestKey(districtId) {
+            APLogger.LogInfo(s"District unlocked: \(districtId)");
+        } else {
+            APLogger.LogError(s"APDistrictManager: Failed to unlock district \(districtId) - quest system not available");
+        }
     }
 
     // Handle district restriction (called when player enters locked district)

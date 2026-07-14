@@ -13,6 +13,11 @@ public static native func AP_StoryComplete() -> Bool
 public static native func AP_IsDeathLinkPending() -> Bool
 public static native func AP_ClearDeathLink() -> Void
 public static native func AP_PollItemQueue() -> Int64
+// Valid only immediately after a successful AP_PollItemQueue() call that returned a real item id.
+// Identifies the item's position in the server's ReceivedItems stream so callers can detect items
+// already applied on a prior connection and avoid re-applying one-shot effects (e.g. traps).
+public static native func AP_GetPolledItemNetworkIndex() -> Int32
+public static native func AP_GetPolledItemShouldNotify() -> Bool
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
 public static native func AP_GetWeaponRestrictionType() -> Int32
 public static native func AP_GetWeaponRestrictPistol() -> Bool

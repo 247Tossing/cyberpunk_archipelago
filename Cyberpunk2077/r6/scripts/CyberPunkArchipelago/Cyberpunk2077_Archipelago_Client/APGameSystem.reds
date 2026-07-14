@@ -229,7 +229,16 @@ public class APGameSystem extends ScriptableSystem {
         }
     }
 
-    private func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+    // Re-applies an already-seen network item (i.e. one the server is resending on reconnect that
+    // was already applied during a prior connection). This must never re-trigger one-shot effects
+    // like traps, but progression state (quest keys, district tokens, weapon passes) is safe - and
+    // necessary - to reconcile here, since it recovers grants that never made it into a quest fact
+    // the first time (e.g. the item arrived before the world/quest system was ready).
+    public func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+        if !IsDefined(gameState) || !IsDefined(gameState.items) {
+            return;
+        }
+
         if !APItemParser.IsValidAPItem(item) {
             return;
         }
@@ -242,6 +251,10 @@ public class APGameSystem extends ScriptableSystem {
             // Quest keys are tracked even though they're binary (0 or 1)
             gameState.items.AddItem(item, 1);
             this.AddQuestKey(item);
+        }
+        else if APItemParser.IsTrap(item) {
+            // Traps are one-shot effects - re-syncing a previously-applied item must not re-trigger them.
+            APLogger.LogDebug(s"APGameSystem: Skipping trap replay during sync: \(item)");
         }
         else if APItemParser.IsEddies(item) {
             let amount: Int32 = APItemParser.ParseEddiesAmount(item);
@@ -256,14 +269,16 @@ public class APGameSystem extends ScriptableSystem {
             gameState.items.AddItem(item, 1);
         }
         else if APItemParser.IsDistrictToken(item) {
-            // Track district tokens so they can be re-synced on save load
+            // Track district tokens so they can be re-synced on save load, and retry the unlock in
+            // case the quest fact never got written the first time this item was received.
             gameState.items.AddItem(item, 1);
+            this.HandleDistrictUnlock(item);
         }
         else if APItemParser.IsWeaponAuthorization(item) {
             gameState.items.AddItem(item, 1);
             this.HandleWeaponUnlock(item);
         }
-        // Note: Skill points and traps not added as they're not fully implemented
+        // Note: Skill points not added as they're not fully implemented
     }
 
     public func HandleItemReceived(item: String) -> Void {
