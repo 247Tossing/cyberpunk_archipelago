@@ -86,8 +86,10 @@ void APBridge::Shutdown()
     m_weaponRestrictLmg = false;
     m_weaponRestrictShotgun = false;
     m_weaponRestrictSmg = false;
-    std::queue<int64_t> empty;
+    std::queue<ReceivedItemEntry> empty;
     m_receivedItemIds.swap(empty);
+    m_lastPolledNetworkIndex = -1;
+    m_lastPolledShouldNotify = false;
 }
 
 bool APBridge::IsReady() const
@@ -168,14 +170,31 @@ bool APBridge::StoryComplete()
 bool APBridge::PollReceivedItemId(int64_t& outItemId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+    m_lastPolledNetworkIndex = -1;
+    m_lastPolledShouldNotify = false;
     if (m_receivedItemIds.empty())
     {
         return false;
     }
 
-    outItemId = m_receivedItemIds.front();
+    const ReceivedItemEntry entry = m_receivedItemIds.front();
     m_receivedItemIds.pop();
+    outItemId = entry.itemId;
+    m_lastPolledNetworkIndex = entry.networkIndex;
+    m_lastPolledShouldNotify = entry.shouldNotify;
     return true;
+}
+
+int32_t APBridge::GetPolledItemNetworkIndex() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNetworkIndex;
+}
+
+bool APBridge::GetPolledItemShouldNotify() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledShouldNotify;
 }
 
 bool APBridge::IsDeathLinkPending() const
@@ -251,13 +270,15 @@ bool APBridge::GetWeaponRestrictSmg() const
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
-    std::queue<int64_t> empty;
+    std::queue<ReceivedItemEntry> empty;
     APBridge::Get().m_receivedItemIds.swap(empty);
+    APBridge::Get().m_lastPolledNetworkIndex = -1;
+    APBridge::Get().m_lastPolledShouldNotify = false;
 }
 
-void APBridge::OnItemReceived(int64_t itemId, bool)
+void APBridge::OnItemReceived(int64_t itemId, bool notify, int32_t networkIndex)
 {
-    APBridge::Get().PushItem(itemId);
+    APBridge::Get().PushItem(itemId, networkIndex, notify);
 }
 
 void APBridge::OnLocationChecked(int64_t)
@@ -314,10 +335,10 @@ void APBridge::OnSlotDataWeaponRestrictSmg(int value)
     APBridge::Get().SetWeaponRestrictSmg(value != 0);
 }
 
-void APBridge::PushItem(int64_t itemId)
+void APBridge::PushItem(int64_t itemId, int32_t networkIndex, bool shouldNotify)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_receivedItemIds.push(itemId);
+    m_receivedItemIds.push({itemId, networkIndex, shouldNotify});
 }
 
 void APBridge::MarkDeathLinkPending()

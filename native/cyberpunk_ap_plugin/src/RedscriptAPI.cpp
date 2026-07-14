@@ -138,6 +138,24 @@ void APPollItemQueue(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int64_
     }
 }
 
+void APGetPolledItemNetworkIndex(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetPolledItemNetworkIndex();
+    }
+}
+
+void APGetPolledItemShouldNotify(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetPolledItemShouldNotify();
+    }
+}
+
 void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -256,6 +274,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_IsDeathLinkPending", "AP_IsDeathLinkPending", &APIsDeathLinkPending);
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNetworkIndex", "AP_GetPolledItemNetworkIndex", &APGetPolledItemNetworkIndex);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemShouldNotify", "AP_GetPolledItemShouldNotify", &APGetPolledItemShouldNotify);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictionType", "AP_GetWeaponRestrictionType", &APGetWeaponRestrictionType);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictPistol", "AP_GetWeaponRestrictPistol", &APGetWeaponRestrictPistol);

@@ -9,6 +9,16 @@
 
 namespace CyberpunkArchipelago
 {
+// One entry from the server's ReceivedItems stream. networkIndex is the item's position in that
+// stream and is used to detect items that were already applied on a prior connection (so callers
+// can skip re-applying one-shot effects like traps, while still reconciling durable state).
+struct ReceivedItemEntry
+{
+    int64_t itemId{0};
+    int32_t networkIndex{-1};
+    bool shouldNotify{false};
+};
+
 class APBridge
 {
 public:
@@ -31,6 +41,8 @@ public:
     bool StoryComplete();
 
     bool PollReceivedItemId(int64_t& outItemId);
+    int32_t GetPolledItemNetworkIndex() const;
+    bool GetPolledItemShouldNotify() const;
     bool IsDeathLinkPending() const;
     void ClearDeathLink();
 
@@ -50,7 +62,7 @@ private:
     APBridge& operator=(const APBridge&) = delete;
 
     static void OnItemClear();
-    static void OnItemReceived(int64_t itemId, bool notify);
+    static void OnItemReceived(int64_t itemId, bool notify, int32_t networkIndex);
     static void OnLocationChecked(int64_t locationId);
     static void OnDeathLinkReceived();
     static void OnSlotDataRestrictByMajorDistrict(int value);
@@ -65,7 +77,7 @@ private:
 
     bool IsReadyLocked() const; // caller must hold m_mutex
 
-    void PushItem(int64_t itemId);
+    void PushItem(int64_t itemId, int32_t networkIndex, bool shouldNotify);
     void MarkDeathLinkPending();
     void SetRestrictByMajorDistrict(bool value);
     void SetWeaponRestrictionType(int32_t value);
@@ -90,6 +102,8 @@ private:
     bool m_weaponRestrictLmg{false};
     bool m_weaponRestrictShotgun{false};
     bool m_weaponRestrictSmg{false};
-    std::queue<int64_t> m_receivedItemIds;
+    std::queue<ReceivedItemEntry> m_receivedItemIds;
+    int32_t m_lastPolledNetworkIndex{-1};
+    bool m_lastPolledShouldNotify{false};
 };
 } // namespace CyberpunkArchipelago
