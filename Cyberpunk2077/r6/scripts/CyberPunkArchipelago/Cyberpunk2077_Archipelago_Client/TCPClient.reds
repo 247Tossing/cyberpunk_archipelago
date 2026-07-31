@@ -242,7 +242,15 @@ public class TCPClient extends ScriptableService {
         if this.initialized {
             let status: Int32 = AP_GetConnectionStatus();
             let nativeError: String = AP_GetLastConnectionError();
-            if status == 0 && StrLen(nativeError) > 0 {
+            // APBridge::GetLastConnectionError suppresses transient websocket-level errors (e.g.
+            // an errno/WSA-0 "Connect error: Success" during the wss:// -> ws:// retry/fallback
+            // window) while a connect attempt is still active, only surfacing a non-empty error
+            // once the attempt has genuinely ended (refused or timed out). Filter defensively here
+            // too in case an older native build without that suppression is still installed - this
+            // block previously latched `initialized = false` on the very first transient error,
+            // which permanently stuck the UI on "DISCONNECTED - ... Connect error: Success" even
+            // though the underlying retry/fallback would otherwise have succeeded.
+            if status == 0 && StrLen(nativeError) > 0 && !StrContains(nativeError, "Success") {
                 this.lastConnectionError = nativeError;
                 this.initialized = false;
             }
@@ -250,6 +258,7 @@ public class TCPClient extends ScriptableService {
 
         // Fetched once up front and reused for both the slot-config mirroring below and the
         // item-resync-pending settle tracking at the end of this function.
+        let systems: ref<ScriptableSystemsContainer> = GetGameInstance().GetScriptableSystemsContainer();
         let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
 
         // Apply slot config received from the server (e.g. district restriction).
@@ -269,7 +278,10 @@ public class TCPClient extends ScriptableService {
                         s"District restriction config received: major=\(gameState.restrictByMajorDistrict), sub=\(gameState.restrictBySubDistrict), gated=\(gatedSummary), auto_open=\(autoOpenSummary)"
                     );
 
-                    let districtGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+                    let districtGameSystem: ref<APGameSystem>;
+                    if IsDefined(systems) {
+                        districtGameSystem = systems.Get(n"Archipelago.APGameSystem") as APGameSystem;
+                    }
                     if IsDefined(districtGameSystem) {
                         districtGameSystem.ApplyDistrictRestrictionConfig();
                     }
@@ -316,7 +328,14 @@ public class TCPClient extends ScriptableService {
         // menu or before the world is ready would pop the item off the native queue with nowhere to
         // apply it, permanently losing it even though the server considers it delivered. Leaving it
         // queued here means it's applied as soon as a save is loaded and Pump runs again.
-        let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        //
+        // `systems` itself may be null (e.g. before the world is fully initialized) - guard the
+        // lookup so a transient null container can't abort the rest of Pump (connection handling
+        // above has already run by this point regardless).
+        let gameSystem: ref<APGameSystem>;
+        if IsDefined(systems) {
+            gameSystem = systems.Get(n"Archipelago.APGameSystem") as APGameSystem;
+        }
         let gameSystemAvailable: Bool = IsDefined(gameSystem);
         // Bool has no != overload in RedScript - use an XOR-style comparison.
         let gameSystemAvailabilityChanged: Bool = (gameSystemAvailable && !this.lastGameSystemAvailableLogged) || (!gameSystemAvailable && this.lastGameSystemAvailableLogged);
@@ -344,7 +363,10 @@ public class TCPClient extends ScriptableService {
                     let networkIndex: Int32 = AP_GetPolledItemNetworkIndex();
                     let shouldNotify: Bool = AP_GetPolledItemShouldNotify();
                     let shouldGrant: Bool = true;
-                    let inventoryHandler: ref<APInventoryHandler> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
+                    let inventoryHandler: ref<APInventoryHandler>;
+                    if IsDefined(systems) {
+                        inventoryHandler = systems.Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
+                    }
 
                     // If this item's network index is older than the last one we already applied
                     // live, the server is resending something we've already processed (typically on
@@ -424,7 +446,10 @@ public class TCPClient extends ScriptableService {
 
         if AP_IsDeathLinkPending() {
             APLogger.LogDebug("DeathLink: inbound pending — attempting HandleDeathLink");
-            let gameSystemDL: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+            let gameSystemDL: ref<APGameSystem>;
+            if IsDefined(systems) {
+                gameSystemDL = systems.Get(n"Archipelago.APGameSystem") as APGameSystem;
+            }
             if !IsDefined(gameSystemDL) {
                 APLogger.LogDebug("DeathLink: inbound deferred — APGameSystem undefined");
             } else if gameSystemDL.HandleDeathLink() {
