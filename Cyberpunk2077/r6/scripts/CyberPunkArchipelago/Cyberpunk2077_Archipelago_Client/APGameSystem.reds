@@ -54,7 +54,24 @@ public class APGameSystem extends ScriptableSystem {
 
     public func SyncData() -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("APGameSystem: Cannot sync data - game state not available");
+            return;
+        }
+
         let gameStateItems: ref<APItemList> = APGameState.GetItems();
+        if !IsDefined(gameStateItems) {
+            APLogger.LogDebug("APGameSystem: Cannot sync data - item list not available");
+            return;
+        }
+
+        // Handlers are cached in OnAttach; ScriptableSystems (and this cache) are recreated on every
+        // save load, so guard against SyncData running before OnAttach has resolved them.
+        if !IsDefined(this.inventoryHandler) || !IsDefined(this.questHandler) {
+            APLogger.LogDebug("APGameSystem: Cannot sync data - inventory/quest handler not available");
+            return;
+        }
+
         APLogger.LogInfo("Starting Item Sync");
 
         for item in gameStateItems.Items { 
