@@ -176,7 +176,10 @@ public class TCPClient extends ScriptableService {
         // queued here means it's applied as soon as a save is loaded and Pump runs again.
         let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
         let gameSystemAvailable: Bool = IsDefined(gameSystem);
-        if !this.hasLoggedGameSystemAvailability || gameSystemAvailable != this.lastGameSystemAvailableLogged {
+        // Bool has no != overload in RedScript - use the same XOR-style comparison as
+        // APGameState.SetRestrictByMajorDistrict / SetWeaponRestrictionConfig.
+        let gameSystemAvailabilityChanged: Bool = (gameSystemAvailable && !this.lastGameSystemAvailableLogged) || (!gameSystemAvailable && this.lastGameSystemAvailableLogged);
+        if !this.hasLoggedGameSystemAvailability || gameSystemAvailabilityChanged {
             APLogger.LogDebug(s"TCPClient.Pump: APGameSystem availability changed -> \(gameSystemAvailable)");
             if !gameSystemAvailable {
                 APLogger.LogDebug("TCPClient.Pump: item queue will not be polled/drained until a save is loaded");
