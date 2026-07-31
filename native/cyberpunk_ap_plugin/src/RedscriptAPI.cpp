@@ -43,6 +43,12 @@ void APConnect(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, 
     }
 }
 
+void APProcessConnectionAttempt(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, void*, int64_t)
+{
+    aFrame->code++;
+    CyberpunkArchipelago::APBridge::Get().ProcessConnectionAttempt();
+}
+
 void APDisconnect(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, void*, int64_t)
 {
     aFrame->code++;
@@ -99,6 +105,17 @@ void APSendDeathLink(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* 
     }
 }
 
+void APSay(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    RED4ext::CString text;
+    RED4ext::GetParameter(aFrame, &text);
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().SendSay(text.c_str());
+    }
+}
+
 void APStoryComplete(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -138,6 +155,45 @@ void APPollItemQueue(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int64_
     }
 }
 
+void APPollChatMessage(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().PollChatMessage();
+    }
+}
+
+void APGetPolledChatMessageJson(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledChatMessageJson().c_str());
+        *aOut = result;
+    }
+}
+
+void APGetPolledItemNotifySender(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledItemNotifySender().c_str());
+        *aOut = result;
+    }
+}
+
+void APGetPolledItemNotifyDisplayName(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetPolledItemNotifyDisplayName().c_str());
+        *aOut = result;
+    }
+}
+
 void APGetPolledItemNetworkIndex(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
 {
     aFrame->code++;
@@ -162,6 +218,24 @@ void APGetRestrictByMajorDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* a
     if (aOut)
     {
         *aOut = CyberpunkArchipelago::APBridge::Get().GetRestrictByMajorDistrict();
+    }
+}
+
+void APGetRestrictBySubDistrict(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetRestrictBySubDistrict();
+    }
+}
+
+void APGetDistrictTokenGatedMajorMask(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetDistrictTokenGatedMajorMask();
     }
 }
 
@@ -237,6 +311,34 @@ void APGetWeaponRestrictSmg(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame,
     }
 }
 
+void APGetVendorSanityEnabled(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetVendorSanityEnabled();
+    }
+}
+
+void APGetVendorSanityStockLine(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetVendorSanityStockLine().c_str());
+        *aOut = result;
+    }
+}
+
+void APGetDeathLinkEnabled(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetDeathLinkEnabled();
+    }
+}
+
 template <typename TFunc>
 void RegisterNative(RED4ext::CRTTISystem* rtti, const char* fullName, const char* shortName, TFunc fn)
 {
@@ -264,19 +366,27 @@ void PostRegisterTypes()
 
     RegisterNative(rtti, "Archipelago.AP_Initialize", "AP_Initialize", &APInitialize);
     RegisterNative(rtti, "Archipelago.AP_Connect", "AP_Connect", &APConnect);
+    RegisterNative(rtti, "Archipelago.AP_ProcessConnectionAttempt", "AP_ProcessConnectionAttempt", &APProcessConnectionAttempt);
     RegisterNative(rtti, "Archipelago.AP_Disconnect", "AP_Disconnect", &APDisconnect);
     RegisterNative(rtti, "Archipelago.AP_IsConnected", "AP_IsConnected", &APIsConnected);
     RegisterNative(rtti, "Archipelago.AP_GetConnectionStatus", "AP_GetConnectionStatus", &APGetConnectionStatus);
     RegisterNative(rtti, "Archipelago.AP_GetLastConnectionError", "AP_GetLastConnectionError", &APGetLastConnectionError);
     RegisterNative(rtti, "Archipelago.AP_SendLocationCheck", "AP_SendLocationCheck", &APSendLocationCheck);
     RegisterNative(rtti, "Archipelago.AP_SendDeathLink", "AP_SendDeathLink", &APSendDeathLink);
+    RegisterNative(rtti, "Archipelago.AP_Say", "AP_Say", &APSay);
     RegisterNative(rtti, "Archipelago.AP_StoryComplete", "AP_StoryComplete", &APStoryComplete);
     RegisterNative(rtti, "Archipelago.AP_IsDeathLinkPending", "AP_IsDeathLinkPending", &APIsDeathLinkPending);
     RegisterNative(rtti, "Archipelago.AP_ClearDeathLink", "AP_ClearDeathLink", &APClearDeathLink);
     RegisterNative(rtti, "Archipelago.AP_PollItemQueue", "AP_PollItemQueue", &APPollItemQueue);
+    RegisterNative(rtti, "Archipelago.AP_PollChatMessage", "AP_PollChatMessage", &APPollChatMessage);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledChatMessageJson", "AP_GetPolledChatMessageJson", &APGetPolledChatMessageJson);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifySender", "AP_GetPolledItemNotifySender", &APGetPolledItemNotifySender);
+    RegisterNative(rtti, "Archipelago.AP_GetPolledItemNotifyDisplayName", "AP_GetPolledItemNotifyDisplayName", &APGetPolledItemNotifyDisplayName);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemNetworkIndex", "AP_GetPolledItemNetworkIndex", &APGetPolledItemNetworkIndex);
     RegisterNative(rtti, "Archipelago.AP_GetPolledItemShouldNotify", "AP_GetPolledItemShouldNotify", &APGetPolledItemShouldNotify);
     RegisterNative(rtti, "Archipelago.AP_GetRestrictByMajorDistrict", "AP_GetRestrictByMajorDistrict", &APGetRestrictByMajorDistrict);
+    RegisterNative(rtti, "Archipelago.AP_GetRestrictBySubDistrict", "AP_GetRestrictBySubDistrict", &APGetRestrictBySubDistrict);
+    RegisterNative(rtti, "Archipelago.AP_GetDistrictTokenGatedMajorMask", "AP_GetDistrictTokenGatedMajorMask", &APGetDistrictTokenGatedMajorMask);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictionType", "AP_GetWeaponRestrictionType", &APGetWeaponRestrictionType);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictPistol", "AP_GetWeaponRestrictPistol", &APGetWeaponRestrictPistol);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictMelee", "AP_GetWeaponRestrictMelee", &APGetWeaponRestrictMelee);
@@ -285,6 +395,9 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictLmg", "AP_GetWeaponRestrictLmg", &APGetWeaponRestrictLmg);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictShotgun", "AP_GetWeaponRestrictShotgun", &APGetWeaponRestrictShotgun);
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictSmg", "AP_GetWeaponRestrictSmg", &APGetWeaponRestrictSmg);
+    RegisterNative(rtti, "Archipelago.AP_GetVendorSanityEnabled", "AP_GetVendorSanityEnabled", &APGetVendorSanityEnabled);
+    RegisterNative(rtti, "Archipelago.AP_GetVendorSanityStockLine", "AP_GetVendorSanityStockLine", &APGetVendorSanityStockLine);
+    RegisterNative(rtti, "Archipelago.AP_GetDeathLinkEnabled", "AP_GetDeathLinkEnabled", &APGetDeathLinkEnabled);
 
     if (g_sdk && g_sdk->logger)
     {

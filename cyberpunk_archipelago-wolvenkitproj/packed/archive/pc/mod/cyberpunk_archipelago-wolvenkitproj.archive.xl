@@ -1,0 +1,4 @@
+localization:
+  onscreens:
+    en-us:
+      - localization\en-us\ap-strings.json

@@ -78,8 +78,6 @@ public class APInventoryHandler extends ScriptableSystem {
         this.UpdateItemFact(itemId, currentCount + incrementBy);
     }
 
-    // Last network item index (server ReceivedItems stream position) that was applied via a live
-    // grant. Persisted as a quest fact so it survives save/reload and reconnects.
     public func GetLastNetworkItemIndex() -> Int32 {
         return this.GetItemFactCount(APConstants.GetNetworkItemIndexFact());
     }

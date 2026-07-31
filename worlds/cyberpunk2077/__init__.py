@@ -16,9 +16,33 @@ from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
 from worlds.AutoWorld import World, WebWorld
 from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups, ItemCategory
 from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups, location_internal_id_to_display_name
-from .options import Cyberpunk2077Options, cyberpunk_option_groups
+from .options import (
+    Cyberpunk2077Options,
+    DistrictRestrictionType,
+    apply_token_locality_options,
+    cyberpunk_option_groups,
+    district_restriction_active,
+    get_gated_major_district_mask,
+    has_effective_phantom_liberty_dlc,
+    is_major_district_token_gated,
+    is_goal_phantom_liberty_only,
+)
 from .regions import create_regions
-from .rules import set_rules
+from .rules import set_rules, VENDOR_CHECK_INTERNAL_KEYS
+
+
+def _vendor_stock_parts_from_check_name(location_name: str) -> tuple[str, int] | None:
+    """Parse `VendorCheck_<vendor>_<slot>` into (`vendor`, `slot`)."""
+    prefix = "VendorCheck_"
+    if not location_name.startswith(prefix):
+        return None
+
+    tail = location_name[len(prefix):]
+    vendor_key, separator, slot_text = tail.rpartition("_")
+    if separator != "_" or not vendor_key or not slot_text.isdigit():
+        return None
+
+    return vendor_key, int(slot_text)
 
 
 
@@ -111,6 +135,50 @@ class Cyberpunk2077World(World):
         "SMG Weapon Pass": "weapon_restrict_smg"
     }
 
+    # Mapping from district token item name to the corresponding player option attribute
+    DISTRICT_TOKEN_OPTION_MAP: Dict[str, str] = {
+        "Westbrook Access Token": "district_restrict_westbrook",
+        "City Center Access Token": "district_restrict_city_center",
+        "Heywood Access Token": "district_restrict_heywood",
+        "Santo Domingo Access Token": "district_restrict_santo_domingo",
+        "Pacifica Access Token": "district_restrict_pacifica",
+        "Badlands Access Token": "district_restrict_badlands",
+        "Dogtown Access Token": "district_restrict_dogtown",
+    }
+
+    DISTRICT_TOKEN_REGION_MAP: Dict[str, str] = {
+        "Westbrook Access Token": "Westbrook",
+        "City Center Access Token": "City Center",
+        "Heywood Access Token": "Heywood",
+        "Santo Domingo Access Token": "Santo Domingo",
+        "Pacifica Access Token": "Pacifica",
+        "Badlands Access Token": "Badlands",
+        "Dogtown Access Token": "Dogtown",
+    }
+
+    SUBDISTRICT_TOKEN_PARENT_MAP: Dict[str, str] = {
+        "Westbrook Japantown Access Token": "Westbrook",
+        "Westbrook Charter Hill Access Token": "Westbrook",
+        "Westbrook North Oak Access Token": "Westbrook",
+        "City Center Corpo Plaza Access Token": "City Center",
+        "City Center Downtown Access Token": "City Center",
+        "Heywood Wellsprings Access Token": "Heywood",
+        "Heywood The Glen Access Token": "Heywood",
+        "Heywood Vista Del Rey Access Token": "Heywood",
+        "Santo Domingo Arroyo Access Token": "Santo Domingo",
+        "Santo Domingo Rancho Coronado Access Token": "Santo Domingo",
+        "Pacifica Coastview Access Token": "Pacifica",
+        "Pacifica West Wind Estate Access Token": "Pacifica",
+        "Badlands Biotechnica Flats Access Token": "Badlands",
+        "Badlands Jackson Plains Access Token": "Badlands",
+        "Badlands Laguna Bend Access Token": "Badlands",
+        "Badlands Red Peaks Access Token": "Badlands",
+        "Badlands Rocky Ridge Access Token": "Badlands",
+        "Badlands Sierra Sonora Access Token": "Badlands",
+        "Badlands SoCal Badlands Access Token": "Badlands",
+        "Badlands Yucca Access Token": "Badlands",
+        "Badlands Morro Rock Access Token": "Badlands",
+    }
 
     def __init__(self, multiworld: MultiWorld, player: int):
         """
@@ -148,10 +216,13 @@ class Cyberpunk2077World(World):
         # Example: Make deterministic random choices
         # self.starting_district = self.random.choice(["Watson", "Westbrook", "Heywood"])
 
-        pass
+        # PL-only goal intentionally strips district token gameplay.
+        # Keep the option values in sync before regions/items/rules consume them.
+        if is_goal_phantom_liberty_only(self.options):
+            self.options.district_restriction_type.value = DistrictRestrictionType.option_none
+            self.options.restrict_by_sub_district.value = 0
 
-
-    def create_regions(self) -> None:
+        apply_token_locality_options(self)
         """
         Create all regions (game areas) and locations (item checks).
 
@@ -190,6 +261,9 @@ class Cyberpunk2077World(World):
         # Create the item pool
         item_pool: List[Item] = []
 
+        pl_only_goal = is_goal_phantom_liberty_only(self.options)
+        effective_dlc_enabled = has_effective_phantom_liberty_dlc(self.options)
+
         # Add all defined items from item_table
         for item_name, item_data in item_table.items():
             # Skip event items - they have code=None and are placed manually on event locations
@@ -199,21 +273,45 @@ class Cyberpunk2077World(World):
 
             # Skip DLC items if Phantom Liberty DLC is disabled
             # Prevents unusable items from appearing in the item pool
-            if item_data.dlc_only and not self.options.include_phantom_liberty_dlc:
+            if item_data.dlc_only and not effective_dlc_enabled:
                 continue
 
-            # Skip subdistrict tokens if sub-district restriction is disabled
-            # These tokens serve no purpose without the corresponding regions/rules
-            if item_data.category == ItemCategory.SUBDISTRICT_TOKEN and not self.options.restrict_by_sub_district:
-                continue
+            # Skip subdistrict tokens unless their parent major is also token-gated.
+            if item_data.category == ItemCategory.SUBDISTRICT_TOKEN:
+                parent_region = self.SUBDISTRICT_TOKEN_PARENT_MAP.get(item_name)
+                if (
+                    not self.options.restrict_by_sub_district
+                    or not parent_region
+                    or not is_major_district_token_gated(self.options, parent_region)
+                ):
+                    continue
 
-            # Skip district tokens if major district restriction is disabled
-            if item_data.category == ItemCategory.DISTRICT_TOKEN and not self.options.restrict_by_major_district:
-                continue
+            # Skip district tokens unless their specific major district is selected.
+            if item_data.category == ItemCategory.DISTRICT_TOKEN:
+                region_name = self.DISTRICT_TOKEN_REGION_MAP.get(item_name)
+                if not region_name or not is_major_district_token_gated(self.options, region_name):
+                    continue
 
             # Skip quickhack items if quick hacks as items is disabled
             if item_data.category == ItemCategory.QUICKHACK and not self.options.quick_hacks_as_items:
                 continue
+
+            # Skip trap items when traps are disabled.
+            if item_data.category == ItemCategory.TRAP and not self.options.enable_traps:
+                continue
+
+            # PL-only mode trims the pool down to DLC progression, optional traps,
+            # and filler to match the reduced location count.
+            if pl_only_goal:
+                is_filler = not (
+                    item_data.classification & (
+                        ItemClassification.progression |
+                        ItemClassification.useful |
+                        ItemClassification.trap
+                    )
+                )
+                if not (item_data.dlc_only or item_data.category == ItemCategory.TRAP or is_filler):
+                    continue
 
             # Skip weapon pass items unless mode is "Require Multiworld Item" (2) AND
             # the specific weapon type is restricted by the player
@@ -229,9 +327,12 @@ class Cyberpunk2077World(World):
                         else item_data.quantity)
             item_pool.extend([self.create_item(item_name) for _ in range(quantity)])
 
+        if pl_only_goal and len(item_pool) > total_locations:
+            item_pool = item_pool[:total_locations]
+
         # Fill remaining slots with filler items if needed
         # This ensures we have exactly enough items for all locations
-        filler_count = total_locations - len(item_pool)
+        filler_count = max(0, total_locations - len(item_pool))
         for _ in range(filler_count):
             item_pool.append(self.create_item(self.get_filler_item_name()))
 
@@ -350,9 +451,10 @@ class Cyberpunk2077World(World):
         # Return any data the client needs to know about this player's world
         # This data is accessible to the game bridge via self.slot_data
         slot_data: Dict[str, Any] = {
-            "world_version": 1,  # Version of your world implementation
+            "world_version": 2,  # Version of your world implementation
             # Configuration options sent to RedScript client via slot_data
             "death_link": bool(self.options.death_link.value),
+            "death_link_amnesty": int(self.options.death_link_amnesty.value),
             # Weapon restriction settings
             # 0 = none (no restriction), 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
             "weapon_restriction_type": int(self.options.weapon_restriction_type.value),
@@ -364,10 +466,44 @@ class Cyberpunk2077World(World):
             "weapon_restrict_shotgun": bool(self.options.weapon_restrict_shotgun.value),
             "weapon_restrict_smg": bool(self.options.weapon_restrict_smg.value),
             # District restriction settings
-            "restrict_by_major_district": bool(self.options.restrict_by_major_district.value),
+            "restrict_by_major_district": district_restriction_active(self.options),
             "restrict_by_sub_district": bool(self.options.restrict_by_sub_district.value),
+            "district_token_gated_major_mask": get_gated_major_district_mask(self.options),
+            # Vendor sanity settings
+            "vendor_sanity": int(bool(self.options.vendor_sanity.value)),
+            "vendor_sanity_stock": "",
             # TODO: Add skill_points_as_items option when implemented
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
         }
+        if bool(self.options.vendor_sanity.value):
+            stock_records: List[str] = []
+            for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
+                parsed = _vendor_stock_parts_from_check_name(internal_key)
+                if parsed is None:
+                    continue
+                vendor_key, stock_index = parsed
+
+                stock_item_name = "Unknown Item"
+                stock_recipient_name = "Unknown Player"
+                display_name = location_table[internal_key].display_name
+                try:
+                    location = self.multiworld.get_location(display_name, self.player)
+                except KeyError:
+                    # Location was not created for this seed (e.g. dlc_only vendors when PL is off).
+                    continue
+                if location.item is not None:
+                    stock_item_name = location.item.name
+                    stock_recipient_name = self.multiworld.get_player_name(location.item.player)
+
+                safe_item_name = self._sanitize_vendor_stock_token(stock_item_name)
+                safe_recipient_name = self._sanitize_vendor_stock_token(stock_recipient_name)
+                stock_records.append(f"{vendor_key}:{stock_index}:{safe_item_name}:{safe_recipient_name}")
+
+            slot_data["vendor_sanity_stock"] = ",".join(stock_records)
+
         return slot_data
+
+    @staticmethod
+    def _sanitize_vendor_stock_token(value: str) -> str:
+        return value.replace(":", " ").replace(",", " ").strip()
 

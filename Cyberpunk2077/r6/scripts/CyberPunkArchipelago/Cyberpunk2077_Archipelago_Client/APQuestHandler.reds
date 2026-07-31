@@ -19,7 +19,6 @@ public class APQuestHandler extends ScriptableSystem {
         }
 
         questSystem.SetFact(StringToName(questKeyId), 1);
-        APLogger.LogDebug(s"APQuestHandler: SetQuestKey('\(questKeyId)') -> fact now reads \(questSystem.GetFact(StringToName(questKeyId)))");
         return true;
     }
 
@@ -28,11 +27,8 @@ public class APQuestHandler extends ScriptableSystem {
         let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance());
 
         if IsDefined(questSystem) {
-            let factValue: Int32 = questSystem.GetFact(StringToName(questKeyId));
-            APLogger.LogDebug(s"APQuestHandler: HasQuestKey('\(questKeyId)') - raw fact value=\(factValue)");
-            return factValue >= 1;
+            return questSystem.GetFact(StringToName(questKeyId)) >= 1;
         }
-        APLogger.LogDebug(s"APQuestHandler: HasQuestKey('\(questKeyId)') - quest system not available, returning false");
         return false;
     }
 
@@ -74,15 +70,14 @@ public class APQuestHandler extends ScriptableSystem {
 
     // Check if heist intro is complete (used for district enforcement)
     public func IsPassedPrologue() -> Bool {
-        let q000Done: Int32 = this.GetQuestFact(APConstants.GetQuestQ000Done());
-        let q001Done: Int32 = this.GetQuestFact(APConstants.GetQuestQ001Done());
-        let firestormDone: Int32 = this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone());
-        let vPills: Int32 = this.GetQuestFact(APConstants.GetVPillsFact());
-        let result: Bool = q000Done > 0 && q001Done > 0 && firestormDone > 0 && vPills > 0;
-        APLogger.LogDebug(
-            s"APQuestHandler: IsPassedPrologue - q000Done=\(q000Done), q001Done=\(q001Done), firestormDone=\(firestormDone), vPills=\(vPills) -> \(result)"
-        );
-        return result;
+        if APNGPlusBridge.IsPastPrologueForEnforcement(this.GetGameInstance()) {
+            return true;
+        }
+
+        return this.GetQuestFact(APConstants.GetQuestQ000Done()) > 0 && 
+        this.GetQuestFact(APConstants.GetQuestQ001Done()) > 0 && 
+        this.GetQuestFact(APConstants.GetQuestQ101_01_firestormDone()) > 0 &&
+        this.GetQuestFact(APConstants.GetVPillsFact()) > 0;
     }
 
     // Send a location check to the server

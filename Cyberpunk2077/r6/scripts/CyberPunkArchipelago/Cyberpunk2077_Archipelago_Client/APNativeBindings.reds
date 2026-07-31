@@ -3,22 +3,27 @@ module Archipelago
 // RED4ext native bindings exposed by CyberpunkAP.dll
 public static native func AP_Initialize(server: String, gameName: String, slotName: String, password: String) -> Bool
 public static native func AP_Connect() -> Bool
+public static native func AP_ProcessConnectionAttempt() -> Void
 public static native func AP_Disconnect() -> Void
 public static native func AP_IsConnected() -> Bool
 public static native func AP_GetConnectionStatus() -> Int32
 public static native func AP_GetLastConnectionError() -> String
 public static native func AP_SendLocationCheck(locationId: Int64) -> Bool
 public static native func AP_SendDeathLink(cause: String) -> Bool
+public static native func AP_Say(text: String) -> Bool
 public static native func AP_StoryComplete() -> Bool
 public static native func AP_IsDeathLinkPending() -> Bool
 public static native func AP_ClearDeathLink() -> Void
 public static native func AP_PollItemQueue() -> Int64
-// Valid only immediately after a successful AP_PollItemQueue() call that returned a real item id.
-// Identifies the item's position in the server's ReceivedItems stream so callers can detect items
-// already applied on a prior connection and avoid re-applying one-shot effects (e.g. traps).
+public static native func AP_PollChatMessage() -> Bool
+public static native func AP_GetPolledChatMessageJson() -> String
+public static native func AP_GetPolledItemNotifySender() -> String
+public static native func AP_GetPolledItemNotifyDisplayName() -> String
 public static native func AP_GetPolledItemNetworkIndex() -> Int32
 public static native func AP_GetPolledItemShouldNotify() -> Bool
 public static native func AP_GetRestrictByMajorDistrict() -> Bool
+public static native func AP_GetRestrictBySubDistrict() -> Bool
+public static native func AP_GetDistrictTokenGatedMajorMask() -> Int32
 public static native func AP_GetWeaponRestrictionType() -> Int32
 public static native func AP_GetWeaponRestrictPistol() -> Bool
 public static native func AP_GetWeaponRestrictMelee() -> Bool
@@ -27,6 +32,9 @@ public static native func AP_GetWeaponRestrictSniper() -> Bool
 public static native func AP_GetWeaponRestrictLmg() -> Bool
 public static native func AP_GetWeaponRestrictShotgun() -> Bool
 public static native func AP_GetWeaponRestrictSmg() -> Bool
+public static native func AP_GetVendorSanityEnabled() -> Bool
+public static native func AP_GetVendorSanityStockLine() -> String
+public static native func AP_GetDeathLinkEnabled() -> Bool
 
 // Thin wrappers around the generated APArchipelagoIdMappings class.
 // The actual id <-> string tables live in APArchipelagoIdMappings.reds, which is

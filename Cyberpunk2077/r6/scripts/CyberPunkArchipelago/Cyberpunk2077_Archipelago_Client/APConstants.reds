@@ -5,11 +5,11 @@ public class APConstants {
 
     // ===== VERSION INFORMATION =====
     public static func GetClientVersion() -> String {
-        return "0.5"; 
+        return "0.7.0";
     }
 
     public static func GetRequiredServerVersion() -> String {
-        return "0.5";
+        return "0.7.0";
     } 
 
     // ===== Weapon Types =====
@@ -37,6 +37,16 @@ public class APConstants {
     public static func GetPacificaAccessToken() -> String { return "ap_dat_pacificaAccessToken"; }
     public static func GetBadlandsAccessToken() -> String { return "ap_dat_badlandsAccessToken"; }
     public static func GetDogtownAccessToken() -> String { return "ap_dat_dogtownAccessToken"; }
+
+    // ===== DISTRICT TOKEN-GATE MASK BITS =====
+    // Must match worlds/cyberpunk2077/options.py MAJOR_DISTRICT_SLOT_MASK.
+    public static func GetWestbrookGateMask() -> Int32 { return 1; }
+    public static func GetCityCenterGateMask() -> Int32 { return 2; }
+    public static func GetHeywoodGateMask() -> Int32 { return 4; }
+    public static func GetSantoDomingoGateMask() -> Int32 { return 8; }
+    public static func GetPacificaGateMask() -> Int32 { return 16; }
+    public static func GetBadlandsGateMask() -> Int32 { return 32; }
+    public static func GetDogtownGateMask() -> Int32 { return 64; }
 
     // ===== Weapon Authorization Item IDs =====
     // These are the item IDs for weapon authorization items
@@ -153,11 +163,26 @@ public class APConstants {
     public static func GetQuestQ101_01_firestormDone() -> String { return "ap_q101_01_firestorm"; }
     public static func GetTarotCounterFact() -> String { return "mq033_grafitti_counter"; }
     public static func GetVPillsFact() -> String { return "q101_v_reached_pills"; }
-
+    public static func GetNGPlusActiveFact() -> String { return "ngplus_active"; }
+    public static func GetNGPlusQ001StartFact() -> String { return "ngplus_q001_start"; }
+    public static func GetNGPlusStandaloneQ101StartFact() -> String { return "ngplus_standalone_q101_start"; }
     // Persists how many network items (by server-stream index) have already been applied via a live
     // grant, so reconnects can distinguish "new item" from "already-applied item being resent" and
     // avoid re-triggering one-shot effects (e.g. traps) or duplicate grants.
     public static func GetNetworkItemIndexFact() -> String { return "ap_network_item_index"; }
+
+    // ===== JACKSON PLAINS RIPPERDOC (ALDECALDOS CAMP MOVE) =====
+    // The Aldecaldos camp relocates within Jackson Plains once Panam's side-quest chain
+    // finishes at this capstone quest. Stall 1 is the pre-move camp ripperdoc and becomes
+    // permanently unreachable once the camp moves; see APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks.
+    public static func GetQueenOfTheHighwayQuestId() -> String { return "sq027_02_raffen_shiv_attack"; }
+    public static func GetJacksonPlainsRipperdocStall1LocationIds() -> array<String> {
+        let locationIds: array<String>;
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_1");
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_2");
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_3");
+        return locationIds;
+    }
 
     // ===== SERVICE NAMES =====
     // CNames for retrieving services from the game engine
@@ -181,6 +206,10 @@ public class APConstants {
 
     // ===== PHONE EXTENSION =====
     public static func GetArchipelagoContactHash() -> Int32 { return 20777702; }
+    public static func GetDistrictAuthorityContactHash() -> Int32 { return 20777703; }
+    public static func GetDistrictAuthorityContactName() -> String { return "NC District Authority"; }
+    public static func GetDistrictAuthorityContactId() -> String { return "NCDistrictAuthorityContact"; }
+    public static func GetDistrictAuthorityContactShortId() -> String { return "NCDAUTH"; }
 
     // ===== DEBUG LOGGING =====
     // Set quest fact "ap_enable_debug_logs" to 1 in CET console to enable verbose logging

@@ -57,7 +57,10 @@ int cur_deathlink_amnesty = 0;
 
 // Message System
 std::deque<AP_Message*> messageQueue;
+std::deque<std::string> chatMessageQueue;
+std::string polledChatMessageJson;
 bool queueitemrecvmsg = true;
+constexpr size_t AP_CHAT_MESSAGE_LIMIT = 1000;
 
 // Data Maps
 std::map<int, AP_NetworkPlayer> map_players;
@@ -69,7 +72,7 @@ std::set<int> teams_set;
 
 // Callback function pointers
 std::function<void()> resetItemValues = nullptr;
-std::function<void(int64_t,bool,int32_t)> getitemfunc = nullptr;
+std::function<void(int64_t, std::string, std::string, bool, int32_t)> getitemfunc = nullptr;
 std::function<void(int64_t)> checklocfunc = nullptr;
 std::function<void(std::vector<AP_NetworkItem>)> locinfofunc = nullptr;
 std::function<void(std::string, std::string)> recvdeath = nullptr;
@@ -125,6 +128,10 @@ AP_NetworkPlayer getPlayer(int team, int slot);
 bool loadDataPkg(const std::string& game, const std::string& hash);
 void cacheDataPkgs(Json::Value& serverPkgs);
 Json::Value getDataPkgRequest(void);
+std::string getColorForItemFlags(int flags);
+std::string getColorForHintStatus(int hintStatus);
+int64_t getNodeNumericValue(const Json::Value& valueNode, int64_t fallback);
+void appendChatMessageFromPrintJson(const Json::Value& packet);
 // PRIV Func Declarations End
 
 void AP_Init(const char* ip, const char* game, const char* player_name, const char* passwd) {
@@ -178,7 +185,12 @@ void AP_Init(const char* ip, const char* game, const char* player_name, const ch
                     last_connection_error = "Unable to connect to Archipelago server.";
                 }
                 printf("AP: Error connecting to Archipelago. Retries: %d\n", msg->errorInfo.retries-1);
-                if (msg->errorInfo.retries-1 >= 2 && isSSL && !ssl_success) {
+                // Fall back to plaintext ws:// on the very first failed wss:// attempt rather than
+                // waiting for several retries. A failed TLS handshake is frequently reported by
+                // IXWebSocket with an errno/WSA value of 0 (rendered as "Connect error: Success" by
+                // strerror), which is easy to mistake for a real/terminal error; recovering to
+                // ws:// immediately minimizes how long that misleading message can stick around.
+                if (msg->errorInfo.retries-1 >= 0 && isSSL && !ssl_success) {
                     printf("AP: SSL connection failed. Attempting unencrypted...\n");
                     webSocket.setUrl("ws://" + ap_ip);
                     isSSL = false;
@@ -288,6 +300,8 @@ void AP_Shutdown() {
     gifting_autoReject = true;
     gifting_supported = false;
     while (AP_IsMessagePending()) AP_ClearLatestMessage();
+    chatMessageQueue.clear();
+    polledChatMessageJson.clear();
     queueitemrecvmsg = true;
     map_players.clear();
     map_location_id_name.clear();
@@ -446,7 +460,7 @@ void AP_SetItemClearCallback(std::function<void()> f_itemclr) {
     resetItemValues = f_itemclr;
 }
 
-void AP_SetItemRecvCallback(std::function<void(int64_t,bool,int32_t)> f_itemrecv) {
+void AP_SetItemRecvCallback(std::function<void(int64_t, std::string, std::string, bool, int32_t)> f_itemrecv) {
     getitemfunc = f_itemrecv;
 }
 
@@ -502,6 +516,21 @@ void AP_ClearLatestMessage() {
         delete messageQueue.front();
         messageQueue.pop_front();
     }
+}
+
+bool AP_PollChatMessage() {
+    if (chatMessageQueue.empty()) {
+        polledChatMessageJson.clear();
+        return false;
+    }
+
+    polledChatMessageJson = chatMessageQueue.front();
+    chatMessageQueue.pop_front();
+    return true;
+}
+
+const char* AP_GetPolledChatMessageJson() {
+    return polledChatMessageJson.c_str();
 }
 
 void AP_Say(std::string text) {
@@ -921,6 +950,7 @@ bool parse_response(std::string msg, std::string &request) {
                 setreplyfunc(setreply);
             }
         } else if (cmd == "PrintJSON") {
+            appendChatMessageFromPrintJson(root[i]);
             const std::string printType = root[i].get("type","").asString();
             if (printType == "ItemSend" || printType == "ItemCheat") {
                 // Filter out itemrecv messages, which would otherwise be duplicated from the itemrecv callback
@@ -991,13 +1021,13 @@ bool parse_response(std::string msg, std::string &request) {
             for (unsigned int j = 0; j < root[i]["items"].size(); j++) {
                 int64_t item_id = root[i]["items"][j]["item"].asInt64();
                 notify = (item_idx == 0 && last_item_idx <= j && multiworld) || item_idx != 0;
-                int32_t network_index = item_idx + static_cast<int32_t>(j);
-                getitemfunc(item_id, notify, network_index);
+                AP_NetworkPlayer sender = getPlayer(0, root[i]["items"][j]["player"].asInt());
+                const std::string itemDisplayName = getItemName(ap_game, item_id);
+                getitemfunc(item_id, sender.alias, itemDisplayName, notify, item_idx + static_cast<int>(j));
                 if (queueitemrecvmsg && notify) {
                     AP_ItemRecvMessage* msg = new AP_ItemRecvMessage;
-                    AP_NetworkPlayer sender = getPlayer(0, root[i]["items"][j]["player"].asInt());
                     msg->type = AP_MessageType::ItemRecv;
-                    msg->item = getItemName(ap_game, item_id);
+                    msg->item = itemDisplayName;
                     msg->sendPlayer = sender.alias;
                     msg->text = std::string("Received ") + msg->item + std::string(" from ") + msg->sendPlayer;
                     messageQueue.push_back(msg);
@@ -1187,6 +1217,103 @@ std::string getItemName(std::string game, int64_t id) {
 std::string getLocationName(std::string game, int64_t id) {
     std::pair<std::string,int64_t> location = {game,id};
     return map_location_id_name.count(location) ? map_location_id_name.at(location) : std::string("Unknown Location") + std::to_string(id) + " from " + game;
+}
+
+std::string getColorForItemFlags(int flags) {
+    if (flags == 0) return "cyan";
+    if ((flags & 0b001) != 0) return "plum";
+    if ((flags & 0b010) != 0) return "slateblue";
+    if ((flags & 0b100) != 0) return "salmon";
+    return "cyan";
+}
+
+std::string getColorForHintStatus(int hintStatus) {
+    if (hintStatus == 30) return "green";
+    if (hintStatus == 20) return "plum";
+    if (hintStatus == 10) return "yellow";
+    return "red";
+}
+
+int64_t getNodeNumericValue(const Json::Value& valueNode, int64_t fallback) {
+    if (valueNode.isInt64()) return valueNode.asInt64();
+    if (valueNode.isInt()) return static_cast<int64_t>(valueNode.asInt());
+    if (valueNode.isUInt64()) return static_cast<int64_t>(valueNode.asUInt64());
+    if (valueNode.isString()) {
+        try {
+            return std::stoll(valueNode.asString());
+        } catch (...) {
+            return fallback;
+        }
+    }
+    return fallback;
+}
+
+void appendChatMessageFromPrintJson(const Json::Value& packet) {
+    Json::Value output;
+    output["type"] = packet.get("type", "").asString();
+    output["segments"] = Json::arrayValue;
+    const Json::Value data = packet.get("data", Json::arrayValue);
+
+    for (const auto& node : data) {
+        Json::Value segment;
+        const std::string nodeType = node.get("type", "text").asString();
+        std::string color;
+        std::string text;
+
+        if (nodeType == "player_id") {
+            const int slot = static_cast<int>(getNodeNumericValue(node["text"], 0));
+            AP_NetworkPlayer player = getPlayer(0, slot);
+            text = player.alias;
+            color = (slot == ap_player_id) ? "magenta" : "yellow";
+        } else if (nodeType == "player_name") {
+            text = node.get("text", "").asString();
+            color = "yellow";
+        } else if (nodeType == "item_name") {
+            text = node.get("text", "").asString();
+            color = getColorForItemFlags(node.get("flags", 0).asInt());
+        } else if (nodeType == "item_id") {
+            const int playerSlot = static_cast<int>(getNodeNumericValue(node["player"], ap_player_id));
+            AP_NetworkPlayer player = getPlayer(0, playerSlot);
+            const int64_t itemId = getNodeNumericValue(node["text"], 0);
+            text = getItemName(player.game, itemId);
+            color = getColorForItemFlags(node.get("flags", 0).asInt());
+        } else if (nodeType == "location_name") {
+            text = node.get("text", "").asString();
+            color = "green";
+        } else if (nodeType == "location_id") {
+            const int playerSlot = static_cast<int>(getNodeNumericValue(node["player"], ap_player_id));
+            AP_NetworkPlayer player = getPlayer(0, playerSlot);
+            const int64_t locationId = getNodeNumericValue(node["text"], 0);
+            text = getLocationName(player.game, locationId);
+            color = "green";
+        } else if (nodeType == "entrance_name") {
+            text = node.get("text", "").asString();
+            color = "blue";
+        } else if (nodeType == "hint_status") {
+            text = node.get("text", "").asString();
+            color = getColorForHintStatus(node.get("hint_status", 0).asInt());
+        } else if (nodeType == "color") {
+            text = node.get("text", "").asString();
+            color = node.get("color", "").asString();
+        } else {
+            text = node.get("text", "").asString();
+        }
+
+        if (text.empty()) {
+            continue;
+        }
+
+        segment["text"] = text;
+        segment["color"] = color;
+        output["segments"].append(segment);
+    }
+
+    if (!output["segments"].empty()) {
+        chatMessageQueue.push_back(writer.write(output));
+        while (chatMessageQueue.size() > AP_CHAT_MESSAGE_LIMIT) {
+            chatMessageQueue.pop_front();
+        }
+    }
 }
 
 AP_NetworkPlayer getPlayer(int team, int slot) {

@@ -1,195 +1,238 @@
 """
 Cyberpunk 2077 Access Rules
-
-This file defines the logic for when locations and regions become accessible.
-
-Rules determine what items are needed to:
-- Travel between regions (region access rules)
-- Complete specific locations (location access rules)
-- Beat the game (victory condition)
-
-Rules are lambda functions that check the player's current item collection.
 """
 
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Callable, TypeAlias
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
-from .locations import location_table
+from .locations import location_table, LocationCategory, JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS
+from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
 
 
+@dataclass(frozen=True)
+class PrereqAny:
+    """Represents an OR dependency over location names."""
+
+    names: tuple[str, ...]
+
+
+Prerequisite: TypeAlias = str | tuple[str, ...] | PrereqAny
+
+
+def any_of(*names: str) -> PrereqAny:
+    return PrereqAny(tuple(names))
+
+
+# Overlay prerequisites used in normal (non-PL-only) goals.
+BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
+    "Point of No Return - Nocturne Op55N1": (
+        "Main - Transmission",
+        "Main - Life During Wartime",
+        "Main - Search and Destroy",
+    ),
+    "Ending Reached": "Point of No Return - Nocturne Op55N1",
+}
+
+# Side chains now live on LocationData.prerequisite and apply in all goals.
+SIDE_QUEST_GOAL_PREREQUISITES: dict[str, Prerequisite] = {}
+
+# Phantom Liberty-only questline requirements.
+PHANTOM_LIBERTY_ONLY_PREREQUISITES: dict[str, Prerequisite] = {
+    "Phantom Liberty - Phantom Liberty": "Lifepath Chosen",
+    "Phantom Liberty - Dog Eat Dog": "Phantom Liberty - Phantom Liberty",
+    "Phantom Liberty - Hole in the Sky": "Phantom Liberty - Dog Eat Dog",
+    "Phantom Liberty - Spider and the Fly": "Phantom Liberty - Hole in the Sky",
+    "Phantom Liberty - Lucretia My Reflection": "Phantom Liberty - Spider and the Fly",
+    "Phantom Liberty - The Damned": "Phantom Liberty - Lucretia My Reflection",
+    "Phantom Liberty - Get It Together": "Phantom Liberty - The Damned",
+    "Phantom Liberty - You Know My Name": "Phantom Liberty - Get It Together",
+    "Phantom Liberty - Birds with Broken Wings": "Phantom Liberty - You Know My Name",
+    "Phantom Liberty - I've Seen That Face Before": "Phantom Liberty - Birds with Broken Wings",
+    "Phantom Liberty - Firestarter": "Phantom Liberty - I've Seen That Face Before",
+    "PL - Split Quest 1": "Phantom Liberty - Firestarter",
+    "PL - Split Quest 2": "Phantom Liberty - Firestarter",
+    "PL - Split Quest 3": "Phantom Liberty - Firestarter",
+    "Phantom Liberty - Who Wants to Live Forever": any_of(
+        "PL - Split Quest 1",
+        "PL - Split Quest 2",
+        "PL - Split Quest 3",
+    ),
+    "Ending Reached": "Phantom Liberty - Who Wants to Live Forever",
+}
+
+
+def _collect_location_prerequisites() -> dict[str, Prerequisite]:
+    """Collect per-location prerequisite edges from LocationData rows."""
+    edges: dict[str, Prerequisite] = {}
+    for data in location_table.values():
+        if data.code is None or data.prerequisite is None:
+            continue
+        edges[data.display_name] = data.prerequisite
+    return edges
+
+
+# Stable exported prerequisite catalog for tests and debugging.
+LOCATION_PREREQUISITES: dict[str, dict[str, Prerequisite]] = {
+    "base": {**_collect_location_prerequisites(), **BASE_LOCATION_PREREQUISITES},
+    "all_side_quests": SIDE_QUEST_GOAL_PREREQUISITES,
+    "phantom_liberty_only": PHANTOM_LIBERTY_ONLY_PREREQUISITES,
+}
+
+# Internal ``location_table`` keys ``VendorCheck_*`` (sorted for stable slot_data order).
+# Archipelago Location.name is each row's ``display_name``; rules and slot_data resolve that from here.
+VENDOR_CHECK_INTERNAL_KEYS = tuple(
+    sorted(
+        (
+            name
+            for name, data in location_table.items()
+            if data.category == LocationCategory.VENDOR and data.code is not None
+        ),
+        key=lambda name: (location_table[name].display_name, name),
+    )
+)
+
+
 def set_rules(world: "Cyberpunk2077World") -> None:
-    """
-    Set all access rules for quest progression and victory condition.
-
-    This implements the canonical Cyberpunk 2077 quest chain structure:
-    - Prologue (linear progression)
-    - Act 2 (three branches that can be done in any order, all required)
-    - Point of No Return (requires all three Act 2 branches)
-    - Endings (each with different prerequisites)
-
-    In addition to the quest-chain rules below, ``_apply_multi_region_rules``
-    adds a per-location reachability predicate for every ``LocationData`` whose
-    ``regions`` tuple contains more than one district. This keeps the
-    generator's reachability model in sync with the data when
-    ``restrict_by_major_district`` gates districts behind tokens.
-    """
+    """Set location and victory rules for the selected completion goal."""
     player = world.player
 
-    # ===== PROLOGUE CHAIN =====
-    # Linear progression through prologue quests
+    _apply_location_prerequisites(world, player, _get_goal_location_prerequisites(world))
 
-    set_rule(
-        world.multiworld.get_location("Prologue - The Ripperdoc", player),
-        lambda state: state.can_reach_location("Prologue - The Rescue", player)
-    )
-
-    set_rule(
-        world.multiworld.get_location("Prologue - The Ride", player),
-        lambda state: state.can_reach_location("Prologue - The Ripperdoc", player)
-    )
-
-    # Both The Information AND The Pickup must be completed before The Heist
-    set_rule(
-        world.multiworld.get_location("Prologue - The Heist", player),
-        lambda state: (
-            state.can_reach_location("Prologue - The Pickup", player) and
-            state.can_reach_location("Prologue - The Information", player)
-        )
-    )
-
-    set_rule(
-        world.multiworld.get_location("Prologue - Love Like Fire", player),
-        lambda state: state.can_reach_location("Prologue - The Heist", player)
-    )
-
-    set_rule(
-        world.multiworld.get_location("Main - Playing for Time", player),
-        lambda state: state.can_reach_location("Prologue - Love Like Fire", player)
-    )
-
-    # ========== Act 2 ============
-
-    # Only need to put the FIRST and LAST quest of a given chain for the generator to understand whats going on theoretically
-    # Vodoo Boys
-    set_rule(world.multiworld.get_location("Main - Automatic Love", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Transmission", player),
-             lambda state: state.can_reach_location("Main - Automatic Love", player))
-
-    # Hellman
-    set_rule(world.multiworld.get_location("Main - Ghost Town", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Life During Wartime", player),
-             lambda state: state.can_reach_location("Main - Ghost Town", player))
-
-    # Takemura
-    set_rule(world.multiworld.get_location("Main - Down on the Street", player),
-             lambda state: state.can_reach_location("Main - Playing for Time", player))
-
-    set_rule(world.multiworld.get_location("Main - Search and Destroy", player),
-             lambda state: state.can_reach_location("Main - Down on the Street", player))
-
-    # ======= Point of No Return ======
-    # Requires ALL THREE Act 2 branches to be completed
-    # Check quest locations directly instead of using event items to avoid circular dependencies
-
-    set_rule(world.multiworld.get_location("Point of No Return - Nocturne Op55N1", player), lambda state: (
-            state.can_reach_location("Main - Transmission", player) and
-            state.can_reach_location("Main - Life During Wartime", player) and
-            state.can_reach_location("Main - Search and Destroy", player)
-    ))
-
-    # Ending Reached - accessible after completing Nocturne Op55N1 and any ending path
-    # The epilogue quests (q201_heir, q202_nomads, q203_legend, q204_reborn, q307_tomorrow)
-    # all map to this single location, so completing ANY ending triggers this check
-    set_rule(world.multiworld.get_location("Ending Reached", player), lambda state: (
-        state.can_reach_location("Point of No Return - Nocturne Op55N1", player)
-    ))
-
-    # ==========================================
-    # Ending Side Quest Prerequisites
-    # ==========================================
-    # Set ending side quest chain rules when either include_all_endings OR include_side_quests is enabled
-    # These quests have ENDING_SIDE_QUEST category and are included automatically when either option is true
-    if world.options.include_all_endings or world.options.include_side_quests:
-        # --- PANAM'S BRANCH (For The Star Ending) ---
-        # Unlocked after finishing Branch B (Hellman)
-        set_rule(world.multiworld.get_location("Riders on the Storm", player),
-                 lambda state: state.can_reach_location("Main - Life During Wartime", player))
-
-        # Shortcut: Tying the end of Panam's arc to the beginning of it
-        set_rule(world.multiworld.get_location("Queen of the Highway", player),
-                 lambda state: state.can_reach_location("Riders on the Storm", player))
-
-        # --- ROGUE & JOHNNY'S BRANCH (For The Sun / Temperance Endings) ---
-        # Unlocked after finishing Branch C (Takemura)
-        set_rule(world.multiworld.get_location("Chippin' In", player),
-                 lambda state: state.can_reach_location("Main - Search and Destroy", player))
-
-        # Shortcut: Tying the end of Rogue's arc to the beginning of it
-        set_rule(world.multiworld.get_location("Blistering Love", player),
-                 lambda state: state.can_reach_location("Chippin' In", player))
-
-
-    # List of locations of which only ONE must be accessible to reach a point of no return
-    no_return_locations = [
-        "Epilogue - Where is My Mind?",
-        "Epilogue - All Along the Watchtower",
-        "Epilogue - Path of Glory",
-        "Epilogue - New Dawn Fades",
-        "Phantom Liberty - Firestarter",
-        "Phantom Liberty - The Last Stand"
-    ]
-
-    # ==========================================
-    # Multi-region district reachability
-    # ==========================================
-    # Many quests touch more than one district. ``LocationData.regions`` lists
-    # every district the quest physically requires the player to reach. When
-    # ``restrict_by_major_district`` is on, each district has its own entrance
-    # token, so we must add a per-location rule mirroring the data: the player
-    # must be able to reach every listed major district. ``add_rule`` ANDs with
-    # any quest-chain rule set earlier in this function.
-    #
-    # We only do this when the district randomizer is on. With it off, every
-    # district is reachable as soon as the lifepath intro is done and no extra
-    # rule is needed.
+    _apply_vendor_rules(world, player)
     _apply_multi_region_rules(world, player)
+    _set_victory_rule(world, player)
 
-    # ===== VICTORY CONDITION =====
-    # Victory requires reaching any ending (consolidated into "Ending Reached" location)
+    world.multiworld.completion_condition[player] = lambda state: state.has("Victory", player)
+
+
+def _completion_goal(world: "Cyberpunk2077World") -> int:
+    return int(world.options.completion_goal.value)
+
+
+def _get_goal_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
+    goal = _completion_goal(world)
+    if goal == CompletionGoal.option_complete_only_phantom_liberty_questline:
+        return dict(LOCATION_PREREQUISITES["phantom_liberty_only"])
+
+    return dict(LOCATION_PREREQUISITES["base"])
+
+
+def get_active_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
+    """
+    Return active location prerequisite edges for the configured world/options.
+
+    This mirrors the rule application behavior and filters out prerequisite rules
+    for locations not present in the generated location set.
+    """
+    player = world.player
+    edges = _get_goal_location_prerequisites(world)
+    edges.update(_get_vendor_location_prerequisites(world))
+    return {
+        location_name: required
+        for location_name, required in edges.items()
+        if _location_exists(world, player, location_name)
+    }
+
+
+def _build_prerequisite_rule(required: Prerequisite, player: int) -> Callable[[CollectionState], bool]:
+    if isinstance(required, PrereqAny):
+        return lambda state, reqs=required.names: any(state.can_reach_location(req, player) for req in reqs)
+    if isinstance(required, tuple):
+        return lambda state, reqs=required: all(state.can_reach_location(req, player) for req in reqs)
+    return lambda state, req=required: state.can_reach_location(req, player)
+
+
+def _apply_location_prerequisites(
+    world: "Cyberpunk2077World",
+    player: int,
+    edges: dict[str, Prerequisite],
+) -> None:
+    for location_name, required in edges.items():
+        if not _location_exists(world, player, location_name):
+            continue
+        set_rule(
+            world.multiworld.get_location(location_name, player),
+            _build_prerequisite_rule(required, player),
+        )
+
+
+def _set_victory_rule(world: "Cyberpunk2077World", player: int) -> None:
+    victory_location = world.multiworld.get_location("Victory", player)
+    goal = _completion_goal(world)
+
+    if goal == CompletionGoal.option_complete_any_ending_w_all_side_quests:
+        side_quest_locations = tuple(_get_required_side_quest_locations(world, player))
+        set_rule(
+            victory_location,
+            lambda state, required=side_quest_locations: (
+                state.can_reach_location("Ending Reached", player) and
+                all(state.can_reach_location(name, player) for name in required)
+            ),
+        )
+        return
+
     set_rule(
-        world.multiworld.get_location("Victory", world.player),
-        lambda state: state.can_reach_location("Ending Reached", player)
+        victory_location,
+        lambda state: state.can_reach_location("Ending Reached", player),
     )
 
-    # Set completion condition - player wins when they collect the Victory event item
-    world.multiworld.completion_condition[player] = \
-        lambda state: state.has("Victory", player)
+
+def _apply_vendor_rules(world: "Cyberpunk2077World", player: int) -> None:
+    _apply_location_prerequisites(world, player, _get_vendor_location_prerequisites(world))
+
+
+def _get_vendor_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, Prerequisite]:
+    if not bool(world.options.vendor_sanity.value):
+        return {}
+
+    subtype_option_map = {
+        "ripperdoc": world.options.vendor_ripperdocs,
+        "gunsmith": world.options.vendor_gunsmiths,
+        "clothing": world.options.vendor_clothing,
+        "melee": world.options.vendor_melee,
+        "netrunner": world.options.vendor_netrunners,
+    }
+    edges: dict[str, Prerequisite] = {}
+    for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
+        loc_data = location_table[internal_key]
+        subtype = loc_data.vendor_subtype
+        if subtype and not subtype_option_map.get(subtype):
+            continue
+        # Jackson Plains Ripperdoc (Stall 2) only exists post-camp-move, which requires
+        # completing Panam's side-quest chain (capstone "Queen of the Highway"). It is only
+        # in the pool when side quests are enabled (see regions.py), so this edge is inert
+        # otherwise.
+        if internal_key in JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS:
+            edges[loc_data.display_name] = ("Prologue - The Ripperdoc", "Queen of the Highway")
+            continue
+        edges[loc_data.display_name] = "Prologue - The Ripperdoc"
+    return edges
+
+
+def _get_required_side_quest_locations(world: "Cyberpunk2077World", player: int) -> list[str]:
+    """Collect included SIDE_QUEST / DLC_SIDE checks for all-side-quests goal."""
+    included_names = {loc.name for loc in world.multiworld.get_locations(player)}
+    required: list[str] = []
+
+    for data in location_table.values():
+        if data.display_name not in included_names:
+            continue
+        if data.category == LocationCategory.SIDE_QUEST:
+            required.append(data.display_name)
+        elif data.category == LocationCategory.DLC_SIDE and has_effective_phantom_liberty_dlc(world.options):
+            required.append(data.display_name)
+
+    return required
+
+
+def _location_exists(world: "Cyberpunk2077World", player: int, location_name: str) -> bool:
+    return any(loc.name == location_name for loc in world.multiworld.get_locations(player))
 
 # ===== MULTI-REGION HELPERS =====
-
-# Top-level regions that have entrance token gates when
-# ``restrict_by_major_district`` is enabled. ``LocationData.regions`` entries
-# outside this set (e.g. ``Afterlife``, ``North Oak``, ``Cyberspace``) carry no
-# token rule so we ignore them when building the OR predicate -- they cannot
-# meaningfully gate the location any more than the parent region already does.
-_MAJOR_DISTRICTS_BASE = frozenset({
-    "Watson",
-    "Westbrook",
-    "City Center",
-    "Heywood",
-    "Santo Domingo",
-    "Pacifica",
-    "Badlands",
-})
-_MAJOR_DISTRICTS_DLC = frozenset({"Dogtown"})
-
 
 def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     """
@@ -204,16 +247,15 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     Why AND (``all``) instead of OR? Multi-region locations represent quests
     that require the player to actually move between districts to complete the
     quest in-game, so the safe default is to require reach to every district
-    listed. A permissive ``any`` would let generation place a key item on a
-    multi-district location while only one district is reachable; the in-game
-    check would never fire, creating a soft-lock. Quests with looser
-    semantics can override this with their own ``set_rule`` higher up.
+    listed gated major district. A permissive ``any`` would let generation
+    place a key item on a multi-district location while only one gated district
+    is reachable; the in-game check would never fire, creating a soft-lock.
+    Quests with looser semantics can override this with their own ``set_rule``
+    higher up.
 
-    The rule is only added when ``restrict_by_major_district`` is enabled --
-    without it every district is reachable after the lifepath intro and the
-    extra rule would be a no-op. We also skip locations that have been
-    filtered out by the player's category/DLC options to avoid touching
-    Locations that were never created.
+    The rule is only added for selected gated majors. Non-gated districts are
+    intentionally ignored because the client auto-opens those districts from
+    slot-data during sync.
 
     Subdistrict mode (``restrict_by_sub_district``) is intentionally not
     handled here: subdistrict tokens layer on top of the major-district
@@ -221,12 +263,9 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
     If/when ``regions`` entries start naming subdistricts directly, this
     helper should be extended to recognise ``"<Major> - <Sub>"`` names.
     """
-    if not world.options.restrict_by_major_district:
+    gated_major_districts = set(get_gated_major_districts(world.options))
+    if not gated_major_districts:
         return
-
-    major_districts = set(_MAJOR_DISTRICTS_BASE)
-    if world.options.include_phantom_liberty_dlc:
-        major_districts |= _MAJOR_DISTRICTS_DLC
 
     # Snapshot of location names actually created for this player so we
     # silently skip rows filtered out by category/DLC options.
@@ -240,7 +279,7 @@ def _apply_multi_region_rules(world: "Cyberpunk2077World", player: int) -> None:
         if loc_data.display_name not in existing_locations:
             continue
 
-        applicable = tuple(r for r in loc_data.regions if r in major_districts)
+        applicable = tuple(r for r in loc_data.regions if r in gated_major_districts)
         if not applicable:
             continue
 

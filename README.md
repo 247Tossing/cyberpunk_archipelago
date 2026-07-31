@@ -1,82 +1,170 @@
-
 # Cyberpunk 2077 Archipelago Mod
 
-A mod and client for Cyberpunk 2077 for [Archipelago](https://archipelago.gg/)
+An [Archipelago](https://archipelago.gg/) mod for Cyberpunk 2077
 
-## ⚠️ WARNING: Experimental Release
-**This current release is NOT recommended for use in large community async environments.**
-It is currently prone to **generation issues**. Thar be dragons!
-## ⚠️ WARNING: Other Mod Support
-I do not support adding other mods on top of this one, nor will i assist if this mod does not work with other mods installed. Only the mods listed in the Requirements are supported.
+> [!WARNING]
+> **Experimental Release**
+> 
+> While most generation issues have been resolved, there is a possibility that certain quirks exist in the new features being added.
+
+## What does this mod do?
+
+First, familiarize yourself with Archipelago by reading [The Archipelago FAQ](https://archipelago.gg/faq/en/).
+
+**Checks (Locations)** include story and DLC quest beats, gigs, tarot paintings, cyberpsycho sightings, NCPD hustles, minor quests, and optional **vendor sanity** purchases at ripperdocs and weapon vendors.
+
+**Items** include progression and utility gear, filler rewards, optional **trap** items, **eddies**, and **quickhacks**.
+
+**Weapon Restrictions** Hard-block selected weapon classes or require matching **weapon pass** items from the multiworld before you can use those weapon types.
+**District Restrictions** Restrict access to districts in Night City until their access token is obtained from the multiworld.
+
+**Extras** include:
+- **Death Link** — share deaths with the multiworld when enabled
+- **Oops! All Traps!** — replaces useful and filler items with traps
+
 ---
-
-## What does this do?
-If enabled, you will be restricted by District and be unable to travel to those districts until you aquire the access token from the multiworld.
-You can get extra items suchs as Eddies, Quckhacks, Burrito from the multi-world.
-More will come in due time.
-***Have Patience***
 
 # Installation
 
-## Requirements
+### Requirements
 
-You will need the following mods for this to work:
-| Mod          | Github Link | Nexusmods Link |
-| ----------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| RedScript 0.5.31 | [Github Link](https://github.com/jac3km4/redscript)| [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/1511)
-| Cyber Engine Tweaks | [Github Link](https://github.com/maximegmd/CyberEngineTweaks) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/107)
-| Codeware | [Github Link](https://github.com/psiberx/cp2077-codeware) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/7780)
-| Red4Ext | [Github Link](https://github.com/wopss/RED4ext) | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/2380)
-| Phone Extension | Unknown | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/24949)
+You'll need these mods for the archipelago mod to work:
 
-## Mod Installation
-Download the ```cyberpunk-archipelago-release-vXX.zip``` from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+| Mod | Version | GitHub | Nexus |
+|-----|---------|--------|-------|
+| RedScript | 0.5.31+ | [Link](https://github.com/jac3km4/redscript) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/1511) |
+| TweakXL | — | [Link](https://github.com/psiberx/cp2077-tweak-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4197) |
+| ArchiveXL | — | [Link](https://github.com/psiberx/cp2077-archive-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4198) |
+| Cyber Engine Tweaks | — | [Link](https://github.com/maximegmd/CyberEngineTweaks) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/107) |
+| Codeware | — | [Link](https://github.com/psiberx/cp2077-codeware) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/7780) |
+| Red4Ext | — | [Link](https://github.com/wopss/RED4ext) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/2380) |
+| Phone Extension | — | N/A | [Link](https://www.nexusmods.com/cyberpunk2077/mods/24949) |
 
-The zip contains:
- - The AP World
- - The Mod Itself
- - The PopTracker
+### Optional Recommended Mods
 
-take the ```CyberpunkArchipelagoMod_(X_X_X).zip``` and extract to your Cyberpunk 2077 Root folder. This should contain the ```r6```, ```bin```, and ```Red4EXT``` folders.
+These mods are **not** required but have been tested for compatibility and enhance the experience:
 
-Next, open the Archipelago Launcher and drag the ```cyberpunk2077.apworld``` file onto the launcher.
+| Mod | Links | Notes |
+|-----|-------|-------|
+| New Game Plus - Native | [GitHub](https://github.com/alphanin9/CyberpunkNewGamePlus) · [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) | When installed, this AP mod can auto-release skip flags |
+| Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | **If you use Vendor Sanity**, you **MUST** disable Randomize Vendors in mod options or this **WILL** cause softlocks. It is also reccomended to disable Loot Randomization |
 
-You ***MUST*** restart the launcher before it will show up.
+### Mod Installation Steps
+
+1. Download the latest release from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+2. Extract `CyberpunkArchipelagoMod.zip` to your Cyberpunk 2077 root folder (should contain `r6`, `bin`, and `Red4EXT` folders)
+3. Open the Archipelago Launcher and drag the `cyberpunk2077.apworld` file onto it
+4. **You MUST restart the launcher** before it will show up
+
+---
+
 # Usage
 
-## Using the Mod
-## This assumes that you already have an AP world hosted somewhere
-1. Start up Cyberpunk 2077
-2. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-3. From the CET overlay, fill out the fields with your ```Archipelago Server IP/URL```, ```Archipelago Server Port```, and ```Save Slot Name```
-4. Profit. Have Fun.
+### Using the Mod
 
-## Linux Users (like me!)
+1. Start Cyberpunk 2077
+2. Set a keybind for the CET overlay (if you haven't already). Refer to [Cyber Engine Tweaks documentation](https://github.com/maximegmd/CyberEngineTweaks) if needed
+3. From the CET overlay, enter your:
+   - Archipelago IP/URL ( i.e. ```archipelago.gg``` or your self-hosted instance IP )
+   - Port
+   - Slot Name
+   
+   Then click **Connect to Archipelago**
+4. Enjoy!
 
-Before anything follow this guide: [Cyber Engine Tweaks Linux Instructions](https://wiki.redmodding.org/cyber-engine-tweaks/getting-started/installing/linux-proton)
+### Setting up your YAML
 
-### For Heroic:
+There are many options available because of the mod's extensive content. Depending on your group size, you may want to tune these differently.
+
+Below is a list of options that add location checks and their counts:
+
+| Option | Number of Checks |
+|--------|------------------|
+| Completion Goal — Complete Any Ending W/ All Side Quests | 45 (base) / 46 (with Phantom Liberty DLC) |
+| Completion Goal — Complete Only Phantom Liberty Questline | 17 |
+| Include Phantom Liberty DLC | Up to 57 |
+| Include Gigs | 81 |
+| Include Tarot | 26 |
+| Include Cyber Psycho Sighting | 18 |
+| Include NCPD Hustles | 37 |
+| Include Minor Quests | 62 |
+| Include Ripperdocs | 54 (requires Vendor Sanity) |
+| Include Weapon Vendors | 42 (requires Vendor Sanity) |
+| Include Clothing Vendors | 42 (requires Vendor Sanity) |
+| Include Melee Vendors | 21 (requires Vendor Sanity) |
+| Include Netrunners | 21 (requires Vendor Sanity) |
+
+Some notes about the YAML Options:
+
+Vendor Sanity adds a substantial amount of checks when all vendors are enabled. I highly advise against enabling all of the vendors in smaller groups (less then 5 worlds) as it will hog your Multiworld items.
+
+The tuning of the various quest options have been tuned as such that the ending of major quest chains (should) have progression/useful items attached to them.
+
+### Linux Users (Like me!)
+
+Before anything else, follow this guide: [Cyber Engine Tweaks Linux Instructions](https://wiki.redmodding.org/cyber-engine-tweaks/getting-started/installing/linux-proton)
+
+#### For Heroic:
 1. Open the game settings
-2. Go to Advanced
-3. Scroll down to Environment Variables
-4. in the ```Variable Name```, put ```WINEDLLOVERRIDES```
-5. in the ```Value```, put ```"version,winmm=n,b"```
+2. Go to **Advanced**
+3. Scroll down to **Environment Variables**
+4. Set `Variable Name` to `WINEDLLOVERRIDES`
+5. Set `Value` to `version,winmm=n,b`
 
-### For Steam:
-1. Rightclick the game in Steam
-2. Select ```Properties```
-3. Under ```Launch Options```, ```put in WINEDLLOVERRIDES="version,winmm=n,b" %command%```
+#### For Steam:
+1. Right-click the game in Steam
+2. Select **Properties**
+3. Under **Launch Options**, add: `WINEDLLOVERRIDES="version,winmm=n,b" %command%`
 
 ---
 
-## Credits
+# Troubleshooting
 
+### Something's broken?
+
+[Open an issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose)
+
+Please include a **Clear description** of the issue. I can't help if I don't know what to look for.
+
+Depending on the nature of your issue, please include the following:
+
+### For issue with AP World seed generation:
+**spoiler.txt** - found in `{archipelago install dir}\output\(zip used in generation)\spoiler.txt`
+
+### For issues with checks not sending, connection issues, game specific bugs:
+**CET logs** - found in `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
+
+### For issues with textures not loading, icons not displaying, odd text:
+**Archive XL Logs** -  found in `{game dir}\red4ext\plugins\ArchiveXL`
+**Tweak XL Logs** - found in `{game dir}\red4ext\plugins\TweakXL`
+
+### For issues that appear to be caused by the AP World itself in the server during gameplay (very rare):
+**Server Logs** - if hosting locally, found in `{archipelago install dir}\logs\Server*.log`
+
+---
+
+## Credits & Acknowledgements
+
+### Mod Author
 - **247Tossing** — Cyberpunk 2077 Archipelago Mod
-- Built with [Archipelago](https://archipelago.gg/), [RedScript](https://github.com/jac3km4/redscript), and [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks)
 
-Developers: see [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, issue reporting, and third-party library credits.
+### Third-Party Libraries (Native Plugin)
 
----
+| Library | Author | Purpose |
+|---------|--------|---------|
+| [APCpp](https://github.com/N00byKing/APCpp) | N00byKing | Archipelago C++ client library (vendored + modified) |
+| [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) | WopsS | REDengine 4 plugin SDK headers |
+| [RED4ext](https://github.com/WopsS/RED4ext) | WopsS | RED4ext loader framework (reference) |
+| [Red4Ext-template](https://github.com/ssamjoel/Red4Ext-template) | ssamjoel | Plugin project scaffold |
+| [jsoncpp](https://github.com/open-source-parsers/jsoncpp) | open-source-parsers | JSON parsing (APCpp dependency) |
+| [IXWebSocket](https://github.com/machinezone/IXWebSocket) | Machine Zone | WebSocket client (APCpp dependency) |
+| [zlib](https://github.com/madler/zlib) | Mark Adler | Compression (APCpp dependency) |
 
-## What if something is broken?
-Open an [Issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose). See [CONTRIBUTING.md](CONTRIBUTING.md#reporting-issues) for what to include in your report.
+### Frameworks
+- [Archipelago](https://archipelago.gg/) — Multiworld randomizer framework
+- [RedScript](https://github.com/jac3km4/redscript) — Cyberpunk 2077 scripting framework
+- [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) — Cyberpunk 2077 mod engine
+
+## Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the developer environment and contribution guide.
