@@ -185,7 +185,12 @@ void AP_Init(const char* ip, const char* game, const char* player_name, const ch
                     last_connection_error = "Unable to connect to Archipelago server.";
                 }
                 printf("AP: Error connecting to Archipelago. Retries: %d\n", msg->errorInfo.retries-1);
-                if (msg->errorInfo.retries-1 >= 2 && isSSL && !ssl_success) {
+                // Fall back to plaintext ws:// on the very first failed wss:// attempt rather than
+                // waiting for several retries. A failed TLS handshake is frequently reported by
+                // IXWebSocket with an errno/WSA value of 0 (rendered as "Connect error: Success" by
+                // strerror), which is easy to mistake for a real/terminal error; recovering to
+                // ws:// immediately minimizes how long that misleading message can stick around.
+                if (msg->errorInfo.retries-1 >= 0 && isSSL && !ssl_success) {
                     printf("AP: SSL connection failed. Attempting unencrypted...\n");
                     webSocket.setUrl("ws://" + ap_ip);
                     isSSL = false;

@@ -5,7 +5,10 @@
 
 namespace
 {
-constexpr auto kConnectAttemptTimeout = std::chrono::seconds(10);
+// Must comfortably exceed APCpp's wss:// -> ws:// fallback window (a few retries on wss:// before
+// falling back to plaintext), so a transient SSL/websocket hiccup doesn't get shut down here before
+// the fallback has a chance to succeed.
+constexpr auto kConnectAttemptTimeout = std::chrono::seconds(30);
 constexpr char kConnectTimeoutMessage[] = "Connection timed out. Verify host, port, and slot.";
 
 std::string NormalizeSlotDataRawString(std::string rawValue)
@@ -245,6 +248,19 @@ std::string APBridge::GetLastConnectionError() const
         return m_localConnectionError;
     }
     if (!m_initialized) return "";
+    if (m_connectAttemptActive)
+    {
+        // APCpp's raw last-connection-error is updated on every websocket Error/Close event,
+        // including transient ones during the wss:// -> ws:// retry/fallback sequence (IXWebSocket
+        // reports these with an errno/WSA value of 0, which strerror renders as "Success" - hence
+        // the confusing "Connect error: Success" message). Surfacing that here while an attempt is
+        // still active makes RedScript/CET treat a mid-retry hiccup as a final failure. Genuinely
+        // terminal outcomes don't need this: a refusal flips AP_GetConnectionStatus() to
+        // ConnectionRefused, which ProcessConnectionAttempt() already resolves by clearing
+        // m_connectAttemptActive before this is queried again; a bridge-level timeout sets
+        // m_localConnectionError directly, which is returned above.
+        return "";
+    }
     const char* error = AP_GetLastConnectionError();
     if (error)
     {
