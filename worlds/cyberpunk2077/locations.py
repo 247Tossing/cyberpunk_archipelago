@@ -613,9 +613,19 @@ location_table: Dict[str, LocationData] = {
     "VendorCheck_WbrJpnRipperdoc02_1": LocationData(display_name="Japantown Ripperdoc (Clinic 02) 1", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
     "VendorCheck_WbrJpnRipperdoc02_2": LocationData(display_name="Japantown Ripperdoc (Clinic 02) 2", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
     "VendorCheck_WbrJpnRipperdoc02_3": LocationData(display_name="Japantown Ripperdoc (Clinic 02) 3", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY, vendor_subtype="ripperdoc"),
+    # Stall 1 is the pre-camp-move Aldecaldos ripperdoc: it becomes unreachable once the
+    # player finishes Panam's side-quest chain (capstone "Queen of the Highway") and the
+    # camp relocates. All three slots are EXCLUDED so generation never places progression
+    # here; the client auto-releases any unchecked slots when the camp moves (see
+    # APGameSystem.reds / APQuestLocationLookup.reds).
     "VendorCheck_BlsInaSe1Ripperdoc01_1": LocationData(display_name="Jackson Plains Ripperdoc (Stall 1) 1", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
     "VendorCheck_BlsInaSe1Ripperdoc01_2": LocationData(display_name="Jackson Plains Ripperdoc (Stall 1) 2", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
-    "VendorCheck_BlsInaSe1Ripperdoc01_3": LocationData(display_name="Jackson Plains Ripperdoc (Stall 1) 3", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY, vendor_subtype="ripperdoc"),
+    "VendorCheck_BlsInaSe1Ripperdoc01_3": LocationData(display_name="Jackson Plains Ripperdoc (Stall 1) 3", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
+    # Stall 2 is the post-camp-move Aldecaldos ripperdoc: it only exists once the camp has
+    # relocated, which requires Panam's side-quest chain. It is only populated when side
+    # quests are included in generation (see create_region()'s VENDOR filter in regions.py)
+    # and is gated behind "Queen of the Highway" in addition to the usual ripperdoc
+    # prerequisite (see _get_vendor_location_prerequisites() in rules.py).
     "VendorCheck_BlsInaSe1Ripperdoc02_1": LocationData(display_name="Jackson Plains Ripperdoc (Stall 2) 1", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
     "VendorCheck_BlsInaSe1Ripperdoc02_2": LocationData(display_name="Jackson Plains Ripperdoc (Stall 2) 2", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="ripperdoc"),
     "VendorCheck_BlsInaSe1Ripperdoc02_3": LocationData(display_name="Jackson Plains Ripperdoc (Stall 2) 3", regions=("Badlands",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY, vendor_subtype="ripperdoc"),
@@ -754,6 +764,24 @@ location_table: Dict[str, LocationData] = {
     "VendorCheck_CzConNetrunner_2": LocationData(display_name="Dogtown Netrunner 2", regions=("Dogtown",), category=LocationCategory.VENDOR, dlc_only=True, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="netrunner"),
     "VendorCheck_CzConNetrunner_3": LocationData(display_name="Dogtown Netrunner 3", regions=("Dogtown",), category=LocationCategory.VENDOR, dlc_only=True, progress_type=LocationProgressType.PRIORITY, vendor_subtype="netrunner"),
 }
+
+
+# ===== JACKSON PLAINS RIPPERDOC CAMP-MOVE KEYS =====
+# The Aldecaldos camp (and its ripperdoc) relocates within Jackson Plains once the player
+# finishes Panam's side-quest chain (capstone: "Queen of the Highway"). Stall 1 is the
+# pre-move camp ripperdoc and becomes unreachable once the camp moves; Stall 2 is the
+# post-move camp ripperdoc and only exists after the move. Shared here so regions.py and
+# rules.py apply consistent, option-aware handling instead of duplicating literal keys.
+JACKSON_PLAINS_RIPPERDOC_STALL_1_KEYS = (
+    "VendorCheck_BlsInaSe1Ripperdoc01_1",
+    "VendorCheck_BlsInaSe1Ripperdoc01_2",
+    "VendorCheck_BlsInaSe1Ripperdoc01_3",
+)
+JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS = (
+    "VendorCheck_BlsInaSe1Ripperdoc02_1",
+    "VendorCheck_BlsInaSe1Ripperdoc02_2",
+    "VendorCheck_BlsInaSe1Ripperdoc02_3",
+)
 
 
 # ===== AUTO-ASSIGN LOCATION CODES =====
