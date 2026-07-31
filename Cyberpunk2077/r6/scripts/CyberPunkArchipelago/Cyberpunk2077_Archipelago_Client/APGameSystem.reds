@@ -547,7 +547,9 @@ public final func Update(evt: ref<DistrictEnteredEvent>) -> Void {
 protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpawn>) -> Bool {
     let result = wrappedMethod(evt);
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-    let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+    // Local must not be named APGameSystem — that shadows the type and breaks static calls
+    // (INVALID_STATIC_USE on ReleaseJacksonPlainsRipperdocStall1Checks).
+    let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
     //APLogger.LogInfo( s"Character Visible");
     if IsDefined(APGameState) {
         //APLogger.LogInfo( "AP Game State Defined");
@@ -561,10 +563,10 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
             tcpClient.OnPlayerSpawned();
         }
 
-        APGameSystem.SyncData();
+        gameSystem.SyncData();
         APNGPlusBridge.TryReleasePrologueChecksOnSpawn(GetGameInstance());
         APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks(GetGameInstance());
-        APGameSystem.SendSyncChecks();
+        gameSystem.SendSyncChecks();
 
         // Register the Archipelago phone contact on every spawn
         APLogger.LogDebug("OnSpawn: Attempting to register phone contact");
@@ -578,13 +580,13 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
 
     let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
     if IsDefined(questSystem) {
-        questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
+        questSystem.RegisterListener(n"mq033_grafitti_counter", gameSystem, n"HandleTarotCollected");
     }
 
     let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
-    if IsDefined(journalManager) && IsDefined(APGameSystem) {
-        journalManager.UnregisterScriptCallback(APGameSystem, n"HandleJournalStateChange");
-        journalManager.RegisterScriptCallback(APGameSystem, n"HandleJournalStateChange", gameJournalListenerType.State);
+    if IsDefined(journalManager) && IsDefined(gameSystem) {
+        journalManager.UnregisterScriptCallback(gameSystem, n"HandleJournalStateChange");
+        journalManager.RegisterScriptCallback(gameSystem, n"HandleJournalStateChange", gameJournalListenerType.State);
     }
     
     return result;
