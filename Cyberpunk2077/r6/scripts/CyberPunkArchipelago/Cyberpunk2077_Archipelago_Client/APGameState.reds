@@ -31,8 +31,21 @@ public class APGameState extends ScriptableService {
     // This matches Python's len(received_items) counting for SYNC_COMPLETE
     public let totalNetworkItemsReceived: Int32;
 
-    private func OnAttach() -> Void {
-        this.items = new APItemList();
+    // True while a post-spawn/connect item resync is in flight (TCPClient is still draining the
+    // native item queue after a save load or fresh connect). District enforcement should not
+    // teleport the player while this is set, since the quest facts it reads may not reflect
+    // already-owned tokens yet - see APDistrictManager.HandleDistrictRestriction.
+    public let itemResyncPending: Bool;
+
+    // ScriptableService's lifecycle callback is OnLoad (runs once when the game starts, independent
+    // of save load/unload) - NOT OnAttach, which is a ScriptableSystem callback for save-bound
+    // singletons. Using OnAttach here meant this never ran, so `items` stayed undefined and every
+    // SyncData() call after a save reload silently aborted with "item list not available",
+    // preventing already-owned district tokens from being re-applied and causing softlocks.
+    private func OnLoad() -> Void {
+        if !IsDefined(this.items) {
+            this.items = new APItemList();
+        }
         APLogger.LogInfo("Cyberpunk 2077 Archipelago Game State Ready");
     }
 
@@ -47,8 +60,22 @@ public class APGameState extends ScriptableService {
 
     // ===== SIMPLE GETTERS/SETTERS ONLY =====
 
+    // Lazy-initializes `items` as a defensive fallback in case this is ever called before OnLoad
+    // has run, so callers never have to null-check the result.
     public func GetItems() -> ref<APItemList> {
+        if !IsDefined(this.items) {
+            APLogger.LogDebug("APGameState: Lazy-creating item list");
+            this.items = new APItemList();
+        }
         return this.items;
+    }
+
+    public func IsItemResyncPending() -> Bool {
+        return this.itemResyncPending;
+    }
+
+    public func SetItemResyncPending(value: Bool) -> Void {
+        this.itemResyncPending = value;
     }
 
     public func DiedFromDeathLink() -> Void {

@@ -2,8 +2,10 @@ module Archipelago
 
 public class APWeaponRestrictionEnforcer extends ScriptableService {
 
-    private func OnAttach() -> Void {
-        APLogger.LogInfo("APWeaponRestrictionEnforcer attached and ready");
+    // ScriptableService's lifecycle callback is OnLoad, not OnAttach (that's for ScriptableSystem) -
+    // see APGameState.OnLoad for details on why this matters.
+    private func OnLoad() -> Void {
+        APLogger.LogInfo("APWeaponRestrictionEnforcer loaded and ready");
     }
 
     // This function is called by the game's equipment system when checking if a weapon can be equipped
