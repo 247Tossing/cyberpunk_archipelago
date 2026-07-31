@@ -76,6 +76,18 @@ public class APDistrictManager extends ScriptableSystem {
             return;
         }
 
+        // Don't teleport while a post-spawn/connect item resync is still draining - the quest facts
+        // HasQuestKey reads below may not yet reflect district tokens the player already owns (see
+        // APGameState.itemResyncPending / TCPClient.ArmItemResyncPending). This is what caused the
+        // softlock: SyncData ran with an empty/incomplete item list right after a save reload, and
+        // entering a district before the AP item backlog finished replaying got the player kicked
+        // out of a district they actually owned the token for.
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if IsDefined(APGameState) && APGameState.IsItemResyncPending() {
+            APLogger.LogInfo("APDistrictManager: Deferring district enforcement - item resync still in progress");
+            return;
+        }
+
         // Get the major district enum from the game's district string
         let district: APDistrict = this.districtEnforcer.GetMajorDistrict(districtString);
         let districtId: String = this.districtEnforcer.ParseEnumToDistrictID(district);

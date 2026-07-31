@@ -12,6 +12,12 @@ public class TCPClient extends ScriptableService {
     private let lastGameSystemAvailableLogged: Bool = false;
     private let hasLoggedGameSystemAvailability: Bool = false;
 
+    // Settle-tracking for APGameState.itemResyncPending (see ArmItemResyncPending). Counts Pump
+    // ticks since pending was armed, and consecutive ticks with no item queue activity, so we know
+    // when the post-spawn/connect backlog has finished draining and district enforcement can resume.
+    private let ticksSincePendingSet: Int32 = 0;
+    private let emptyPollStreakWhilePending: Int32 = 0;
+
     public func Configure(server: String, game: String, slot: String, pass: String) -> Void {
         this.serverAddress = server;
         this.gameName = game;
@@ -138,12 +144,41 @@ public class TCPClient extends ScriptableService {
     public func SendSyncCompleteResponse(currentCount: Int32) -> Void {
     }
 
+    // Marks a district-enforcement deferral window: APDistrictManager.HandleDistrictRestriction will
+    // not teleport the player while APGameState.itemResyncPending is set, since quest facts read
+    // during this window may not yet reflect tokens the player already owns (the native item queue
+    // is still being drained by Pump after a save load or fresh connect). Resets the settle counters
+    // so Pump starts watching for the queue to go quiet again.
+    private func ArmItemResyncPending() -> Void {
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(gameState) {
+            return;
+        }
+        if !gameState.IsItemResyncPending() {
+            APLogger.LogDebug("TCPClient: Arming item resync pending - deferring district enforcement until item queue settles");
+        }
+        gameState.SetItemResyncPending(true);
+        this.ticksSincePendingSet = 0;
+        this.emptyPollStreakWhilePending = 0;
+    }
+
+    // Called once per spawn (from APGameSystem's OnMakePlayerVisibleAfterSpawn hook) so enforcement
+    // is deferred as soon as possible after a save load, before any DistrictEnteredEvent can fire.
+    public func OnPlayerSpawned() -> Void {
+        if this.IsConnected() {
+            this.ArmItemResyncPending();
+        }
+    }
+
     public func Pump() -> Void {
+        // Fetched once up front and reused for both the slot-config mirroring below and the
+        // item-resync-pending settle tracking at the end of this function.
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+
         // Apply slot config received from the server (e.g. district restriction).
         // The native bridge captures restrict_by_major_district from the Connected
         // packet's slot_data; mirror it into APGameState so enforcement can read it.
         if this.IsConnected() {
-            let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
             if IsDefined(gameState) {
                 let districtRestrictionChanged: Bool = gameState.SetRestrictByMajorDistrict(AP_GetRestrictByMajorDistrict());
                 if districtRestrictionChanged {
@@ -183,15 +218,23 @@ public class TCPClient extends ScriptableService {
             APLogger.LogDebug(s"TCPClient.Pump: APGameSystem availability changed -> \(gameSystemAvailable)");
             if !gameSystemAvailable {
                 APLogger.LogDebug("TCPClient.Pump: item queue will not be polled/drained until a save is loaded");
+            } else if this.IsConnected() {
+                // The system can become available without a fresh spawn callback (e.g. it attaches
+                // right as Pump runs). Defer enforcement here too, same as OnPlayerSpawned.
+                APLogger.LogDebug("TCPClient.Pump: APGameSystem became available while connected - deferring district enforcement until item queue settles");
+                this.ArmItemResyncPending();
             }
             this.lastGameSystemAvailableLogged = gameSystemAvailable;
             this.hasLoggedGameSystemAvailability = true;
         }
+
+        let itemAppliedThisTick: Bool = false;
         if IsDefined(gameSystem) {
             let nextItemId: Int64 = AP_PollItemQueue();
             if nextItemId >= 0l {
                 let itemId: String = APNativeMappings.ResolveItemId(nextItemId);
                 if StrLen(itemId) > 0 {
+                    itemAppliedThisTick = true;
                     let networkIndex: Int32 = AP_GetPolledItemNetworkIndex();
                     let inventoryHandler: ref<APInventoryHandler> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
                     let shouldGrant: Bool = true;
@@ -213,7 +256,6 @@ public class TCPClient extends ScriptableService {
                         if networkIndex < lastProcessedIndex {
                             shouldGrant = false;
                             APLogger.LogDebug(s"TCPClient.Pump: '\(itemId)' networkIndex(\(networkIndex)) < lastProcessedIndex(\(lastProcessedIndex)) - routing through HandleItemSync (resync)");
-                            let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
                             if IsDefined(gameState) {
                                 gameSystem.HandleItemSync(itemId, gameState);
                             }
@@ -229,6 +271,33 @@ public class TCPClient extends ScriptableService {
                     }
                 } else {
                     APLogger.LogDebug(s"TCPClient: No item mapping for AP item ID \(ToString(nextItemId))");
+                }
+            }
+        }
+
+        // Settle tracking for APGameState.itemResyncPending (see ArmItemResyncPending). Once the
+        // item queue has gone quiet for a bit (or a hard timeout elapses as a safety net), re-run
+        // SyncData once more to catch anything the backlog just delivered, then let district
+        // enforcement resume.
+        if IsDefined(gameState) && gameState.IsItemResyncPending() {
+            this.ticksSincePendingSet += 1;
+            if itemAppliedThisTick {
+                this.emptyPollStreakWhilePending = 0;
+            } else {
+                this.emptyPollStreakWhilePending += 1;
+            }
+
+            let emptyPollSettleThreshold: Int32 = 40; // ~2s of no new items at ~20 Pump ticks/sec
+            let pendingHardTimeoutTicks: Int32 = 600; // ~30s safety net so enforcement can't stay off forever
+            if this.emptyPollStreakWhilePending >= emptyPollSettleThreshold || this.ticksSincePendingSet >= pendingHardTimeoutTicks {
+                APLogger.LogInfo(
+                    s"TCPClient.Pump: item queue settled (emptyPollStreak=\(this.emptyPollStreakWhilePending), ticksSincePending=\(this.ticksSincePendingSet)) - resuming district enforcement"
+                );
+                gameState.SetItemResyncPending(false);
+                this.ticksSincePendingSet = 0;
+                this.emptyPollStreakWhilePending = 0;
+                if IsDefined(gameSystem) {
+                    gameSystem.SyncData();
                 }
             }
         }
