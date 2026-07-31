@@ -17,7 +17,10 @@ local isOverlayOpen = false
 local connectionStatus = "DISCONNECTED"
 local statusMessage = "Not connected"
 local connectAttemptStartedAt = nil
-local connectTimeoutSeconds = 10
+-- Must comfortably exceed the native retry/SSL-fallback window (wss:// attempt, a few retries,
+-- then ws:// fallback) so a transient errno-0 "Connect error: Success" during that window doesn't
+-- get read as a final failure before the native layer has a chance to recover.
+local connectTimeoutSeconds = 30
 
 local pumpAccumulator = 0.0
 local pumpIntervalSeconds = 0.05
@@ -261,22 +264,25 @@ local function updateConnectionStatus(apService)
     end
 
     if connectionStatus == "CONNECTING" then
-        if lastConnectionError ~= "" then
+        -- Do NOT treat a non-empty lastConnectionError as final here. The native layer reports
+        -- transient websocket errors (including a misleading errno-0 "Connect error: Success")
+        -- while it is still retrying / falling back from wss:// to ws://, and status stays
+        -- "refused" (handled above) or times out (handled below) once the attempt truly fails.
+        -- Bailing out on the first transient error message previously caused the connection to
+        -- appear permanently "DISCONNECTED - ... Connect error: Success" even when the native
+        -- retry/fallback would have succeeded shortly after.
+        local elapsedSeconds = connectAttemptStartedAt and (os.clock() - connectAttemptStartedAt) or 0
+        if elapsedSeconds >= connectTimeoutSeconds then
+            pcall(function()
+                apService:DisconnectFromCET()
+            end)
             connectionStatus = "DISCONNECTED"
             connectAttemptStartedAt = nil
-            statusMessage = lastConnectionError
+            statusMessage = lastConnectionError ~= "" and lastConnectionError or "Connection timed out. Verify host, port, and slot."
+        elseif lastConnectionError ~= "" then
+            statusMessage = "Connecting... (" .. lastConnectionError .. ")"
         else
-            local elapsedSeconds = connectAttemptStartedAt and (os.clock() - connectAttemptStartedAt) or 0
-            if elapsedSeconds >= connectTimeoutSeconds then
-                pcall(function()
-                    apService:DisconnectFromCET()
-                end)
-                connectionStatus = "DISCONNECTED"
-                connectAttemptStartedAt = nil
-                statusMessage = "Connection timed out. Verify host, port, and slot."
-            else
-                statusMessage = statusText ~= "" and statusText or "Connecting..."
-            end
+            statusMessage = statusText ~= "" and statusText or "Connecting..."
         end
         return
     end
