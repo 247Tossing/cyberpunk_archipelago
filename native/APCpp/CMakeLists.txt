@@ -18,15 +18,12 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 
-# Enable TLS. On Windows, build mbedTLS
+# Enable TLS. OpenSSL backend is intentionally disabled for release stability.
+# Always force IXWebSocket/APCpp onto bundled mbedTLS so produced binaries do
+# not rely on external OpenSSL runtime installs.
 set(USE_TLS ON CACHE BOOL "Enable TLS support" FORCE)
-# OpenSSL backend is intentionally disabled for release stability.
-# Always force IXWebSocket/APCpp onto bundled mbedTLS so produced binaries
-# do not rely on external OpenSSL runtime installs.
-set(USE_MBED_TLS ON)
-set(USE_MBED_TLS ON CACHE BOOL "" FORCE)
-set(USE_OPEN_SSL OFF)
-set(USE_OPEN_SSL OFF CACHE BOOL "" FORCE)
+set(USE_MBED_TLS ON CACHE BOOL "Use mbedTLS backend for TLS" FORCE)
+set(USE_OPEN_SSL OFF CACHE BOOL "Use OpenSSL backend for TLS" FORCE)
 
 if (USE_MBED_TLS)
     set(APCPP_MBEDTLS_VER 3.6.4)

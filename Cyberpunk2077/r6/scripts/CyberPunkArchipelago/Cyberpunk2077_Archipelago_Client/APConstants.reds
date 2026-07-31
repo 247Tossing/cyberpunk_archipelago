@@ -166,6 +166,9 @@ public class APConstants {
     public static func GetNGPlusActiveFact() -> String { return "ngplus_active"; }
     public static func GetNGPlusQ001StartFact() -> String { return "ngplus_q001_start"; }
     public static func GetNGPlusStandaloneQ101StartFact() -> String { return "ngplus_standalone_q101_start"; }
+    // Persists how many network items (by server-stream index) have already been applied via a live
+    // grant, so reconnects can distinguish "new item" from "already-applied item being resent" and
+    // avoid re-triggering one-shot effects (e.g. traps) or duplicate grants.
     public static func GetNetworkItemIndexFact() -> String { return "ap_network_item_index"; }
 
     // ===== JACKSON PLAINS RIPPERDOC (ALDECALDOS CAMP MOVE) =====

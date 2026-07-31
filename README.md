@@ -164,3 +164,7 @@ Depending on the nature of your issue, please include the following:
 - [Archipelago](https://archipelago.gg/) — Multiworld randomizer framework
 - [RedScript](https://github.com/jac3km4/redscript) — Cyberpunk 2077 scripting framework
 - [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) — Cyberpunk 2077 mod engine
+
+## Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the developer environment and contribution guide.
