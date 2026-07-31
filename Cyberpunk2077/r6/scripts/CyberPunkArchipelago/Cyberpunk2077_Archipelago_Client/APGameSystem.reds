@@ -220,12 +220,52 @@ public class APGameSystem extends ScriptableSystem {
             return true;
         }
 
+        // Aldecaldos camp relocates to Jackson Plains once "Queen of the Highway" completes,
+        // making Stall 1 (pre-move camp ripperdoc) permanently unreachable. Release any
+        // unchecked Stall 1 vendor checks so vendor-sanity runs never get stuck on them.
+        if StrCmp(questId, APConstants.GetQueenOfTheHighwayQuestId()) == 0 && Equals(state, gameJournalEntryState.Succeeded) {
+            APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
+            APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks(this.GetGameInstance());
+            return true;
+        }
+
         if Equals(state, gameJournalEntryState.Succeeded) {
             APLogger.LogDebug(s"HandleJournalStateChange completion: questId=\(questId)");
             APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
         }
 
         return true;
+    }
+
+    // Aldecaldos camp relocates to Jackson Plains once "Queen of the Highway" completes,
+    // making Stall 1 (pre-move camp ripperdoc) permanently unreachable. Idempotent and
+    // safe to call from both the quest-completion hook and on spawn (e.g. after loading a
+    // save where the quest was already finished before the player reconnected) — only
+    // sends checks that are part of this run's vendor sanity stock and haven't already
+    // been sent, and no-ops entirely until the camp has actually moved.
+    public static func ReleaseJacksonPlainsRipperdocStall1Checks(game: GameInstance) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(game) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetTCPClientName()) as TCPClient;
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetAPGameStateName()) as APGameState;
+        if !IsDefined(questSystem) || !IsDefined(tcpService) || !IsDefined(gameState) {
+            return;
+        }
+        if !gameState.vendorSanityEnabled {
+            return;
+        }
+
+        let campMovedFact: CName = StringToName(s"ap_\(APConstants.GetQueenOfTheHighwayQuestId())");
+        if questSystem.GetFact(campMovedFact) < 1 {
+            // Camp hasn't moved yet — Stall 1 is still reachable normally.
+            return;
+        }
+
+        let locationIds: array<String> = APConstants.GetJacksonPlainsRipperdocStall1LocationIds();
+        for locationId in locationIds {
+            if gameState.IsVendorCheckInRun(locationId) {
+                APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+            }
+        }
     }
 
     //Progressive Items
@@ -487,6 +527,7 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
         APNGPlusBridge.TryReleasePrologueChecksOnSpawn(GetGameInstance());
+        APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks(GetGameInstance());
         APGameSystem.SendSyncChecks();
 
         // Register the Archipelago phone contact on every spawn
