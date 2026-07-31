@@ -123,7 +123,7 @@ Logs: `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
 Open an [issue](https://github.com/247Tossing/cyberpunk_archipelago/issues/new/choose) with:
 
 1. `spoiler.txt` from generation
-2. CET log (`scripting.log`)
+2. CET logs (`scripting.log`, `gamelog.log`)
 3. Archipelago server log (if local)
 4. Steps to reproduce
 
