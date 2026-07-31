@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, TypeAlias
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
-from .locations import location_table, LocationCategory
+from .locations import location_table, LocationCategory, JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS
 from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc
 
 if TYPE_CHECKING:
@@ -201,6 +201,13 @@ def _get_vendor_location_prerequisites(world: "Cyberpunk2077World") -> dict[str,
         loc_data = location_table[internal_key]
         subtype = loc_data.vendor_subtype
         if subtype and not subtype_option_map.get(subtype):
+            continue
+        # Jackson Plains Ripperdoc (Stall 2) only exists post-camp-move, which requires
+        # completing Panam's side-quest chain (capstone "Queen of the Highway"). It is only
+        # in the pool when side quests are enabled (see regions.py), so this edge is inert
+        # otherwise.
+        if internal_key in JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS:
+            edges[loc_data.display_name] = ("Prologue - The Ripperdoc", "Queen of the Highway")
             continue
         edges[loc_data.display_name] = "Prologue - The Ripperdoc"
     return edges

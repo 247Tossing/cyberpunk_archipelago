@@ -168,6 +168,19 @@ public class APConstants {
     public static func GetNGPlusStandaloneQ101StartFact() -> String { return "ngplus_standalone_q101_start"; }
     public static func GetNetworkItemIndexFact() -> String { return "ap_network_item_index"; }
 
+    // ===== JACKSON PLAINS RIPPERDOC (ALDECALDOS CAMP MOVE) =====
+    // The Aldecaldos camp relocates within Jackson Plains once Panam's side-quest chain
+    // finishes at this capstone quest. Stall 1 is the pre-move camp ripperdoc and becomes
+    // permanently unreachable once the camp moves; see APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks.
+    public static func GetQueenOfTheHighwayQuestId() -> String { return "sq027_02_raffen_shiv_attack"; }
+    public static func GetJacksonPlainsRipperdocStall1LocationIds() -> array<String> {
+        let locationIds: array<String>;
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_1");
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_2");
+        ArrayPush(locationIds, "VendorCheck_BlsInaSe1Ripperdoc01_3");
+        return locationIds;
+    }
+
     // ===== SERVICE NAMES =====
     // CNames for retrieving services from the game engine
     public static func GetAPGameSystemName() -> CName { return n"Archipelago.APGameSystem"; }

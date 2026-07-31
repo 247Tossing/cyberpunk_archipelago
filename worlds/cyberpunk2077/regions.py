@@ -4,7 +4,7 @@ Cyberpunk 2077 Region Definitions
 
 from typing import Dict, TYPE_CHECKING
 from BaseClasses import Region, Entrance, LocationProgressType
-from .locations import Cyberpunk2077Location, location_table, LocationCategory
+from .locations import Cyberpunk2077Location, location_table, LocationCategory, JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS
 from .options import (
     has_effective_phantom_liberty_dlc,
     is_goal_all_side_quests,
@@ -366,6 +366,13 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
             }
             subtype = location_data.vendor_subtype
             if subtype and not subtype_option_map.get(subtype):
+                continue
+            # Jackson Plains Ripperdoc (Stall 2) is the post-camp-move Aldecaldos
+            # ripperdoc: it only exists once Panam's side-quest chain has relocated
+            # the camp. Without side quests in the pool there is no way to gate it
+            # sanely, so it must not be populated at all (see rules.py for the
+            # Queen of the Highway gate applied when side quests are enabled).
+            if location_name in JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS and not side_quests_enabled:
                 continue
 
         # Skip DLC locations if the player didn't enable them
