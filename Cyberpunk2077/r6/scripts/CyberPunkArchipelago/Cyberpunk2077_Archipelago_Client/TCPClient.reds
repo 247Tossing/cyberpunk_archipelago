@@ -7,6 +7,10 @@ public class TCPClient extends ScriptableService {
     private let password: String = "";
     private let initialized: Bool = false;
     private let lastConnectionError: String = "";
+    // Tracks APGameSystem availability across Pump ticks so we can log only on transitions
+    // (Pump runs ~20x/sec, so logging every tick would flood scripting.log).
+    private let lastGameSystemAvailableLogged: Bool = false;
+    private let hasLoggedGameSystemAvailability: Bool = false;
 
     public func Configure(server: String, game: String, slot: String, pass: String) -> Void {
         this.serverAddress = server;
@@ -141,7 +145,10 @@ public class TCPClient extends ScriptableService {
         if this.IsConnected() {
             let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
             if IsDefined(gameState) {
-                gameState.SetRestrictByMajorDistrict(AP_GetRestrictByMajorDistrict());
+                let districtRestrictionChanged: Bool = gameState.SetRestrictByMajorDistrict(AP_GetRestrictByMajorDistrict());
+                if districtRestrictionChanged {
+                    APLogger.LogInfo(s"District restriction config received: restrictByMajorDistrict=\(gameState.restrictByMajorDistrict)");
+                }
                 let weaponConfigChanged: Bool = gameState.SetWeaponRestrictionConfig(
                     AP_GetWeaponRestrictionType(),
                     AP_GetWeaponRestrictPistol(),
@@ -168,6 +175,15 @@ public class TCPClient extends ScriptableService {
         // apply it, permanently losing it even though the server considers it delivered. Leaving it
         // queued here means it's applied as soon as a save is loaded and Pump runs again.
         let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+        let gameSystemAvailable: Bool = IsDefined(gameSystem);
+        if !this.hasLoggedGameSystemAvailability || gameSystemAvailable != this.lastGameSystemAvailableLogged {
+            APLogger.LogDebug(s"TCPClient.Pump: APGameSystem availability changed -> \(gameSystemAvailable)");
+            if !gameSystemAvailable {
+                APLogger.LogDebug("TCPClient.Pump: item queue will not be polled/drained until a save is loaded");
+            }
+            this.lastGameSystemAvailableLogged = gameSystemAvailable;
+            this.hasLoggedGameSystemAvailability = true;
+        }
         if IsDefined(gameSystem) {
             let nextItemId: Int64 = AP_PollItemQueue();
             if nextItemId >= 0l {
@@ -176,6 +192,13 @@ public class TCPClient extends ScriptableService {
                     let networkIndex: Int32 = AP_GetPolledItemNetworkIndex();
                     let inventoryHandler: ref<APInventoryHandler> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
                     let shouldGrant: Bool = true;
+                    let lastProcessedIndexForLog: Int32 = -1;
+                    if IsDefined(inventoryHandler) {
+                        lastProcessedIndexForLog = inventoryHandler.GetLastNetworkItemIndex();
+                    }
+                    APLogger.LogDebug(
+                        s"TCPClient.Pump: polled AP item id=\(ToString(nextItemId)) resolvedItemId='\(itemId)' networkIndex=\(networkIndex) lastProcessedIndex=\(lastProcessedIndexForLog)"
+                    );
 
                     // If this item's network index is older than the last one we already applied
                     // live, the server is resending something we've already processed (typically on
@@ -186,6 +209,7 @@ public class TCPClient extends ScriptableService {
                         let lastProcessedIndex: Int32 = inventoryHandler.GetLastNetworkItemIndex();
                         if networkIndex < lastProcessedIndex {
                             shouldGrant = false;
+                            APLogger.LogDebug(s"TCPClient.Pump: '\(itemId)' networkIndex(\(networkIndex)) < lastProcessedIndex(\(lastProcessedIndex)) - routing through HandleItemSync (resync)");
                             let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
                             if IsDefined(gameState) {
                                 gameSystem.HandleItemSync(itemId, gameState);
@@ -194,6 +218,7 @@ public class TCPClient extends ScriptableService {
                     }
 
                     if shouldGrant {
+                        APLogger.LogDebug(s"TCPClient.Pump: '\(itemId)' routing through HandleItemReceived (live grant)");
                         gameSystem.HandleItemReceived(itemId);
                         if networkIndex >= 0 && IsDefined(inventoryHandler) {
                             inventoryHandler.SetLastNetworkItemIndex(networkIndex + 1);

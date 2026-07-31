@@ -19,6 +19,7 @@ public class APDistrictManager extends ScriptableSystem {
     // Check if a district is unlocked 
     public func IsDistrictUnlocked(districtId: String) -> Bool {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        APLogger.LogDebug(s"IsDistrictUnlocked('\(districtId)'): APGameStateDefined=\(IsDefined(APGameState)), restrictByMajorDistrict=\(IsDefined(APGameState) && APGameState.restrictByMajorDistrict)");
         if !IsDefined(APGameState) || !APGameState.restrictByMajorDistrict {
             APLogger.LogDebug("District Restriction Disabled: All districts are considered unlocked");
             return true;
@@ -29,13 +30,17 @@ public class APDistrictManager extends ScriptableSystem {
             return false;
         }
         if StrCmp(districtId, "unknown") == 0 {
+            APLogger.LogDebug(s"IsDistrictUnlocked('\(districtId)'): 'unknown' district - treating as unlocked");
             return true;
         }
-        return this.questHandler.HasQuestKey(districtId);
+        let hasKey: Bool = this.questHandler.HasQuestKey(districtId);
+        APLogger.LogDebug(s"IsDistrictUnlocked('\(districtId)'): HasQuestKey=\(hasKey)");
+        return hasKey;
     }
 
     // Unlock a district
     public func UnlockDistrict(districtId: String) -> Void {
+        APLogger.LogDebug(s"UnlockDistrict('\(districtId)') called - questHandlerDefined=\(IsDefined(this.questHandler))");
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return;
@@ -53,6 +58,7 @@ public class APDistrictManager extends ScriptableSystem {
 
     // Handle district restriction (called when player enters locked district)
     public func HandleDistrictRestriction(districtString: String) -> Void {
+        APLogger.LogDebug(s"HandleDistrictRestriction: rawDistrictString='\(districtString)' districtEnforcerDefined=\(IsDefined(this.districtEnforcer)) questHandlerDefined=\(IsDefined(this.questHandler))");
         if !IsDefined(this.districtEnforcer) {
             APLogger.LogDebug("APDistrictManager: District enforcer not initialized");
             return;
@@ -64,16 +70,21 @@ public class APDistrictManager extends ScriptableSystem {
         }
 
         // Don't enforce during lifepath intro
-        if !this.questHandler.IsPassedPrologue() {
+        let passedPrologue: Bool = this.questHandler.IsPassedPrologue();
+        APLogger.LogDebug(s"HandleDistrictRestriction: IsPassedPrologue=\(passedPrologue)");
+        if !passedPrologue {
             return;
         }
 
         // Get the major district enum from the game's district string
         let district: APDistrict = this.districtEnforcer.GetMajorDistrict(districtString);
         let districtId: String = this.districtEnforcer.ParseEnumToDistrictID(district);
+        APLogger.LogDebug(s"HandleDistrictRestriction: rawDistrictString='\(districtString)' -> APDistrict=\(district) -> districtId='\(districtId)'");
 
         // If district is unlocked, no need to teleport
-        if this.IsDistrictUnlocked(districtId) {
+        let unlocked: Bool = this.IsDistrictUnlocked(districtId);
+        APLogger.LogDebug(s"HandleDistrictRestriction: IsDistrictUnlocked('\(districtId)')=\(unlocked)");
+        if unlocked {
             return;
         }
 
@@ -93,7 +104,9 @@ public class APDistrictManager extends ScriptableSystem {
         }
 
         let currentPos: Vector4 = player.GetWorldPosition();
+        APLogger.LogDebug(s"TeleportToSafeZone: currentPos=(\(currentPos.X), \(currentPos.Y), \(currentPos.Z))");
         let nearestSafePoint: Vector4 = this.districtEnforcer.GetNearestSafePoint(currentPos);
+        APLogger.LogDebug(s"TeleportToSafeZone: nearestSafePoint=(\(nearestSafePoint.X), \(nearestSafePoint.Y), \(nearestSafePoint.Z))");
 
         // Set default rotation
         let targetRotation: EulerAngles = EulerAngles();

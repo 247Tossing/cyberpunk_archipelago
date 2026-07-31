@@ -72,16 +72,21 @@ public class APGameSystem extends ScriptableSystem {
             return;
         }
 
-        APLogger.LogInfo("Starting Item Sync");
+        APLogger.LogInfo(s"Starting Item Sync - \(ArraySize(gameStateItems.Items)) tracked item(s), restrictByMajorDistrict=\(APGameState.restrictByMajorDistrict)");
 
         for item in gameStateItems.Items { 
             // Try to get the item from the FactsDB
             let itemCountFromFact: Int32 = this.inventoryHandler.GetItemFactCount(item.itemID);
             let stateCount: Int32 = item.totalFromAP;
 
+            if APItemParser.IsDistrictToken(item.itemID) {
+                APLogger.LogDebug(s"SyncData: district token '\(item.itemID)' - factCount=\(itemCountFromFact), totalFromAP=\(stateCount)");
+            }
+
             // If state has more than local, give the difference to player
             if itemCountFromFact < stateCount {
                 let difference: Int32 = stateCount - itemCountFromFact;
+                APLogger.LogDebug(s"SyncData: '\(item.itemID)' factCount(\(itemCountFromFact)) < totalFromAP(\(stateCount)) - applying difference=\(difference)");
 
                 // Route to appropriate handler based on item type
                 if StrCmp(item.itemID, APConstants.GetMoneyItemId()) == 0 {
@@ -103,6 +108,7 @@ public class APGameSystem extends ScriptableSystem {
                 }
                 else if APItemParser.IsDistrictToken(item.itemID) {
                     // District unlock tokens (binary - just unlock)
+                    APLogger.LogDebug(s"SyncData: retrying HandleDistrictUnlock('\(item.itemID)')");
                     this.HandleDistrictUnlock(item.itemID);
                 }
                 else if APItemParser.IsWeaponAuthorization(item.itemID) {
@@ -123,6 +129,7 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func HandleDistrictRestriction(district: String) -> Void {
+        APLogger.LogDebug(s"APGameSystem: HandleDistrictRestriction('\(district)') - districtManager defined=\(IsDefined(this.districtManager))");
         if IsDefined(this.districtManager) {
             this.districtManager.HandleDistrictRestriction(district);
         } else {
@@ -131,6 +138,7 @@ public class APGameSystem extends ScriptableSystem {
     }
 
     public func HandleDistrictUnlock(district: String) -> Void {
+        APLogger.LogDebug(s"APGameSystem: HandleDistrictUnlock('\(district)') - districtManager defined=\(IsDefined(this.districtManager))");
         if IsDefined(this.districtManager) {
             this.districtManager.UnlockDistrict(district);
         } else {
@@ -145,8 +153,11 @@ public class APGameSystem extends ScriptableSystem {
 
     public func GetDistrictUnlockStatus(district: String) -> Bool {
         if IsDefined(this.districtManager) {
-            return this.districtManager.IsDistrictUnlocked(district);
+            let unlocked: Bool = this.districtManager.IsDistrictUnlocked(district);
+            APLogger.LogDebug(s"APGameSystem: GetDistrictUnlockStatus('\(district)')=\(unlocked)");
+            return unlocked;
         }
+        APLogger.LogDebug(s"APGameSystem: GetDistrictUnlockStatus('\(district)') - districtManager not available, returning false");
         return false;
     }
 
@@ -252,11 +263,14 @@ public class APGameSystem extends ScriptableSystem {
     // necessary - to reconcile here, since it recovers grants that never made it into a quest fact
     // the first time (e.g. the item arrived before the world/quest system was ready).
     public func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+        APLogger.LogDebug(s"HandleItemSync: item='\(item)' gameStateDefined=\(IsDefined(gameState))");
         if !IsDefined(gameState) || !IsDefined(gameState.items) {
+            APLogger.LogDebug("HandleItemSync: aborting - gameState or gameState.items not defined");
             return;
         }
 
         if !APItemParser.IsValidAPItem(item) {
+            APLogger.LogDebug(s"HandleItemSync: aborting - '\(item)' is not a valid AP item");
             return;
         }
 
@@ -288,6 +302,7 @@ public class APGameSystem extends ScriptableSystem {
         else if APItemParser.IsDistrictToken(item) {
             // Track district tokens so they can be re-synced on save load, and retry the unlock in
             // case the quest fact never got written the first time this item was received.
+            APLogger.LogDebug(s"HandleItemSync: district token '\(item)' - AddItem + retry HandleDistrictUnlock");
             gameState.items.AddItem(item, 1);
             this.HandleDistrictUnlock(item);
         }
@@ -300,8 +315,10 @@ public class APGameSystem extends ScriptableSystem {
 
     public func HandleItemReceived(item: String) -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        APLogger.LogDebug(s"HandleItemReceived: item='\(item)' gameStateDefined=\(IsDefined(APGameState))");
 
         if !APItemParser.IsValidAPItem(item) {
+            APLogger.LogDebug(s"HandleItemReceived: aborting - '\(item)' is not a valid AP item");
             return;
         }
 
@@ -347,6 +364,7 @@ public class APGameSystem extends ScriptableSystem {
             this.HandleProgressiveItem(item);
         }
         else if APItemParser.IsDistrictToken(item) {
+            APLogger.LogDebug(s"HandleItemReceived: district token '\(item)' - AddItem + HandleDistrictUnlock (live grant)");
             if IsDefined(APGameState.items) {
                 APGameState.items.AddItem(item, 1);
             }
@@ -389,10 +407,10 @@ public class APGameSystem extends ScriptableSystem {
 public final func Update(evt: ref<DistrictEnteredEvent>) -> Void {
     let districtString: String = TDBID.ToStringDEBUG(evt.district);
     let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+    APLogger.LogDebug(s"DistrictEnteredEvent fired: rawDistrict='\(districtString)' APGameSystemDefined=\(IsDefined(APGameSystem))");
     if IsDefined(APGameSystem) {
         APGameSystem.HandleDistrictRestriction(districtString);
     }
-    //APLogger.LogInfo(districtString);
 }
 
 // Making sure that the player is respawned before allowing another Deathlink call.
@@ -401,9 +419,9 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     let result = wrappedMethod(evt);
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
     let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
-    //APLogger.LogInfo( s"Character Visible");
+    APLogger.LogDebug(s"OnMakePlayerVisibleAfterSpawn: EndGracePeriodAfterSpawn fired - APGameStateDefined=\(IsDefined(APGameState)), APGameSystemDefined=\(IsDefined(APGameSystem))");
     if IsDefined(APGameState) {
-        //APLogger.LogInfo( "AP Game State Defined");
+        APLogger.LogDebug("OnSpawn: Running SyncData + SendSyncChecks");
         APGameState.HandlePlayerRespawn();
         APGameSystem.SyncData();
         APGameSystem.SendSyncChecks();

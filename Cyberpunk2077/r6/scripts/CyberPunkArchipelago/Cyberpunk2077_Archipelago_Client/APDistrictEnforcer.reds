@@ -63,8 +63,11 @@ public class APDistrictEnforcer extends ScriptableSystem {
         }
 
         for point in this.safePoints {
+            let candidateDistrictId: String = this.ParseEnumToDistrictID(point.District);
+            let candidateUnlocked: Bool = gameSystem.GetDistrictUnlockStatus(candidateDistrictId);
+            APLogger.LogDebug(s"GetNearestSafePoint: candidate district='\(candidateDistrictId)' unlocked=\(candidateUnlocked)");
             // Only consider unlocked districts
-            if gameSystem.GetDistrictUnlockStatus(this.ParseEnumToDistrictID(point.District)) {
+            if candidateUnlocked {
                 let distance: Float = Vector4.Distance(currentLocation, point.Position);
 
                 // If this is the first valid point, or closer than current best
@@ -73,6 +76,12 @@ public class APDistrictEnforcer extends ScriptableSystem {
                     bestDistance = distance;
                 }
             }
+        }
+
+        if bestDistance < 0.0 {
+            APLogger.LogWarning("GetNearestSafePoint: no unlocked safe points found - falling back to default Watson position");
+        } else {
+            APLogger.LogDebug(s"GetNearestSafePoint: chosen position=(\(decidedPosition.X), \(decidedPosition.Y), \(decidedPosition.Z)) distance=\(bestDistance)");
         }
 
         return decidedPosition;
