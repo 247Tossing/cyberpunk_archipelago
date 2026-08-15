@@ -51,7 +51,7 @@ These mods are **not** required but have been tested for compatibility and enhan
 
 ### Mod Installation Steps
 
-1. Download the latest release from [Releases](https://github.com/247Tossing/cyberpunk_archipelago/releases/tag/Latest)
+1. Download the `.apworld` and `CyberpunkArchipelagoMod` zip from [the latest GitHub release](https://github.com/247Tossing/cyberpunk_archipelago/releases/latest)
 2. Extract `CyberpunkArchipelagoMod.zip` to your Cyberpunk 2077 root folder (should contain `r6`, `bin`, and `Red4EXT` folders)
 3. Open the Archipelago Launcher and drag the `cyberpunk2077.apworld` file onto it
 4. **You MUST restart the launcher** before it will show up
