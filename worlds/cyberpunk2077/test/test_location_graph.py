@@ -65,6 +65,10 @@ class TestLocationGraph(unittest.TestCase):
         cycles = _find_cycles(self._edges_for_options({"completion_goal": 2}))
         self.assertFalse(cycles, f"Found cycles in PL-only prerequisites: {cycles}")
 
+    def test_mixed_dlc_goal_has_no_cycles(self) -> None:
+        cycles = _find_cycles(self._edges_for_options({"include_phantom_liberty_dlc": 1}))
+        self.assertFalse(cycles, f"Found cycles in mixed-DLC prerequisites: {cycles}")
+
     def test_prerequisite_targets_exist(self) -> None:
         multiworld = setup_multiworld([Cyberpunk2077World], options=[{}])
         world = multiworld.worlds[1]

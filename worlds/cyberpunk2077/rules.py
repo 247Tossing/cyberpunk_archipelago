@@ -27,6 +27,15 @@ def any_of(*names: str) -> PrereqAny:
     return PrereqAny(tuple(names))
 
 
+# Firestarter splits the PL finale into Reed vs Songbird paths; only one branch is
+# playable per run, so "Who Wants to Live Forever" needs any one of the three splits.
+# Shared between the base (mixed DLC) and PL-only goal graphs.
+WHO_WANTS_TO_LIVE_FOREVER_PREREQUISITE: Prerequisite = any_of(
+    "PL - Split Quest 1",
+    "PL - Split Quest 2",
+    "PL - Split Quest 3",
+)
+
 # Overlay prerequisites used in normal (non-PL-only) goals.
 BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
     "Point of No Return - Nocturne Op55N1": (
@@ -35,32 +44,20 @@ BASE_LOCATION_PREREQUISITES: dict[str, Prerequisite] = {
         "Main - Search and Destroy",
     ),
     "Ending Reached": "Point of No Return - Nocturne Op55N1",
+    "Phantom Liberty - Who Wants to Live Forever": WHO_WANTS_TO_LIVE_FOREVER_PREREQUISITE,
 }
 
 # Side chains now live on LocationData.prerequisite and apply in all goals.
 SIDE_QUEST_GOAL_PREREQUISITES: dict[str, Prerequisite] = {}
 
-# Phantom Liberty-only questline requirements.
+# Phantom Liberty-only questline requirements. This overlays (rather than replaces)
+# the LocationData-derived chain: the PL-only pool has no base-game checks, so
+# "Phantom Liberty - Phantom Liberty" is re-gated on Lifepath Chosen instead of the
+# full wiki AND-list used in the base goal (see LocationData.prerequisite in
+# locations.py for the in-game requirements of q300).
 PHANTOM_LIBERTY_ONLY_PREREQUISITES: dict[str, Prerequisite] = {
     "Phantom Liberty - Phantom Liberty": "Lifepath Chosen",
-    "Phantom Liberty - Dog Eat Dog": "Phantom Liberty - Phantom Liberty",
-    "Phantom Liberty - Hole in the Sky": "Phantom Liberty - Dog Eat Dog",
-    "Phantom Liberty - Spider and the Fly": "Phantom Liberty - Hole in the Sky",
-    "Phantom Liberty - Lucretia My Reflection": "Phantom Liberty - Spider and the Fly",
-    "Phantom Liberty - The Damned": "Phantom Liberty - Lucretia My Reflection",
-    "Phantom Liberty - Get It Together": "Phantom Liberty - The Damned",
-    "Phantom Liberty - You Know My Name": "Phantom Liberty - Get It Together",
-    "Phantom Liberty - Birds with Broken Wings": "Phantom Liberty - You Know My Name",
-    "Phantom Liberty - I've Seen That Face Before": "Phantom Liberty - Birds with Broken Wings",
-    "Phantom Liberty - Firestarter": "Phantom Liberty - I've Seen That Face Before",
-    "PL - Split Quest 1": "Phantom Liberty - Firestarter",
-    "PL - Split Quest 2": "Phantom Liberty - Firestarter",
-    "PL - Split Quest 3": "Phantom Liberty - Firestarter",
-    "Phantom Liberty - Who Wants to Live Forever": any_of(
-        "PL - Split Quest 1",
-        "PL - Split Quest 2",
-        "PL - Split Quest 3",
-    ),
+    "Phantom Liberty - Who Wants to Live Forever": WHO_WANTS_TO_LIVE_FOREVER_PREREQUISITE,
     "Ending Reached": "Phantom Liberty - Who Wants to Live Forever",
 }
 
@@ -79,7 +76,7 @@ def _collect_location_prerequisites() -> dict[str, Prerequisite]:
 LOCATION_PREREQUISITES: dict[str, dict[str, Prerequisite]] = {
     "base": {**_collect_location_prerequisites(), **BASE_LOCATION_PREREQUISITES},
     "all_side_quests": SIDE_QUEST_GOAL_PREREQUISITES,
-    "phantom_liberty_only": PHANTOM_LIBERTY_ONLY_PREREQUISITES,
+    "phantom_liberty_only": {**_collect_location_prerequisites(), **PHANTOM_LIBERTY_ONLY_PREREQUISITES},
 }
 
 # Internal ``location_table`` keys ``VendorCheck_*`` (sorted for stable slot_data order).

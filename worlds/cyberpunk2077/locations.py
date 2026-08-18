@@ -204,22 +204,44 @@ location_table: Dict[str, LocationData] = {
     # Phantom Liberty Checks
     # (Only applicable w/DLC)
     # =====================================
-    "q300_phantom_liberty": LocationData(display_name="Phantom Liberty - Phantom Liberty", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q301_crash": LocationData(display_name="Phantom Liberty - Dog Eat Dog", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
-    "q301_finding_myers": LocationData(display_name="Phantom Liberty - Hole in the Sky", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q301_q302_rescue_myers": LocationData(display_name="Phantom Liberty - Spider and the Fly", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q302_reed": LocationData(display_name="Phantom Liberty - Lucretia My Reflection", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
-    "q303_baron": LocationData(display_name="Phantom Liberty - The Damned", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q303_hands": LocationData(display_name="Phantom Liberty - Get It Together", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q303_songbird": LocationData(display_name="Phantom Liberty - You Know My Name", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q304_stadium": LocationData(display_name="Phantom Liberty - Birds with Broken Wings", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q304_netrunners": LocationData(display_name="Phantom Liberty - I've Seen That Face Before", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
-    "q304_deal": LocationData(display_name="Phantom Liberty - Firestarter", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
+    # Phantom Liberty (q300) is a Night City checklist quest; per the wiki
+    # (https://cyberpunk.fandom.com/wiki/Phantom_Liberty_(quest)) it only completes
+    # once ALL of the following main jobs are finished:
+    "q300_phantom_liberty": LocationData(
+        display_name="Phantom Liberty - Phantom Liberty",
+        regions=("Dogtown",),
+        category=LocationCategory.DLC_MAIN,
+        dlc_only=True,
+        prerequisite=(
+            "Prologue - The Heist",
+            "Main - Playing for Time",
+            "Main - Automatic Love",
+            "Main - The Space in Between",
+            "Main - Disasterpiece",
+            "Main - Double Life",
+            "Main - M'ap Tann Pèlen",
+            "Main - I Walk the Line",
+            "Main - Transmission",
+            "Main - Never Fade Away",
+        ),
+    ),
+    "q301_crash": LocationData(display_name="Phantom Liberty - Dog Eat Dog", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY, prerequisite="Phantom Liberty - Phantom Liberty"),
+    "q301_finding_myers": LocationData(display_name="Phantom Liberty - Hole in the Sky", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - Dog Eat Dog"),
+    "q301_q302_rescue_myers": LocationData(display_name="Phantom Liberty - Spider and the Fly", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - Hole in the Sky"),
+    "q302_reed": LocationData(display_name="Phantom Liberty - Lucretia My Reflection", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY, prerequisite="Phantom Liberty - Spider and the Fly"),
+    "q303_baron": LocationData(display_name="Phantom Liberty - The Damned", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - Lucretia My Reflection"),
+    "q303_hands": LocationData(display_name="Phantom Liberty - Get It Together", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - The Damned"),
+    "q303_songbird": LocationData(display_name="Phantom Liberty - You Know My Name", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - Get It Together"),
+    "q304_stadium": LocationData(display_name="Phantom Liberty - Birds with Broken Wings", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - You Know My Name"),
+    "q304_netrunners": LocationData(display_name="Phantom Liberty - I've Seen That Face Before", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, prerequisite="Phantom Liberty - Birds with Broken Wings"),
+    "q304_deal": LocationData(display_name="Phantom Liberty - Firestarter", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY, prerequisite="Phantom Liberty - I've Seen That Face Before"),
     # Firestarter splits the finale into Reed vs Songbird paths; only one branch is
     # playable per run. Three abstract checks cover both paths (see APQuestLocationLookup).
-    "pl_split_quest_1": LocationData(display_name="PL - Split Quest 1", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "pl_split_quest_2": LocationData(display_name="PL - Split Quest 2", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED),
-    "pl_split_quest_3": LocationData(display_name="PL - Split Quest 3", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY),
+    "pl_split_quest_1": LocationData(display_name="PL - Split Quest 1", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED, prerequisite="Phantom Liberty - Firestarter"),
+    "pl_split_quest_2": LocationData(display_name="PL - Split Quest 2", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.EXCLUDED, prerequisite="Phantom Liberty - Firestarter"),
+    "pl_split_quest_3": LocationData(display_name="PL - Split Quest 3", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True, progress_type=LocationProgressType.PRIORITY, prerequisite="Phantom Liberty - Firestarter"),
+    # "Who Wants to Live Forever" requires either finale path; the any_of(...) overlay
+    # is applied in rules.py since PrereqAny cannot be imported here without a cycle.
     "q307_before_tomorrow": LocationData(display_name="Phantom Liberty - Who Wants to Live Forever", regions=("Dogtown",), category=LocationCategory.DLC_MAIN, dlc_only=True),
 
     # =================================
