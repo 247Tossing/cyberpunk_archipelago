@@ -932,7 +932,7 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
             continue  # Skip event locations
 
         for region_name in loc_data.regions:
-            regions.setdefault(region_name, []).append(loc_name)
+            regions.setdefault(region_name, []).append(loc_data.display_name)
 
     # Add all region groups
     groups.update(regions)
@@ -957,29 +957,29 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
 
         # Group by category
         if loc_data.category == LocationCategory.MAIN_QUEST:
-            main_quests.append(loc_name)
+            main_quests.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.SIDE_QUEST:
-            side_quests.append(loc_name)
+            side_quests.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.GIG:
-            gigs.append(loc_name)
+            gigs.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.CYBERPSYCHO:
-            cyberpsychos.append(loc_name)
+            cyberpsychos.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.NCPD_HUSTLE:
-            ncpd_hustles.append(loc_name)
+            ncpd_hustles.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.MINOR_QUEST:
-            minor_quests.append(loc_name)
+            minor_quests.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.ENDING:
-            endings.append(loc_name)
+            endings.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.EPILOGUE:
-            epilogues.append(loc_name)
+            epilogues.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.DLC_MAIN:
-            dlc_main.append(loc_name)
+            dlc_main.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.DLC_SIDE:
-            dlc_side.append(loc_name)
+            dlc_side.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.VENDOR:
-            vendor.append(loc_name)
+            vendor.append(loc_data.display_name)
         elif loc_data.category == LocationCategory.MISC:
-            misc.append(loc_name)
+            misc.append(loc_data.display_name)
 
     # Add category groups only if they have locations
     if main_quests:
