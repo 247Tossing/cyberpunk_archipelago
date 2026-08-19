@@ -133,11 +133,17 @@ class DistrictRestrictionType(Choice):
     Choose the major-district restriction behavior:
     - None: District tokens are not placed and the client will not enforce district locks.
     - Require District Token: Selected districts require their access token.
+
+    Defaults to None: gating every major district behind its own always-required
+    Access Token can leave too few always-reachable locations to place all of
+    those tokens, causing generation failures. Opt in (and consider disabling
+    a few districts below) once you've verified generation succeeds for your
+    other settings.
     """
     display_name = "District Restriction Type"
     option_none = 0
     option_require_district_token = 1
-    default = 1
+    default = 0
 
 class RestrictWestbrook(Toggle):
     """Gate Westbrook behind its Access Token when District Restriction Type is Require District Token."""
