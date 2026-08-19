@@ -119,7 +119,7 @@ Two GitHub Actions workflows exercise `worlds/cyberpunk2077` against a real Arch
 
 Per the official guidance, fuzz-style random generation runs as part of the **release** workflow rather than every PR; failures found by fuzzing should get a small, targeted `test_*.py` reproducer under `worlds/cyberpunk2077/test/`.
 
-> **Known issue:** with all district-restriction options at their defaults, generation can fail to place every major-district Access Token (`Fill.FillError`) because too few always-reachable locations exist relative to the number of always-gated districts. This is the same fragility noted in the [README](README.md) and is tracked as a follow-up; it is not something the CI wiring itself introduced.
+> **Note:** District Restriction Type defaults to **None**. Gating every major district behind its own always-required Access Token left too few always-reachable locations to place all of those tokens, causing `Fill.FillError` during generation. If you opt into `Require District Token`, consider disabling a few districts (`district_restrict_*` options) unless you've verified generation still succeeds with all of them enabled.
 
 ### Running unit tests locally
 
