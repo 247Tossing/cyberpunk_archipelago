@@ -1,0 +1,28 @@
+# Runs the cyberpunk2077 apworld's Archipelago unit tests (WorldTestBase-based
+# tests under worlds/cyberpunk2077/test/) against a pinned Archipelago release.
+# Uses Eijebong/ap-actions, the community-maintained CI wrapper for the
+# official Archipelago unit-test runner (see docs/tests.md upstream).
+
+name: APWorld tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: Eijebong/ap-actions/ap-tests@main
+        with:
+          apworld-path: worlds/cyberpunk2077
+          # Matches minimum_ap_version in worlds/cyberpunk2077/archipelago.json.
+          ap-version: "0.6.6"
+          python-version: "3.12"
