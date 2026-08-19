@@ -52,42 +52,52 @@ class WeaponRestrictionType(Choice):
     option_requireMultiworldItem = 2
 
 class RestrictPistols(Toggle):
+    """Restrict pistols according to Weapon Restriction Type."""
     display_name = "Restrict Pistols"
     default = 0
 
 class RestrictMelee(Toggle):
+    """Restrict melee weapons according to Weapon Restriction Type."""
     display_name = "Restrict Melee"
     default = 0
 
 class RestrictShotgun(Toggle):
+    """Restrict shotguns according to Weapon Restriction Type."""
     display_name = "Restrict Shotgun"
     default = 0
 
 class RestrictSniper(Toggle):
+    """Restrict sniper rifles according to Weapon Restriction Type."""
     display_name = "Restrict Sniper Rifles"
     default = 0
 
 class RestrictRifle(Toggle):
+    """Restrict rifles according to Weapon Restriction Type."""
     display_name = "Restrict Rifle"
     default = 0
 
 class RestrictLMG(Toggle):
+    """Restrict LMGs according to Weapon Restriction Type."""
     display_name = "Restrict LMG"
     default = 0
 
 class RestrictSMG(Toggle):
+    """Restrict SMGs according to Weapon Restriction Type."""
     display_name = "Restrict SMG"
     default = 0
 
 class IncludeGigs(Toggle):
+    """Include gig checks in the location pool."""
     display_name = "Include Gigs"
     default = 1
 
 class IncludeTarot(Toggle):
+    """Include tarot card checks in the location pool."""
     display_name = "Include Tarot"
     default = 1
 
 class IncludeCyberPsychoSighting(Toggle):
+    """Include cyberpsycho sighting checks in the location pool."""
     display_name = "Include Cyber Psycho Sighting"
     default = 1
 
@@ -114,6 +124,7 @@ class IncludeNCPDHustles(Toggle):
     visibility = Visibility.none  # Temporary
 
 class IncludeMinorQuests(Toggle):
+    """Include minor quest checks in the location pool."""
     display_name = "Include Minor Quests"
     default = 1
 
@@ -122,37 +133,53 @@ class DistrictRestrictionType(Choice):
     Choose the major-district restriction behavior:
     - None: District tokens are not placed and the client will not enforce district locks.
     - Require District Token: Selected districts require their access token.
+
+    Defaults to None: gating every major district behind its own always-required
+    Access Token can leave too few always-reachable locations to place all of
+    those tokens, causing generation failures. Opt in (and consider disabling
+    a few districts below) once you've verified generation succeeds for your
+    other settings.
     """
     display_name = "District Restriction Type"
     option_none = 0
     option_require_district_token = 1
-    default = 1
+    default = 0
 
 class RestrictWestbrook(Toggle):
+    """Gate Westbrook behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict Westbrook"
     default = 1
 
 class RestrictCityCenter(Toggle):
+    """Gate City Center behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict City Center"
     default = 1
 
 class RestrictHeywood(Toggle):
+    """Gate Heywood behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict Heywood"
     default = 1
 
 class RestrictSantoDomingo(Toggle):
+    """Gate Santo Domingo behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict Santo Domingo"
     default = 1
 
 class RestrictPacifica(Toggle):
+    """Gate Pacifica behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict Pacifica"
     default = 1
 
 class RestrictBadlands(Toggle):
+    """Gate Badlands behind its Access Token when District Restriction Type is Require District Token."""
     display_name = "Restrict Badlands"
     default = 1
 
 class RestrictDogtown(Toggle):
+    """
+    Gate Dogtown behind its Access Token when District Restriction Type is
+    Require District Token and Phantom Liberty is enabled.
+    """
     display_name = "Restrict Dogtown"
     default = 1
 
@@ -196,20 +223,24 @@ class QuickHacksAsItems(Toggle):
     default = 1
 
 class EnableTraps(Toggle):
+    """Include trap items in the item pool."""
     display_name = "Enable Traps"
     default = 1
 
 class TrapItemsPerTrap(Range):
+    """How many trap items to add to the pool for each trap type, when Enable Traps is on."""
     display_name = "Trap Items per Trap"
     range_start = 1
     range_end = 5
     default = 3
 
 class IncludePhantomLibertyDLC(Toggle):
+    """Include Phantom Liberty DLC content (Dogtown and its questline) in generation."""
     display_name = "Include Phantom Liberty DLC"
     default = 0
 
 class EnableDeathLink(Toggle):
+    """When you die, everyone who enabled death link dies. Of course, the reverse is true too."""
     display_name = "Death Link"
     default = 0
 
@@ -226,6 +257,7 @@ class OopsAllTraps(Toggle):
     default = 0
 
 class VendorSanity(Toggle):
+    """Turn vendor stock slots into checks. Individual vendor categories are toggled below."""
     display_name = "Vendor Sanity"
     default = 0
 

@@ -108,6 +108,40 @@ Native-only build output lands in `Cyberpunk2077/red4ext/plugins/CyberpunkAP/Cyb
 
 More detail on individual scripts: [`tools/README.md`](tools/README.md). Native project layout: [`native/README.md`](native/README.md).
 
+## Automated testing
+
+Two GitHub Actions workflows exercise `worlds/cyberpunk2077` against a real Archipelago checkout, following the [official Archipelago unit-testing guidance](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/tests.md) and the community [Archipelago-fuzzer](https://github.com/Eijebong/Archipelago-fuzzer) (via [Eijebong/ap-actions](https://github.com/Eijebong/ap-actions)):
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| [`apworld-tests.yml`](.github/workflows/apworld-tests.yml) | Every push/PR | Runs the `WorldTestBase` unit tests under `worlds/cyberpunk2077/test/` plus Archipelago's generic world tests |
+| [`apworld-fuzz.yml`](.github/workflows/apworld-fuzz.yml) | Release tags (`v*`) and manual dispatch | Mass-generates randomized multiworlds with the fuzzer to find generation/logic bugs before release |
+
+Per the official guidance, fuzz-style random generation runs as part of the **release** workflow rather than every PR; failures found by fuzzing should get a small, targeted `test_*.py` reproducer under `worlds/cyberpunk2077/test/`.
+
+> **Note:** District Restriction Type defaults to **None**. Gating every major district behind its own always-required Access Token left too few always-reachable locations to place all of those tokens, causing `Fill.FillError` during generation. If you opt into `Require District Token`, consider disabling a few districts (`district_restrict_*` options) unless you've verified generation still succeeds with all of them enabled.
+
+### Running unit tests locally
+
+From an Archipelago source checkout with `worlds/cyberpunk2077` linked in (see [Dev environment setup](#dev-environment-setup)):
+
+```cmd
+cd ..\Archipelago
+python -m pip install pytest pytest-subtests
+set AP_TEST_WORLDS=cyberpunk2077
+python -m pytest worlds\cyberpunk2077\test
+```
+
+### Running the fuzzer locally
+
+From the same Archipelago checkout, copy in `fuzz.py` from [Eijebong/Archipelago-fuzzer](https://github.com/Eijebong/Archipelago-fuzzer), then:
+
+```cmd
+python fuzz.py -r 100 -j <cores> -g cyberpunk2077 -n 1
+```
+
+Failures are written to `fuzz_output/`.
+
 ## Testing in-game
 
 Copy the contents of `Cyberpunk2077/` into your Cyberpunk 2077 root (same layout as extracting the release zip: `r6/`, `bin/`, `red4ext/`).

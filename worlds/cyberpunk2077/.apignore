@@ -3,3 +3,4 @@
 tools/
 ../../poptracker/templates/
 __pycache__/
+test/

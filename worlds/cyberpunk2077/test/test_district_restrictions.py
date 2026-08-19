@@ -6,6 +6,15 @@ class TestDistrictRestrictions(Cyberpunk2077TestBase):
         "district_restriction_type": 1,
         "district_restrict_westbrook": 1,
         "district_restrict_santo_domingo": 1,
+        # Explicitly disable the other majors (which default to on once the
+        # restriction type is enabled) so only Westbrook/Santo Domingo are
+        # gated, matching this test's intent and keeping enough
+        # always-reachable locations to place both Access Tokens.
+        "district_restrict_city_center": 0,
+        "district_restrict_heywood": 0,
+        "district_restrict_pacifica": 0,
+        "district_restrict_badlands": 0,
+        "district_restrict_dogtown": 0,
     }
 
     def test_westbrook_requires_token(self) -> None:

@@ -79,6 +79,10 @@ class TestJacksonPlainsRipperdocStallsAllSideQuestsGoal(Cyberpunk2077TestBase):
     options = {
         **VENDOR_SANITY_RIPPERDOC_ONLY_OPTIONS,
         "completion_goal": 1,
+        # District Restriction Type defaults to None; opt in explicitly so the
+        # Badlands-access reachability assertions below still exercise the
+        # intended behavior.
+        "district_restriction_type": 1,
     }
 
     def test_stall_2_is_populated(self) -> None:
