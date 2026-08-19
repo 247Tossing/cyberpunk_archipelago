@@ -126,14 +126,15 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     afterlife = create_region(world, "Afterlife")
     regions["Afterlife"] = afterlife
 
-    cyberspace = create_region(world, "Cyberspace")
-    regions["Cyberspace"] = cyberspace
-
     orbital_station = create_region(world, "Orbital Station")
     regions["Orbital Station"] = orbital_station
 
-    north_oak = create_region(world, "North Oak")
-    regions["North Oak"] = north_oak
+    # NOTE: "Cyberspace" and a top-level "North Oak" region used to be created
+    # here as placeholders, but neither ever held any locations or gained an
+    # entrance, leaving them permanently unreachable and failing Archipelago's
+    # generic reachability test. Removed until real content needs them. The
+    # Westbrook subdistrict "Westbrook - North Oak" (see below) is unrelated
+    # and unaffected.
 
     # ===== CREATE SUBDISTRICT REGIONS (if restriction enabled) =====
     if world.options.restrict_by_sub_district:
@@ -247,7 +248,7 @@ def create_regions(world: "Cyberpunk2077World") -> None:
     # Special Regions
     connect_regions(world, regions["Watson"], regions["Afterlife"], "Watson to Afterlife")
     connect_regions(world, regions["Afterlife"], regions["Watson"], "Afterlife to Watson")
-    # Cyberspace and Orbital Station are usually late-game/one-way or specific event triggers
+    # Orbital Station is usually late-game/one-way or a specific event trigger
     connect_regions(world, regions["City Center"], regions["Orbital Station"], "Arasaka Tower to Orbital Station")
 
     # DLC Only Connections
@@ -276,7 +277,10 @@ def create_regions(world: "Cyberpunk2077World") -> None:
 
     # Other districts require having completed a lifepath intro
     # Set rules on all entrances leading to these regions
-    for region_name in ["Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands", "North Oak", "Afterlife", "Cyberspace", "Orbital Station"]:
+    lifepath_gated_regions = [
+        "Westbrook", "City Center", "Heywood", "Pacifica", "Santo Domingo", "Badlands", "Afterlife", "Orbital Station",
+    ]
+    for region_name in lifepath_gated_regions:
         region = regions[region_name]
         # Set access rule on all entrances leading to this region
         for entrance in region.entrances:
