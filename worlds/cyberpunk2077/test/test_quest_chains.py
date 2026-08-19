@@ -94,6 +94,10 @@ class TestPhantomLibertyMixedDlcChain(Cyberpunk2077TestBase):
     run_default_tests = False
     options = {
         "include_phantom_liberty_dlc": 1,
+        # District Restriction Type defaults to None; opt in explicitly so the
+        # reachability assertions below (which depend on district gating)
+        # still exercise the intended behavior.
+        "district_restriction_type": 1,
     }
 
     def test_phantom_liberty_requires_full_wiki_checklist(self) -> None:
