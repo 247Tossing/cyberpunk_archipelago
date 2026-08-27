@@ -7,6 +7,7 @@ public class APGameSystem extends ScriptableSystem {
     private let inventoryHandler: ref<APInventoryHandler>;
     private let questHandler: ref<APQuestHandler>;
     private let districtManager: ref<APDistrictManager>;
+    private let fixerTierManager: ref<APFixerTierManager>;
 
     public func OnAttach() -> Void {
         // Cache handler references to avoid repeated container lookups
@@ -14,6 +15,7 @@ public class APGameSystem extends ScriptableSystem {
         this.inventoryHandler = container.Get(n"Archipelago.APInventoryHandler") as APInventoryHandler;
         this.questHandler = container.Get(n"Archipelago.APQuestHandler") as APQuestHandler;
         this.districtManager = container.Get(n"Archipelago.APDistrictManager") as APDistrictManager;
+        this.fixerTierManager = container.Get(n"Archipelago.APFixerTierManager") as APFixerTierManager;
         APLogger.LogInfo("Cyberpunk 2077 Archipelago System Ready");
     }
 
@@ -122,7 +124,35 @@ public class APGameSystem extends ScriptableSystem {
         // Always ensure Watson is unlocked as starting district
         this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
         this.ApplyDistrictRestrictionConfig();
+        this.ApplyFixersOnlyConfig();
         APLogger.LogInfo("Item Sync Complete");
+    }
+
+    // Publish the Fixers-Only facts that gate content in-game: the run-wide mode
+    // flag plus each fixer's highest unlocked gig tier. Idempotent, so connect,
+    // item resync and save load all converge on the same state.
+    public func ApplyFixersOnlyConfig() -> Void {
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetAPGameStateName()) as APGameState;
+        if !IsDefined(gameState) || !IsDefined(this.questHandler) {
+            APLogger.LogDebug("APGameSystem: Cannot apply Fixers-Only config - game state or quest handler not available");
+            return;
+        }
+
+        if !gameState.IsFixersOnlyGoal() {
+            this.questHandler.SetQuestFact(APConstants.GetFixersOnlyModeFact(), 0);
+            return;
+        }
+
+        this.questHandler.SetQuestFact(APConstants.GetFixersOnlyModeFact(), 1);
+        if IsDefined(this.fixerTierManager) {
+            this.fixerTierManager.RefreshUnlockedTierFacts();
+        } else {
+            APLogger.LogDebug("APGameSystem: Fixer tier manager not available");
+        }
+
+        // A save loaded after the final gig should still report the goal.
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        APGigGoalTracker.ReportGoalIfComplete(questSystem, gameState);
     }
 
     public func ApplyDistrictRestrictionConfig() -> Void {
@@ -244,9 +274,26 @@ public class APGameSystem extends ScriptableSystem {
         if Equals(state, gameJournalEntryState.Succeeded) {
             APLogger.LogDebug(s"HandleJournalStateChange completion: questId=\(questId)");
             APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
+            this.TryGrantFirstFixerTiers();
         }
 
         return true;
+    }
+
+    // Fixers-Only holds every fixer's tier 1 back until the prologue is done, which
+    // can happen mid-session with no spawn or resync to trigger a config refresh.
+    // The guard keeps this to one fact read per quest completion once tiers are out.
+    private func TryGrantFirstFixerTiers() -> Void {
+        if !IsDefined(this.questHandler) || !IsDefined(this.fixerTierManager) {
+            return;
+        }
+        if this.questHandler.GetQuestFact(APConstants.GetFixersOnlyModeFact()) < 1 {
+            return;
+        }
+        if this.questHandler.GetQuestFact(APConstants.GetFixerUnlockedTierFact("regina")) >= 1 {
+            return;
+        }
+        this.fixerTierManager.RefreshUnlockedTierFacts();
     }
 
     // Aldecaldos camp relocates to Jackson Plains once "Queen of the Highway" completes,
@@ -322,10 +369,17 @@ public class APGameSystem extends ScriptableSystem {
 
     // For when the player receives a quest item from the Archipelago server.
     public func AddQuestKey(questKey: String) -> Void {
-        if IsDefined(this.questHandler) {
-            this.questHandler.SetQuestKey(questKey);
-        } else {
+        if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APGameSystem: Quest handler not available");
+            return;
+        }
+
+        this.questHandler.SetQuestKey(questKey);
+
+        // Fixer gig tier unlocks also drive a per-fixer summary fact, so refresh it
+        // now instead of waiting for the next sync.
+        if IsDefined(this.fixerTierManager) && APFixerTierManager.IsFixerTierItem(questKey) {
+            this.fixerTierManager.HandleFixerTierUnlock(questKey);
         }
     }
     

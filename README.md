@@ -82,6 +82,7 @@ Below is a list of options that add location checks and their counts:
 |--------|------------------|
 | Completion Goal — Complete Any Ending W/ All Side Quests | 45 (base) / 46 (with Phantom Liberty DLC) |
 | Completion Goal — Complete Only Phantom Liberty Questline | 17 |
+| Completion Goal — Complete All Fixer Gigs | 73 (base) / 82 (with Phantom Liberty DLC) |
 | Include Phantom Liberty DLC | Up to 57 |
 | Include Gigs | 81 |
 | Include Tarot | 26 |
@@ -99,6 +100,8 @@ Some notes about the YAML Options:
 Vendor Sanity adds a substantial amount of checks when all vendors are enabled. I highly advise against enabling all of the vendors in smaller groups (less then 5 worlds) as it will hog your Multiworld items.
 
 The tuning of the various quest options have been tuned as such that the ending of major quest chains (should) have progression/useful items attached to them.
+
+**Complete All Fixer Gigs** is its own kind of run and ignores the other quest options. The only checks are gigs, the prologue, and vendor sanity if you turn it on — no story, side, tarot, cyberpsycho or minor quest checks, whatever those toggles say. Each fixer's gigs come in four tiers, and every tier past the first needs that fixer's **Gig Tier** item from the multiworld; receiving one raises your street cred to the level that tier normally wants, so the gigs start showing up. Play the prologue as usual, then work the fixers until every gig in the seed is done. Story jobs still exist in game but pay nothing toward the goal.
 
 ### Linux Users (Like me!)
 

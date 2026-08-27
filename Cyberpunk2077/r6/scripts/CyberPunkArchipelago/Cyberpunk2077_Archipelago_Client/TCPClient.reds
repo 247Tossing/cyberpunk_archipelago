@@ -313,6 +313,24 @@ public class TCPClient extends ScriptableService {
                     );
                 }
 
+                let goalChanged: Bool = gameState.SetGoalConfig(
+                    AP_GetCompletionGoal(),
+                    AP_GetGigGoalManifest()
+                );
+                if goalChanged {
+                    APLogger.LogInfo(
+                        s"Completion goal received: goal=\(gameState.completionGoal), gig_goal_checks=\(ToString(ArraySize(gameState.gigGoalIds)))"
+                    );
+
+                    let goalGameSystem: ref<APGameSystem>;
+                    if IsDefined(systems) {
+                        goalGameSystem = systems.Get(n"Archipelago.APGameSystem") as APGameSystem;
+                    }
+                    if IsDefined(goalGameSystem) {
+                        goalGameSystem.ApplyFixersOnlyConfig();
+                    }
+                }
+
                 let nativeDeathLinkEnabled: Bool = AP_GetDeathLinkEnabled();
                 let deathLinkChanged: Bool = gameState.SetEnableDeathLink(nativeDeathLinkEnabled);
                 if deathLinkChanged {

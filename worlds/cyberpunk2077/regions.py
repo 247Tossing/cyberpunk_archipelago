@@ -8,6 +8,7 @@ from .locations import Cyberpunk2077Location, location_table, LocationCategory, 
 from .options import (
     has_effective_phantom_liberty_dlc,
     is_goal_all_side_quests,
+    is_goal_fixers_only,
     is_goal_phantom_liberty_only,
     is_major_district_token_gated,
 )
@@ -346,6 +347,7 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
     region = Region(region_name, world.player, world.multiworld)
 
     pl_only_goal = is_goal_phantom_liberty_only(world.options)
+    fixers_only_goal = is_goal_fixers_only(world.options)
     effective_dlc_enabled = has_effective_phantom_liberty_dlc(world.options)
     side_quests_enabled = is_goal_all_side_quests(world.options)
     pl_only_fixed_checks = {"Lifepath Chosen", "Ending Reached"}
@@ -356,6 +358,15 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
             if (
                 location_name not in pl_only_fixed_checks and
                 not (location_data.dlc_only and location_data.category == LocationCategory.DLC_MAIN)
+            ):
+                continue
+        if fixers_only_goal:
+            # Gigs are the goal, vendor checks are the only optional extra, and
+            # "Lifepath Chosen" stays because every district entrance is gated on
+            # it (see create_regions) and the prologue remains playable.
+            if (
+                location_name != "Lifepath Chosen" and
+                location_data.category not in (LocationCategory.GIG, LocationCategory.VENDOR)
             ):
                 continue
         if location_data.category == LocationCategory.VENDOR:

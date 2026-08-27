@@ -106,6 +106,17 @@ public class APQuestLocationLookup {
             return;
         }
 
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetAPGameStateName()) as APGameState;
+        let fixersOnly: Bool = IsDefined(gameState) && gameState.IsFixersOnlyGoal();
+
+        // A Fixers-Only seed only holds gig, vendor and lifepath checks. Story
+        // quests can still be completed in-game, so drop their checks here rather
+        // than sending locations this slot does not have.
+        if fixersOnly && !APStoryQuestEnforcer.IsRunCheck(gameState, locationId) {
+            APStoryQuestEnforcer.HandleBlockedStoryCheck(GetGameInstance(), locationId);
+            return;
+        }
+
         let factName: CName = StringToName(s"ap_\(locationId)");
         if questSystem.GetFact(factName) >= 1 {
             return;
@@ -114,9 +125,15 @@ public class APQuestLocationLookup {
         questSystem.SetFact(factName, 1);
         tcpService.SendCheck(locationId);
 
+        if fixersOnly {
+            // Fixers-Only wins on the last gig, not on an ending.
+            APGigGoalTracker.ReportGoalIfComplete(questSystem, gameState);
+            return;
+        }
+
         // Notify the AP server of goal completion so remaining slot checks can release.
         if StrCmp(locationId, "q201_heir") == 0 {
-            let storyCompleteFact: CName = StringToName("ap_story_complete_sent");
+            let storyCompleteFact: CName = StringToName(APConstants.GetStoryCompleteSentFact());
             if questSystem.GetFact(storyCompleteFact) < 1 {
                 if AP_StoryComplete() {
                     questSystem.SetFact(storyCompleteFact, 1);
