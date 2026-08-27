@@ -806,6 +806,191 @@ JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS = (
 )
 
 
+# ===== FIXER GIG TIERS =====
+# Every gig belongs to a fixer, and each fixer releases their gigs in tiers that
+# vanilla unlocks at street cred thresholds
+# (https://cyberpunk.fandom.com/wiki/Cyberpunk_2077_Gigs).
+#
+# The Fixers-Only completion goal reuses this grouping as its progression axis:
+# tier 1 is available as soon as the prologue is done, and every higher tier is
+# gated behind that fixer's tier item from the multiworld. The client applies the
+# same grouping in-game, so this table is the single source of truth for both the
+# generation logic (rules.py) and the fixer tier unlock items (items.py).
+#
+# Note that a gig's fixer does not always match the district in its quest ID:
+# "For My Son" uses a Pacifica quest ID but is an El Capitan contract, and Rogue's
+# four gigs are spread across districts with no tier gate at all (tier 1).
+
+FIXER_REGINA = "regina"
+FIXER_WAKAKO = "wakako"
+FIXER_PADRE = "padre"
+FIXER_EL_CAPITAN = "elcapitan"
+FIXER_DINO = "dino"
+FIXER_MR_HANDS = "hands"
+FIXER_DAKOTA = "dakota"
+FIXER_ROGUE = "rogue"
+
+# Player-facing fixer names, used to build the tier item names in items.py.
+FIXER_DISPLAY_NAMES: Dict[str, str] = {
+    FIXER_REGINA: "Regina",
+    FIXER_WAKAKO: "Wakako",
+    FIXER_PADRE: "Padre",
+    FIXER_EL_CAPITAN: "El Capitan",
+    FIXER_DINO: "Dino",
+    FIXER_MR_HANDS: "Mr. Hands",
+    FIXER_DAKOTA: "Dakota",
+    FIXER_ROGUE: "Rogue",
+}
+
+# Highest tier each fixer hands out. Regina keeps offering work the longest, so
+# Watson alone spans eight tiers; Rogue's gigs are never tier-gated.
+FIXER_MAX_TIER: Dict[str, int] = {
+    FIXER_REGINA: 8,
+    FIXER_WAKAKO: 4,
+    FIXER_PADRE: 4,
+    FIXER_EL_CAPITAN: 4,
+    FIXER_DINO: 3,
+    FIXER_MR_HANDS: 4,
+    FIXER_DAKOTA: 4,
+    FIXER_ROGUE: 1,
+}
+
+# Internal gig quest ID -> (fixer, tier).
+GIG_FIXER_TIERS: Dict[str, Tuple[str, int]] = {
+    # --- Regina Jones (Watson) ---
+    "sts_wat_kab_02": (FIXER_REGINA, 1),   # Hippocratic Oath
+    "sts_wat_nid_02": (FIXER_REGINA, 1),   # Many Ways to Skin a Cat
+    "sts_wat_kab_07": (FIXER_REGINA, 1),   # Monster Hunt
+    "sts_wat_lch_05": (FIXER_REGINA, 1),   # Playing for Keeps
+    "sts_wat_nid_05": (FIXER_REGINA, 1),   # Rite of Passage
+    "sts_wat_nid_04": (FIXER_REGINA, 2),   # Dirty Biz
+    "sts_wat_kab_107": (FIXER_REGINA, 2),  # Troublesome Neighbors
+    "sts_wat_kab_102": (FIXER_REGINA, 2),  # Welcome to America, Comrade
+    "sts_wat_kab_03": (FIXER_REGINA, 3),   # Backs Against the Wall
+    "sts_wat_lch_01": (FIXER_REGINA, 3),   # Catch a Tyger's Toe
+    "sts_wat_kab_08": (FIXER_REGINA, 3),   # Woman of La Mancha
+    "sts_wat_nid_03": (FIXER_REGINA, 4),   # Flight of the Cheetah
+    "sts_wat_kab_06": (FIXER_REGINA, 4),   # Shark in the Water
+    "sts_wat_kab_05": (FIXER_REGINA, 5),   # Last Login
+    "sts_wat_kab_101": (FIXER_REGINA, 5),  # Small Man, Big Evil
+    "sts_wat_lch_03": (FIXER_REGINA, 6),   # Bloodsport
+    "sts_wat_nid_07": (FIXER_REGINA, 6),   # Scrolls before Swine
+    "sts_wat_nid_12": (FIXER_REGINA, 7),   # Freedom of the Press
+    "sts_wat_nid_06": (FIXER_REGINA, 7),   # Lousy Kleppers
+    "sts_wat_kab_04": (FIXER_REGINA, 8),   # Fixer, Merc, Soldier, Spy
+    "sts_wat_lch_06": (FIXER_REGINA, 8),   # The Heisenberg Principle
+    "sts_wat_nid_01": (FIXER_REGINA, 8),   # Occupational Hazard
+    "sts_wat_kab_01": (FIXER_REGINA, 8),   # Concrete Cage Trap
+
+    # --- Wakako Okada (Westbrook) ---
+    "sts_wbr_hil_07": (FIXER_WAKAKO, 1),  # Tyger and Vulture
+    "sts_wbr_jpn_02": (FIXER_WAKAKO, 1),  # We Have Your Wife
+    "sts_wbr_jpn_12": (FIXER_WAKAKO, 2),  # Greed Never Pays
+    "sts_wbr_jpn_01": (FIXER_WAKAKO, 2),  # Olive Branch
+    "sts_wbr_hil_01": (FIXER_WAKAKO, 2),  # Until Death Do Us Part
+    "sts_hey_rey_09": (FIXER_WAKAKO, 3),  # Getting Warmer...
+    "sts_wbr_jpn_05": (FIXER_WAKAKO, 3),  # Wakako's Favorite
+    "sts_wbr_jpn_03": (FIXER_WAKAKO, 4),  # A Shrine Defiled
+
+    # --- Sebastian "Padre" Ibarra (Heywood) ---
+    "sts_hey_gle_04": (FIXER_PADRE, 1),  # Fifth Column
+    "sts_hey_rey_06": (FIXER_PADRE, 1),  # Jeopardy
+    "sts_hey_gle_06": (FIXER_PADRE, 1),  # Life's Work
+    "sts_hey_spr_01": (FIXER_PADRE, 1),  # On a Tight Leash
+    "sts_hey_rey_01": (FIXER_PADRE, 2),  # Bring Me the Head of Gustavo Orta
+    "sts_hey_rey_08": (FIXER_PADRE, 2),  # Old Friends
+    "sts_hey_gle_03": (FIXER_PADRE, 2),  # Psychofan
+    "sts_hey_gle_01": (FIXER_PADRE, 3),  # Eye for an Eye
+    "sts_hey_rey_02": (FIXER_PADRE, 3),  # Sr. Ladrillo's Private Collection
+    "sts_hey_spr_03": (FIXER_PADRE, 3),  # The Lord Giveth and Taketh Away
+    "sts_hey_gle_05": (FIXER_PADRE, 4),  # Going Up or Down?
+
+    # --- Muamar "El Capitan" Reyes (Santo Domingo) ---
+    "sts_std_rcr_04": (FIXER_EL_CAPITAN, 1),  # Error 404
+    "sts_std_arr_03": (FIXER_EL_CAPITAN, 1),  # Race to the Top
+    "sts_std_arr_01": (FIXER_EL_CAPITAN, 1),  # Serious Side Effects
+    "sts_std_arr_05": (FIXER_EL_CAPITAN, 2),  # Breaking News
+    "sts_std_rcr_05": (FIXER_EL_CAPITAN, 2),  # Family Matters
+    "sts_std_arr_11": (FIXER_EL_CAPITAN, 2),  # Hacking the Hacker
+    "sts_std_rcr_02": (FIXER_EL_CAPITAN, 3),  # Cuckoo's Nest
+    "sts_std_arr_10": (FIXER_EL_CAPITAN, 3),  # Severance Package
+    "sts_std_arr_12": (FIXER_EL_CAPITAN, 4),  # Desperate Measures
+    "sts_pac_wwd_05": (FIXER_EL_CAPITAN, 4),  # For My Son (Pacifica quest ID, El Capitan contract)
+    "sts_std_rcr_03": (FIXER_EL_CAPITAN, 4),  # Going-away Party
+
+    # --- Dino Dinovic (City Center) ---
+    "sts_cct_dtn_03": (FIXER_DINO, 1),  # A Lack of Empathy
+    "sts_cct_dtn_02": (FIXER_DINO, 2),  # An Inconvenient Killer
+    "sts_cct_cpz_01": (FIXER_DINO, 2),  # Serial Suicide
+    "sts_cct_dtn_04": (FIXER_DINO, 3),  # Guinea Pigs
+    "sts_cct_dtn_05": (FIXER_DINO, 3),  # The Frolics of Councilwoman Cole
+
+    # --- Mr. Hands (Pacifica, then Dogtown with Phantom Liberty) ---
+    "sts_pac_cvi_02": (FIXER_MR_HANDS, 1),  # Two Wrongs Makes Us Right
+    "sts_ep1_01": (FIXER_MR_HANDS, 2),      # Dogtown Saints
+    "sts_ep1_04": (FIXER_MR_HANDS, 2),      # Prototype in the Scraper
+    "sts_ep1_12": (FIXER_MR_HANDS, 2),      # Treating Symptoms
+    "sts_ep1_10": (FIXER_MR_HANDS, 2),      # Waiting for Dodger
+    "sts_ep1_03": (FIXER_MR_HANDS, 3),      # The Man Who Killed Jason Foreman
+    "sts_ep1_08": (FIXER_MR_HANDS, 3),      # Spy in the Jungle
+    "sts_ep1_13": (FIXER_MR_HANDS, 3),      # Talent Academy
+    "sts_ep1_06": (FIXER_MR_HANDS, 4),      # Heaviest of Hearts
+    "sts_ep1_07": (FIXER_MR_HANDS, 4),      # Roads to Redemption
+
+    # --- Dakota Smith (Badlands) ---
+    "sts_bls_ina_07": (FIXER_DAKOTA, 1),  # Dancing on a Minefield
+    "sts_bls_ina_03": (FIXER_DAKOTA, 1),  # Flying Drugs
+    "sts_bls_ina_02": (FIXER_DAKOTA, 2),  # Big Pete's Got Big Problems
+    "sts_bls_ina_06": (FIXER_DAKOTA, 2),  # No Fixers
+    "sts_bls_ina_08": (FIXER_DAKOTA, 2),  # Trevor's Last Ride
+    "sts_bls_ina_09": (FIXER_DAKOTA, 3),  # MIA
+    "sts_bls_ina_11": (FIXER_DAKOTA, 3),  # Sparring Partner
+    "sts_bls_ina_05": (FIXER_DAKOTA, 4),  # Goodbye, Night City
+    "sts_bls_ina_04": (FIXER_DAKOTA, 4),  # Radar Love
+
+    # --- Rogue Amendiares (no tier gate) ---
+    "sts_wbr_hil_06": (FIXER_ROGUE, 1),  # Family Heirloom
+    "sts_hey_spr_06": (FIXER_ROGUE, 1),  # Hot Merchandise
+    "sts_std_arr_06": (FIXER_ROGUE, 1),  # Nasty Hangover
+    "sts_std_rcr_01": (FIXER_ROGUE, 1),  # The Union Strikes Back
+}
+
+
+def fixer_tier_item_name(fixer: str, tier: int) -> str:
+    """Return the item_table key for a fixer's tier unlock (tiers 2 and up)."""
+    return f"{FIXER_DISPLAY_NAMES[fixer]} Gig Tier {tier}"
+
+
+def fixer_tier_game_id(fixer: str, tier: int) -> str:
+    """Return the ``ap_qk_*`` game ID / quest fact name for a fixer tier unlock."""
+    return f"ap_qk_{fixer}_tier_{tier}"
+
+
+def _validate_gig_fixer_tiers() -> None:
+    """Fail fast when the fixer tier table drifts away from the gig locations."""
+    gig_keys = {
+        name
+        for name, data in location_table.items()
+        if data.category == LocationCategory.GIG
+    }
+    missing = gig_keys - GIG_FIXER_TIERS.keys()
+    if missing:
+        raise ValueError(f"Gig locations without a fixer tier: {sorted(missing)}")
+
+    unknown = GIG_FIXER_TIERS.keys() - gig_keys
+    if unknown:
+        raise ValueError(f"Fixer tier entries that are not gig locations: {sorted(unknown)}")
+
+    for gig_key, (fixer, tier) in GIG_FIXER_TIERS.items():
+        if fixer not in FIXER_MAX_TIER:
+            raise ValueError(f"Gig {gig_key} references unknown fixer {fixer!r}")
+        if not 1 <= tier <= FIXER_MAX_TIER[fixer]:
+            raise ValueError(f"Gig {gig_key} has tier {tier} outside {fixer!r}'s range")
+
+
+_validate_gig_fixer_tiers()
+
+
 # ===== AUTO-ASSIGN LOCATION CODES =====
 # Assigns sequential codes (0, 1, 2, ...) to every location in the table.
 # Must run BEFORE the derived mappings below that depend on data.code.
