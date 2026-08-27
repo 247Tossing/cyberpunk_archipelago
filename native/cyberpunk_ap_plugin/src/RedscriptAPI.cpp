@@ -330,6 +330,25 @@ void APGetVendorSanityStockLine(RED4ext::IScriptable*, RED4ext::CStackFrame* aFr
     }
 }
 
+void APGetCompletionGoal(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        *aOut = CyberpunkArchipelago::APBridge::Get().GetCompletionGoal();
+    }
+}
+
+void APGetGigGoalManifest(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (aOut)
+    {
+        RED4ext::CString result(CyberpunkArchipelago::APBridge::Get().GetGigGoalManifest().c_str());
+        *aOut = result;
+    }
+}
+
 void APGetDeathLinkEnabled(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t)
 {
     aFrame->code++;
@@ -397,6 +416,8 @@ void PostRegisterTypes()
     RegisterNative(rtti, "Archipelago.AP_GetWeaponRestrictSmg", "AP_GetWeaponRestrictSmg", &APGetWeaponRestrictSmg);
     RegisterNative(rtti, "Archipelago.AP_GetVendorSanityEnabled", "AP_GetVendorSanityEnabled", &APGetVendorSanityEnabled);
     RegisterNative(rtti, "Archipelago.AP_GetVendorSanityStockLine", "AP_GetVendorSanityStockLine", &APGetVendorSanityStockLine);
+    RegisterNative(rtti, "Archipelago.AP_GetCompletionGoal", "AP_GetCompletionGoal", &APGetCompletionGoal);
+    RegisterNative(rtti, "Archipelago.AP_GetGigGoalManifest", "AP_GetGigGoalManifest", &APGetGigGoalManifest);
     RegisterNative(rtti, "Archipelago.AP_GetDeathLinkEnabled", "AP_GetDeathLinkEnabled", &APGetDeathLinkEnabled);
 
     if (g_sdk && g_sdk->logger)
