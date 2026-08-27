@@ -48,6 +48,65 @@ public class APConstants {
     public static func GetBadlandsGateMask() -> Int32 { return 32; }
     public static func GetDogtownGateMask() -> Int32 { return 64; }
 
+    // ===== COMPLETION GOALS =====
+    // Must match worlds/cyberpunk2077/options.py CompletionGoal.
+    public static func GetCompletionGoalAnyEnding() -> Int32 { return 0; }
+    public static func GetCompletionGoalAllSideQuests() -> Int32 { return 1; }
+    public static func GetCompletionGoalPhantomLibertyOnly() -> Int32 { return 2; }
+    public static func GetCompletionGoalAllFixerGigs() -> Int32 { return 3; }
+
+    // ===== FIXER GIG TIERS =====
+    // Fixer keys and tier counts must match GIG_FIXER_TIERS / FIXER_MAX_TIER in
+    // worlds/cyberpunk2077/locations.py. Tier unlock items arrive as quest keys
+    // named ap_qk_<fixer>_tier_<n>, which the standard quest-key path already
+    // turns into facts; GetFixerTierFact mirrors that name so other systems can
+    // read it, and GetFixerUnlockedTierFact exposes the highest unlocked tier as
+    // a single number for quest phase and TweakDB conditions to compare against.
+    public static func GetFixerKeys() -> array<String> {
+        let fixers: array<String>;
+        ArrayPush(fixers, "regina");
+        ArrayPush(fixers, "wakako");
+        ArrayPush(fixers, "padre");
+        ArrayPush(fixers, "elcapitan");
+        ArrayPush(fixers, "dino");
+        ArrayPush(fixers, "hands");
+        ArrayPush(fixers, "dakota");
+        ArrayPush(fixers, "rogue");
+        return fixers;
+    }
+
+    public static func GetFixerMaxTier(fixer: String) -> Int32 {
+        if StrCmp(fixer, "regina") == 0 { return 8; }
+        if StrCmp(fixer, "wakako") == 0 { return 4; }
+        if StrCmp(fixer, "padre") == 0 { return 4; }
+        if StrCmp(fixer, "elcapitan") == 0 { return 4; }
+        if StrCmp(fixer, "dino") == 0 { return 3; }
+        if StrCmp(fixer, "hands") == 0 { return 4; }
+        if StrCmp(fixer, "dakota") == 0 { return 4; }
+        if StrCmp(fixer, "rogue") == 0 { return 1; }
+        return 0;
+    }
+
+    public static func GetFixerTierFact(fixer: String, tier: Int32) -> String {
+        return s"ap_qk_\(fixer)_tier_\(ToString(tier))";
+    }
+
+    public static func GetFixerUnlockedTierFact(fixer: String) -> String {
+        return s"ap_fixer_tier_\(fixer)";
+    }
+
+    // Set to 1 while a Fixers-Only run is connected. Quest phase and TweakDB
+    // conditions use it to keep story content from becoming available.
+    public static func GetFixersOnlyModeFact() -> String { return "ap_fixers_only_mode"; }
+
+    // Records that a story quest activated while Fixers-Only was blocking it.
+    public static func GetStoryBlockedFact(questId: String) -> String {
+        return s"ap_story_blocked_\(questId)";
+    }
+
+    // Set once the client has told the server the goal is met.
+    public static func GetStoryCompleteSentFact() -> String { return "ap_story_complete_sent"; }
+
     // ===== Weapon Authorization Item IDs =====
     // These are the item IDs for weapon authorization items
     public static func GetPistolPass() -> String { return "ap_wep_pistolPass"; }
