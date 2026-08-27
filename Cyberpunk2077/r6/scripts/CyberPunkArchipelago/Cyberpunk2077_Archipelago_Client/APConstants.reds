@@ -76,16 +76,68 @@ public class APConstants {
     }
 
     public static func GetFixerMaxTier(fixer: String) -> Int32 {
-        if StrCmp(fixer, "regina") == 0 { return 8; }
-        if StrCmp(fixer, "wakako") == 0 { return 4; }
-        if StrCmp(fixer, "padre") == 0 { return 4; }
-        if StrCmp(fixer, "elcapitan") == 0 { return 4; }
-        if StrCmp(fixer, "dino") == 0 { return 3; }
-        if StrCmp(fixer, "hands") == 0 { return 4; }
-        if StrCmp(fixer, "dakota") == 0 { return 4; }
         if StrCmp(fixer, "rogue") == 0 { return 1; }
+        if StrCmp(fixer, "regina") == 0
+            || StrCmp(fixer, "wakako") == 0
+            || StrCmp(fixer, "padre") == 0
+            || StrCmp(fixer, "elcapitan") == 0
+            || StrCmp(fixer, "dino") == 0
+            || StrCmp(fixer, "hands") == 0
+            || StrCmp(fixer, "dakota") == 0 {
+            return 4;
+        }
         return 0;
     }
+
+    // Street cred a fixer's tier needs before vanilla offers its gigs. Must match
+    // FIXER_TIER_STREET_CRED in worlds/cyberpunk2077/locations.py. The CET bridge
+    // reads this through the ap_fixer_tier_<fixer> facts to raise street cred to
+    // the matching floor, which is what actually makes the gigs appear.
+    public static func GetFixerTierStreetCred(fixer: String, tier: Int32) -> Int32 {
+        if tier <= 1 {
+            return 1;
+        }
+        if StrCmp(fixer, "regina") == 0 {
+            if tier == 2 { return 4; }
+            if tier == 3 { return 8; }
+            return 15;
+        }
+        if StrCmp(fixer, "wakako") == 0 {
+            if tier == 2 { return 10; }
+            if tier == 3 { return 20; }
+            return 35;
+        }
+        if StrCmp(fixer, "padre") == 0 {
+            if tier == 2 { return 13; }
+            if tier == 3 { return 22; }
+            return 30;
+        }
+        if StrCmp(fixer, "elcapitan") == 0 {
+            if tier == 2 { return 21; }
+            if tier == 3 { return 38; }
+            return 50;
+        }
+        if StrCmp(fixer, "dino") == 0 {
+            if tier == 2 { return 9; }
+            if tier == 3 { return 18; }
+            return 32;
+        }
+        if StrCmp(fixer, "hands") == 0 {
+            if tier == 2 { return 12; }
+            if tier == 3 { return 32; }
+            return 43;
+        }
+        if StrCmp(fixer, "dakota") == 0 {
+            if tier == 2 { return 5; }
+            if tier == 3 { return 11; }
+            return 18;
+        }
+        return 1;
+    }
+
+    // Highest street cred any unlocked fixer tier calls for. The CET bridge keeps
+    // the player at or above this, and never lowers it.
+    public static func GetRequiredStreetCredFact() -> String { return "ap_required_street_cred"; }
 
     public static func GetFixerTierFact(fixer: String, tier: Int32) -> String {
         return s"ap_qk_\(fixer)_tier_\(ToString(tier))";

@@ -58,15 +58,18 @@ public class APFixerTierManager extends ScriptableSystem {
         return unlocked;
     }
 
-    // Recompute every fixer's summary fact. Safe to call repeatedly: it only
-    // writes facts and does so idempotently, so connect, resync and save load all
-    // converge on the same state.
+    // Recompute every fixer's summary fact and the street cred floor those tiers
+    // imply. Safe to call repeatedly: it only writes facts and does so
+    // idempotently, so connect, resync and save load all converge on the same
+    // state. The floor is published as a fact rather than applied here because
+    // raising street cred goes through the CET bridge.
     public func RefreshUnlockedTierFacts() -> Void {
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APFixerTierManager: Cannot refresh tier facts - quest handler not available");
             return;
         }
 
+        let requiredStreetCred: Int32 = 0;
         let fixers: array<String> = APConstants.GetFixerKeys();
         for fixer in fixers {
             let unlocked: Int32 = this.GetUnlockedTier(fixer);
@@ -74,8 +77,19 @@ public class APFixerTierManager extends ScriptableSystem {
                 // Vanilla opens every fixer's tier 1 at street cred 1, so grant it
                 // outright rather than spending a multiworld item on it.
                 this.questHandler.SetQuestKey(APConstants.GetFixerTierFact(fixer, 1));
+
+                let tierStreetCred: Int32 = APConstants.GetFixerTierStreetCred(fixer, unlocked);
+                if tierStreetCred > requiredStreetCred {
+                    requiredStreetCred = tierStreetCred;
+                }
             }
             this.questHandler.SetQuestFact(APConstants.GetFixerUnlockedTierFact(fixer), unlocked);
+        }
+
+        // Never walk the floor back down: street cred does not decrease in game,
+        // and a partially drained item queue would otherwise lower it mid-resync.
+        if requiredStreetCred > this.questHandler.GetQuestFact(APConstants.GetRequiredStreetCredFact()) {
+            this.questHandler.SetQuestFact(APConstants.GetRequiredStreetCredFact(), requiredStreetCred);
         }
     }
 

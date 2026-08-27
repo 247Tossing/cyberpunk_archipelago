@@ -807,15 +807,21 @@ JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS = (
 
 
 # ===== FIXER GIG TIERS =====
-# Every gig belongs to a fixer, and each fixer releases their gigs in tiers that
-# vanilla unlocks at street cred thresholds
-# (https://cyberpunk.fandom.com/wiki/Cyberpunk_2077_Gigs).
+# Every gig belongs to a fixer, and each fixer releases their gigs in four tiers
+# that vanilla unlocks at street cred thresholds. The thresholds are per district
+# (https://cyberpunk.fandom.com/wiki/Cyberpunk_2077_Gigs) and the per-gig street
+# cred requirements come from the district gig tables in
+# https://www.gamerguides.com/cyberpunk-2077/guide/gigs/introduction/overview,
+# so each gig's tier is the highest threshold its requirement reaches. Gigs with
+# no published requirement default to tier 1, which is always the safe direction:
+# a tier 1 gig needs no item and can never end up logically unreachable.
 #
 # The Fixers-Only completion goal reuses this grouping as its progression axis:
 # tier 1 is available as soon as the prologue is done, and every higher tier is
-# gated behind that fixer's tier item from the multiworld. The client applies the
-# same grouping in-game, so this table is the single source of truth for both the
-# generation logic (rules.py) and the fixer tier unlock items (items.py).
+# gated behind that fixer's tier item from the multiworld. The client raises street
+# cred to the matching threshold when that item arrives, so this table is the
+# single source of truth for the generation logic (rules.py), the tier unlock items
+# (items.py) and the in-game unlock (the CET bridge).
 #
 # Note that a gig's fixer does not always match the district in its quest ID:
 # "For My Son" uses a Pacifica quest ID but is an El Capitan contract, and Rogue's
@@ -842,83 +848,99 @@ FIXER_DISPLAY_NAMES: Dict[str, str] = {
     FIXER_ROGUE: "Rogue",
 }
 
-# Highest tier each fixer hands out. Regina keeps offering work the longest, so
-# Watson alone spans eight tiers; Rogue's gigs are never tier-gated.
+# Highest tier each fixer hands out. Every tier-gated fixer has four; Rogue's
+# gigs are never tier-gated, so she stops at one.
 FIXER_MAX_TIER: Dict[str, int] = {
-    FIXER_REGINA: 8,
+    FIXER_REGINA: 4,
     FIXER_WAKAKO: 4,
     FIXER_PADRE: 4,
     FIXER_EL_CAPITAN: 4,
-    FIXER_DINO: 3,
+    FIXER_DINO: 4,
     FIXER_MR_HANDS: 4,
     FIXER_DAKOTA: 4,
     FIXER_ROGUE: 1,
 }
 
+# Street cred each fixer requires per tier, indexed by tier - 1. The client raises
+# street cred to this value when the matching tier item arrives, which is what
+# actually makes the gigs appear in game.
+FIXER_TIER_STREET_CRED: Dict[str, Tuple[int, ...]] = {
+    FIXER_REGINA: (1, 4, 8, 15),        # Watson
+    FIXER_WAKAKO: (1, 10, 20, 35),      # Westbrook
+    FIXER_PADRE: (1, 13, 22, 30),       # Heywood
+    FIXER_EL_CAPITAN: (1, 21, 38, 50),  # Santo Domingo
+    FIXER_DINO: (1, 9, 18, 32),         # City Center
+    FIXER_MR_HANDS: (1, 12, 32, 43),    # Pacifica and Dogtown
+    FIXER_DAKOTA: (1, 5, 11, 18),       # Badlands
+    FIXER_ROGUE: (1,),
+}
+
 # Internal gig quest ID -> (fixer, tier).
 GIG_FIXER_TIERS: Dict[str, Tuple[str, int]] = {
-    # --- Regina Jones (Watson) ---
+    # --- Regina Jones (Watson): street cred 1 / 4 / 8 / 15 ---
+    "sts_wat_kab_03": (FIXER_REGINA, 1),   # Backs Against the Wall
+    "sts_wat_lch_01": (FIXER_REGINA, 1),   # Catch a Tyger's Toe
+    "sts_wat_nid_04": (FIXER_REGINA, 1),   # Dirty Biz
+    "sts_wat_nid_03": (FIXER_REGINA, 1),   # Flight of the Cheetah
     "sts_wat_kab_02": (FIXER_REGINA, 1),   # Hippocratic Oath
     "sts_wat_nid_02": (FIXER_REGINA, 1),   # Many Ways to Skin a Cat
     "sts_wat_kab_07": (FIXER_REGINA, 1),   # Monster Hunt
+    "sts_wat_nid_01": (FIXER_REGINA, 1),   # Occupational Hazard
     "sts_wat_lch_05": (FIXER_REGINA, 1),   # Playing for Keeps
-    "sts_wat_nid_05": (FIXER_REGINA, 1),   # Rite of Passage
-    "sts_wat_nid_04": (FIXER_REGINA, 2),   # Dirty Biz
-    "sts_wat_kab_107": (FIXER_REGINA, 2),  # Troublesome Neighbors
-    "sts_wat_kab_102": (FIXER_REGINA, 2),  # Welcome to America, Comrade
-    "sts_wat_kab_03": (FIXER_REGINA, 3),   # Backs Against the Wall
-    "sts_wat_lch_01": (FIXER_REGINA, 3),   # Catch a Tyger's Toe
-    "sts_wat_kab_08": (FIXER_REGINA, 3),   # Woman of La Mancha
-    "sts_wat_nid_03": (FIXER_REGINA, 4),   # Flight of the Cheetah
-    "sts_wat_kab_06": (FIXER_REGINA, 4),   # Shark in the Water
-    "sts_wat_kab_05": (FIXER_REGINA, 5),   # Last Login
-    "sts_wat_kab_101": (FIXER_REGINA, 5),  # Small Man, Big Evil
-    "sts_wat_lch_03": (FIXER_REGINA, 6),   # Bloodsport
-    "sts_wat_nid_07": (FIXER_REGINA, 6),   # Scrolls before Swine
-    "sts_wat_nid_12": (FIXER_REGINA, 7),   # Freedom of the Press
-    "sts_wat_nid_06": (FIXER_REGINA, 7),   # Lousy Kleppers
-    "sts_wat_kab_04": (FIXER_REGINA, 8),   # Fixer, Merc, Soldier, Spy
-    "sts_wat_lch_06": (FIXER_REGINA, 8),   # The Heisenberg Principle
-    "sts_wat_nid_01": (FIXER_REGINA, 8),   # Occupational Hazard
-    "sts_wat_kab_01": (FIXER_REGINA, 8),   # Concrete Cage Trap
+    "sts_wat_kab_06": (FIXER_REGINA, 1),   # Shark in the Water
+    "sts_wat_kab_107": (FIXER_REGINA, 1),  # Troublesome Neighbors
+    "sts_wat_kab_08": (FIXER_REGINA, 1),   # Woman of La Mancha
+    "sts_wat_kab_01": (FIXER_REGINA, 1),   # Concrete Cage Trap (no published requirement)
+    "sts_wat_kab_101": (FIXER_REGINA, 1),  # Small Man, Big Evil (no published requirement)
+    "sts_wat_kab_102": (FIXER_REGINA, 1),  # Welcome to America, Comrade (no published requirement)
+    "sts_wat_lch_03": (FIXER_REGINA, 2),   # Bloodsport
+    "sts_wat_kab_05": (FIXER_REGINA, 2),   # Last Login
+    "sts_wat_nid_05": (FIXER_REGINA, 2),   # Rite of Passage
+    "sts_wat_nid_07": (FIXER_REGINA, 2),   # Scrolls before Swine
+    "sts_wat_nid_12": (FIXER_REGINA, 3),   # Freedom of the Press
+    "sts_wat_nid_06": (FIXER_REGINA, 3),   # Lousy Kleppers
+    "sts_wat_lch_06": (FIXER_REGINA, 3),   # The Heisenberg Principle
+    "sts_wat_kab_04": (FIXER_REGINA, 4),   # Fixer, Merc, Soldier, Spy
 
-    # --- Wakako Okada (Westbrook) ---
+    # --- Wakako Okada (Westbrook): street cred 1 / 10 / 20 / 35 ---
+    "sts_wbr_jpn_12": (FIXER_WAKAKO, 1),  # Greed Never Pays
+    "sts_wbr_jpn_01": (FIXER_WAKAKO, 1),  # Olive Branch
     "sts_wbr_hil_07": (FIXER_WAKAKO, 1),  # Tyger and Vulture
+    "sts_wbr_hil_01": (FIXER_WAKAKO, 1),  # Until Death Do Us Part
     "sts_wbr_jpn_02": (FIXER_WAKAKO, 1),  # We Have Your Wife
-    "sts_wbr_jpn_12": (FIXER_WAKAKO, 2),  # Greed Never Pays
-    "sts_wbr_jpn_01": (FIXER_WAKAKO, 2),  # Olive Branch
-    "sts_wbr_hil_01": (FIXER_WAKAKO, 2),  # Until Death Do Us Part
-    "sts_hey_rey_09": (FIXER_WAKAKO, 3),  # Getting Warmer...
-    "sts_wbr_jpn_05": (FIXER_WAKAKO, 3),  # Wakako's Favorite
-    "sts_wbr_jpn_03": (FIXER_WAKAKO, 4),  # A Shrine Defiled
+    "sts_hey_rey_09": (FIXER_WAKAKO, 2),  # Getting Warmer... (Wakako contract)
+    "sts_wbr_jpn_05": (FIXER_WAKAKO, 2),  # Wakako's Favorite
+    "sts_wbr_jpn_03": (FIXER_WAKAKO, 3),  # A Shrine Defiled
 
-    # --- Sebastian "Padre" Ibarra (Heywood) ---
+    # --- Sebastian "Padre" Ibarra (Heywood): street cred 1 / 13 / 22 / 30 ---
+    "sts_hey_gle_01": (FIXER_PADRE, 1),  # Eye for an Eye
     "sts_hey_gle_04": (FIXER_PADRE, 1),  # Fifth Column
     "sts_hey_rey_06": (FIXER_PADRE, 1),  # Jeopardy
     "sts_hey_gle_06": (FIXER_PADRE, 1),  # Life's Work
+    "sts_hey_rey_08": (FIXER_PADRE, 1),  # Old Friends
     "sts_hey_spr_01": (FIXER_PADRE, 1),  # On a Tight Leash
+    "sts_hey_gle_03": (FIXER_PADRE, 1),  # Psychofan
     "sts_hey_rey_01": (FIXER_PADRE, 2),  # Bring Me the Head of Gustavo Orta
-    "sts_hey_rey_08": (FIXER_PADRE, 2),  # Old Friends
-    "sts_hey_gle_03": (FIXER_PADRE, 2),  # Psychofan
-    "sts_hey_gle_01": (FIXER_PADRE, 3),  # Eye for an Eye
-    "sts_hey_rey_02": (FIXER_PADRE, 3),  # Sr. Ladrillo's Private Collection
-    "sts_hey_spr_03": (FIXER_PADRE, 3),  # The Lord Giveth and Taketh Away
-    "sts_hey_gle_05": (FIXER_PADRE, 4),  # Going Up or Down?
+    "sts_hey_rey_02": (FIXER_PADRE, 2),  # Sr. Ladrillo's Private Collection
+    "sts_hey_spr_03": (FIXER_PADRE, 2),  # The Lord Giveth and Taketh Away
+    "sts_hey_gle_05": (FIXER_PADRE, 3),  # Going Up or Down?
 
-    # --- Muamar "El Capitan" Reyes (Santo Domingo) ---
+    # --- Muamar "El Capitan" Reyes (Santo Domingo): street cred 1 / 21 / 38 / 50 ---
     "sts_std_rcr_04": (FIXER_EL_CAPITAN, 1),  # Error 404
     "sts_std_arr_03": (FIXER_EL_CAPITAN, 1),  # Race to the Top
     "sts_std_arr_01": (FIXER_EL_CAPITAN, 1),  # Serious Side Effects
     "sts_std_arr_05": (FIXER_EL_CAPITAN, 2),  # Breaking News
+    "sts_std_rcr_02": (FIXER_EL_CAPITAN, 2),  # Cuckoo's Nest
     "sts_std_rcr_05": (FIXER_EL_CAPITAN, 2),  # Family Matters
+    "sts_std_rcr_03": (FIXER_EL_CAPITAN, 2),  # Going-away Party
     "sts_std_arr_11": (FIXER_EL_CAPITAN, 2),  # Hacking the Hacker
-    "sts_std_rcr_02": (FIXER_EL_CAPITAN, 3),  # Cuckoo's Nest
-    "sts_std_arr_10": (FIXER_EL_CAPITAN, 3),  # Severance Package
+    "sts_std_arr_10": (FIXER_EL_CAPITAN, 2),  # Severance Package
+    "sts_pac_wwd_05": (FIXER_EL_CAPITAN, 3),  # For My Son (Pacifica quest ID, El Capitan contract)
     "sts_std_arr_12": (FIXER_EL_CAPITAN, 4),  # Desperate Measures
-    "sts_pac_wwd_05": (FIXER_EL_CAPITAN, 4),  # For My Son (Pacifica quest ID, El Capitan contract)
-    "sts_std_rcr_03": (FIXER_EL_CAPITAN, 4),  # Going-away Party
 
-    # --- Dino Dinovic (City Center) ---
+    # --- Dino Dinovic (City Center): street cred 1 / 9 / 18 / 32 ---
+    # City Center has no published per-gig requirements, so these follow the
+    # wiki's tier grouping for Dino directly.
     "sts_cct_dtn_03": (FIXER_DINO, 1),  # A Lack of Empathy
     "sts_cct_dtn_02": (FIXER_DINO, 2),  # An Inconvenient Killer
     "sts_cct_cpz_01": (FIXER_DINO, 2),  # Serial Suicide
@@ -926,7 +948,9 @@ GIG_FIXER_TIERS: Dict[str, Tuple[str, int]] = {
     "sts_cct_dtn_05": (FIXER_DINO, 3),  # The Frolics of Councilwoman Cole
 
     # --- Mr. Hands (Pacifica, then Dogtown with Phantom Liberty) ---
-    "sts_pac_cvi_02": (FIXER_MR_HANDS, 1),  # Two Wrongs Makes Us Right
+    # Pacifica street cred 1 / 12 / 32 / 43. Dogtown gigs are not street cred
+    # gated in the same way, so they follow the wiki's tier grouping for Mr. Hands.
+    "sts_pac_cvi_02": (FIXER_MR_HANDS, 3),  # Two Wrongs Makes Us Right
     "sts_ep1_01": (FIXER_MR_HANDS, 2),      # Dogtown Saints
     "sts_ep1_04": (FIXER_MR_HANDS, 2),      # Prototype in the Scraper
     "sts_ep1_12": (FIXER_MR_HANDS, 2),      # Treating Symptoms
@@ -937,16 +961,16 @@ GIG_FIXER_TIERS: Dict[str, Tuple[str, int]] = {
     "sts_ep1_06": (FIXER_MR_HANDS, 4),      # Heaviest of Hearts
     "sts_ep1_07": (FIXER_MR_HANDS, 4),      # Roads to Redemption
 
-    # --- Dakota Smith (Badlands) ---
+    # --- Dakota Smith (Badlands): street cred 1 / 5 / 11 / 18 ---
     "sts_bls_ina_07": (FIXER_DAKOTA, 1),  # Dancing on a Minefield
     "sts_bls_ina_03": (FIXER_DAKOTA, 1),  # Flying Drugs
+    "sts_bls_ina_06": (FIXER_DAKOTA, 1),  # No Fixers
     "sts_bls_ina_02": (FIXER_DAKOTA, 2),  # Big Pete's Got Big Problems
-    "sts_bls_ina_06": (FIXER_DAKOTA, 2),  # No Fixers
     "sts_bls_ina_08": (FIXER_DAKOTA, 2),  # Trevor's Last Ride
+    "sts_bls_ina_05": (FIXER_DAKOTA, 3),  # Goodbye, Night City
     "sts_bls_ina_09": (FIXER_DAKOTA, 3),  # MIA
+    "sts_bls_ina_04": (FIXER_DAKOTA, 3),  # Radar Love
     "sts_bls_ina_11": (FIXER_DAKOTA, 3),  # Sparring Partner
-    "sts_bls_ina_05": (FIXER_DAKOTA, 4),  # Goodbye, Night City
-    "sts_bls_ina_04": (FIXER_DAKOTA, 4),  # Radar Love
 
     # --- Rogue Amendiares (no tier gate) ---
     "sts_wbr_hil_06": (FIXER_ROGUE, 1),  # Family Heirloom
@@ -964,6 +988,11 @@ def fixer_tier_item_name(fixer: str, tier: int) -> str:
 def fixer_tier_game_id(fixer: str, tier: int) -> str:
     """Return the ``ap_qk_*`` game ID / quest fact name for a fixer tier unlock."""
     return f"ap_qk_{fixer}_tier_{tier}"
+
+
+def fixer_tier_street_cred(fixer: str, tier: int) -> int:
+    """Return the street cred a fixer's tier needs before its gigs appear in game."""
+    return FIXER_TIER_STREET_CRED[fixer][tier - 1]
 
 
 def _validate_gig_fixer_tiers() -> None:
@@ -986,6 +1015,15 @@ def _validate_gig_fixer_tiers() -> None:
             raise ValueError(f"Gig {gig_key} references unknown fixer {fixer!r}")
         if not 1 <= tier <= FIXER_MAX_TIER[fixer]:
             raise ValueError(f"Gig {gig_key} has tier {tier} outside {fixer!r}'s range")
+
+    for fixer, max_tier in FIXER_MAX_TIER.items():
+        thresholds = FIXER_TIER_STREET_CRED.get(fixer, ())
+        if len(thresholds) != max_tier:
+            raise ValueError(
+                f"Fixer {fixer!r} has {max_tier} tier(s) but {len(thresholds)} street cred threshold(s)"
+            )
+        if sorted(thresholds) != list(thresholds):
+            raise ValueError(f"Fixer {fixer!r} street cred thresholds must not decrease")
 
 
 _validate_gig_fixer_tiers()
