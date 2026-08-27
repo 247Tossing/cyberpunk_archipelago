@@ -110,11 +110,16 @@ class CompletionGoal(Choice):
     - Complete Only Phantom Liberty Questline: complete PL's main questline.
       This mode implies Phantom Liberty DLC for world generation and disables
       district token restrictions to keep the pool aligned to PL checks.
+    - Complete All Fixer Gigs: clear every gig in the seed. Only gigs (plus the
+      prologue check and optional vendor sanity purchases) are in the pool, and
+      the client blocks story quests once the prologue is done. Each fixer's gig
+      tiers unlock as you receive that fixer's tier items from the multiworld.
     """
     display_name = "Completion Goal"
     option_complete_any_ending = 0
     option_complete_any_ending_w_all_side_quests = 1
     option_complete_only_phantom_liberty_questline = 2
+    option_complete_all_fixer_gigs = 3
     default = 0
 
 class IncludeNCPDHustles(Toggle):
@@ -426,6 +431,11 @@ def is_goal_phantom_liberty_only(options: Cyberpunk2077Options) -> bool:
 def is_goal_all_side_quests(options: Cyberpunk2077Options) -> bool:
     """Return True when Completion Goal requires clearing all side quests."""
     return int(options.completion_goal.value) == CompletionGoal.option_complete_any_ending_w_all_side_quests
+
+
+def is_goal_fixers_only(options: Cyberpunk2077Options) -> bool:
+    """Return True when Completion Goal is the gigs-only (fixers) mode."""
+    return int(options.completion_goal.value) == CompletionGoal.option_complete_all_fixer_gigs
 
 
 def has_effective_phantom_liberty_dlc(options: Cyberpunk2077Options) -> bool:
