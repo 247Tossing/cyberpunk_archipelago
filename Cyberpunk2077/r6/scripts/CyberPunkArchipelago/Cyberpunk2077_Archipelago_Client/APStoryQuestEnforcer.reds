@@ -10,8 +10,9 @@ module Archipelago
 // first place. See vendor_checks_README.md's sibling fixer_gigs_README.md for
 // that side of the gate.
 //
-// The allow-list comes from the gig_goal_manifest slot_data field rather than
-// from quest ID patterns, so it always matches exactly what the seed generated.
+// The allow-list comes from the gig_goal_manifest slot_data field and the vendor
+// sanity stock rather than from quest ID patterns, so it always matches exactly
+// what the seed generated.
 public class APStoryQuestEnforcer {
 
     // The lifepath intros resolve to a single check that Fixers-Only keeps,
@@ -26,11 +27,18 @@ public class APStoryQuestEnforcer {
         return ArrayContains(gameState.gigGoalIds, locationId);
     }
 
-    // True when this check belongs to a Fixers-Only run. Vendor checks are not
-    // quests and never reach this path, so only gigs and the lifepath check pass.
+    // True when this check belongs to a Fixers-Only run: a gig from the manifest,
+    // the lifepath check, or a vendor sanity purchase that is part of this seed's
+    // stock. Vendor purchases reach this through APVendorTransactionReader, so they
+    // have to be allowed here or buying a check would silently do nothing.
     public static func IsRunCheck(gameState: ref<APGameState>, locationId: String) -> Bool {
-        return StrCmp(locationId, APStoryQuestEnforcer.GetLifepathLocationId()) == 0
-            || APStoryQuestEnforcer.IsGigGoalCheck(gameState, locationId);
+        if StrCmp(locationId, APStoryQuestEnforcer.GetLifepathLocationId()) == 0 {
+            return true;
+        }
+        if APStoryQuestEnforcer.IsGigGoalCheck(gameState, locationId) {
+            return true;
+        }
+        return IsDefined(gameState) && gameState.IsVendorCheckInRun(locationId);
     }
 
     // Record that a story check was reached but does not count, and tell the
