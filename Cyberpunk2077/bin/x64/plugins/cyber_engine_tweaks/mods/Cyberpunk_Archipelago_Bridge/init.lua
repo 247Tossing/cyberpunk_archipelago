@@ -164,6 +164,74 @@ local function saveConfig()
     file:close()
 end
 
+-- Fixer gig tiers (Fixers-Only completion goal).
+--
+-- The RedScript client publishes the street cred that the unlocked fixer tiers
+-- call for as the ap_required_street_cred quest fact. Vanilla gates gig
+-- availability on street cred, so raising the player to that floor is what
+-- actually makes a newly unlocked tier's gigs appear. That lives here rather
+-- than in RedScript because setting a proficiency level is a CET API, and a
+-- failure here is logged rather than breaking script compilation for the mod.
+--
+-- The floor only ever rises, and street cred is never lowered, so this is safe
+-- to re-apply every tick and across save loads.
+local REQUIRED_STREET_CRED_FACT = "ap_required_street_cred"
+local streetCredAccumulator = 0.0
+local streetCredIntervalSeconds = 2.0
+local lastAppliedStreetCred = 0
+
+local function getStreetCredLevel()
+    local ok, level = pcall(function()
+        local player = Game.GetPlayer()
+        if not player then
+            return nil
+        end
+        local devData = PlayerDevelopmentSystem.GetData(player)
+        if not devData then
+            return nil
+        end
+        return devData:GetProficiencyLevel(gamedataProficiencyType.StreetCred)
+    end)
+    if ok and type(level) == "number" then
+        return level
+    end
+    return nil
+end
+
+local function applyRequiredStreetCred()
+    local questsSystem = Game.GetQuestsSystem()
+    if not questsSystem then
+        return
+    end
+
+    local ok, required = pcall(function()
+        return questsSystem:GetFactStr(REQUIRED_STREET_CRED_FACT)
+    end)
+    if not ok or type(required) ~= "number" or required <= 1 then
+        return
+    end
+
+    local current = getStreetCredLevel()
+    if current and current >= required then
+        return
+    end
+    -- Without a readable level, fall back to what we last set so a repeated
+    -- floor is not re-applied every tick.
+    if not current and lastAppliedStreetCred >= required then
+        return
+    end
+
+    local applied = pcall(function()
+        Game.SetLevel("StreetCred", required, 1)
+    end)
+    if applied then
+        lastAppliedStreetCred = required
+        print(string.format("[Archipelago] Fixer tiers unlocked: street cred raised to %d", required))
+    else
+        print("[Archipelago] Failed to raise street cred for unlocked fixer tiers")
+    end
+end
+
 local function decodeChatMessage(rawChatJson)
     if type(rawChatJson) ~= "string" or rawChatJson == "" then
         return nil
@@ -533,6 +601,14 @@ registerForEvent("onDraw", function()
 end)
 
 registerForEvent("onUpdate", function(deltaTime)
+    -- Runs independently of the connection: the street cred floor is stored in a
+    -- quest fact, so it still needs applying after a save load while offline.
+    streetCredAccumulator = streetCredAccumulator + (deltaTime or 0)
+    if streetCredAccumulator >= streetCredIntervalSeconds then
+        streetCredAccumulator = 0.0
+        applyRequiredStreetCred()
+    end
+
     pumpAccumulator = pumpAccumulator + (deltaTime or 0)
     if pumpAccumulator < pumpIntervalSeconds then
         return
