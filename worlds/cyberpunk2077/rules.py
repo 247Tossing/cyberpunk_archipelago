@@ -214,9 +214,10 @@ def _apply_fixer_tier_rules(world: "Cyberpunk2077World", player: int) -> None:
     for _, display_name, fixer, tier in _iter_included_gigs(world, player):
         if tier <= 1:
             continue
+        tier_item = fixer_tier_item_name(fixer, tier)
         add_rule(
             world.multiworld.get_location(display_name, player),
-            lambda state, item=fixer_tier_item_name(fixer, tier): state.has(item, player),
+            lambda state, item=tier_item: state.has(item, player),
         )
 
 

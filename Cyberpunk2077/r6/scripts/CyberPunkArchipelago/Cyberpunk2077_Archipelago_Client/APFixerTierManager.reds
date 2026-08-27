@@ -102,6 +102,7 @@ public class APFixerTierManager extends ScriptableSystem {
         }
 
         this.RefreshUnlockedTierFacts();
-        APLogger.LogInfo(s"Fixer gig tier unlocked: \(itemId) (\(fixer) now at tier \(ToString(this.GetUnlockedTier(fixer))))");
+        let unlocked: Int32 = this.GetUnlockedTier(fixer);
+        APLogger.LogInfo(s"Fixer gig tier unlocked: \(itemId) - \(fixer) now at tier \(ToString(unlocked))");
     }
 }

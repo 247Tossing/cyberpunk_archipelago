@@ -148,7 +148,7 @@ public class APGameState extends ScriptableService {
 
         this.completionGoal = goal;
         this.gigGoalManifestLine = gigManifestLine;
-        this.gigGoalIds = APGameState.ParseGigManifest(gigManifestLine);
+        this.gigGoalIds = this.ParseGigManifest(gigManifestLine);
         this.goalConfigInitialized = true;
         return changed;
     }
@@ -159,7 +159,7 @@ public class APGameState extends ScriptableService {
     }
 
     // Splits the comma-separated gig_goal_manifest slot_data line into quest IDs.
-    private static func ParseGigManifest(manifestLine: String) -> array<String> {
+    private func ParseGigManifest(manifestLine: String) -> array<String> {
         let gigIds: array<String>;
         if StrLen(manifestLine) == 0 {
             return gigIds;
