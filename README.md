@@ -68,6 +68,7 @@ These mods are **not** required but have been tested for compatibility and enhan
    - Archipelago IP/URL ( i.e. ```archipelago.gg``` or your self-hosted instance IP )
    - Port
    - Slot Name
+   - Password (optional — only if your slot is password-protected)
    
    Then click **Connect to Archipelago**
 4. Enjoy!

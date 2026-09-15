@@ -148,7 +148,7 @@ Copy the contents of `Cyberpunk2077/` into your Cyberpunk 2077 root (same layout
 
 After native or RedScript binding changes, deploy **both** updated scripts and `CyberpunkAP.dll` together.
 
-Drop a freshly built `cyberpunk2077.apworld` into the Archipelago launcher (restart the launcher if it was already open). Host or join a multiworld, then in-game open the CET overlay (~), enter server IP/port/slot name, and connect.
+Drop a freshly built `cyberpunk2077.apworld` into the Archipelago launcher (restart the launcher if it was already open). Host or join a multiworld, then in-game open the CET overlay (~), enter server IP/port/slot name, and optionally a password if the slot is password-protected, and connect.
 
 Logs: `{game dir}\bin\x64\plugins\cyber_engine_tweaks\scripting.log`
 

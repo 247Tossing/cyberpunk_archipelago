@@ -34,7 +34,7 @@ public class TCPClient extends ScriptableService {
         }
     }
 
-    public func ConnectFromCET(ip: String, port: Int32, slotName: String) -> Void {
+    public func ConnectFromCET(ip: String, port: Int32, slotName: String, password: String) -> Void {
         // Always reset prior connection state so APBridge.Initialize doesn't early-return
         // on reconnect attempts (drops, refusals, or timeouts leave the native layer
         // initialized+started, which would otherwise make Initialize/Connect no-ops).
@@ -55,7 +55,7 @@ public class TCPClient extends ScriptableService {
             return;
         }
 
-        this.Configure(s"\(ip):\(port)", this.gameName, slotName, this.password);
+        this.Configure(s"\(ip):\(port)", this.gameName, slotName, password);
         if !this.initialized {
             APLogger.LogInfo(s"TCPClient: ERROR - \(this.lastConnectionError)");
             return;

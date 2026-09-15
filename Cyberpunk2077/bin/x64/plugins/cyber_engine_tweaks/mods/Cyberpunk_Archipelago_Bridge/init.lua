@@ -1,7 +1,8 @@
 local DEFAULTS = {
     ip = "archipelago.gg",
     port = 38281,
-    slotName = "Player1"
+    slotName = "Player1",
+    password = ""
 }
 
 local CONFIG_PATH = "config.json"
@@ -10,7 +11,8 @@ local MAX_CHAT_MESSAGES = 1000
 local apConfig = {
     ip = DEFAULTS.ip,
     port = DEFAULTS.port,
-    slotName = DEFAULTS.slotName
+    slotName = DEFAULTS.slotName,
+    password = DEFAULTS.password
 }
 
 local isOverlayOpen = false
@@ -438,6 +440,10 @@ registerForEvent("onDraw", function()
     ImGui.SetNextItemWidth(-1)
     apConfig.slotName = ImGui.InputText("##ArchipelagoSlot", apConfig.slotName, 128)
 
+    ImGui.Text("Password")
+    ImGui.SetNextItemWidth(-1)
+    apConfig.password = ImGui.InputText("##ArchipelagoPassword", apConfig.password or "", 128, ImGuiInputTextFlags.Password)
+
     if previousIp ~= apConfig.ip or tonumber(previousPort) ~= tonumber(apConfig.port) or previousSlot ~= apConfig.slotName then
         saveConfig()
     end
@@ -469,7 +475,7 @@ registerForEvent("onDraw", function()
                 apConfig.slotName = trimmedSlot
                 saveConfig()
                 local success, err = pcall(function()
-                    apService:ConnectFromCET(apConfig.ip, tonumber(apConfig.port), apConfig.slotName)
+                    apService:ConnectFromCET(apConfig.ip, tonumber(apConfig.port), apConfig.slotName, apConfig.password or "")
                 end)
                 if success then
                     connectionStatus = "CONNECTING"
