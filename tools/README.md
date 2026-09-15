@@ -2,7 +2,7 @@
 
 ## `build_release.py` (full release)
 
-One command produces both end-user artifacts in `build/`:
+One command produces end-user artifacts in `build/`:
 
 - `cyberpunk2077.apworld`
 - `cyberpunk2077_poptracker_(<version>).zip`
@@ -13,10 +13,11 @@ python tools\build_release.py --archipelago-root <ARCHIPELAGO>
 ```
 
 It runs the whole pipeline in order: fetch native submodules, build the RED4ext
-plugin (`CyberpunkAP.dll`) with CMake in `Release`, link `worlds/cyberpunk2077`
-into the Archipelago checkout, install Archipelago's Python requirements
-non-interactively (`ModuleUpdate.py -y`), build the apworld, generate the
-PopTracker pack, then package the mod zip.
+plugin (`CyberpunkAP.dll`) with CMake in `Release`, build/sync the WolvenKit
+project payload (`archive/` + `r6/tweaks/`) into `Cyberpunk2077/`, link
+`worlds/cyberpunk2077` into the Archipelago checkout, install Archipelago's
+Python requirements non-interactively (`ModuleUpdate.py -y`), build the
+apworld, generate the PopTracker pack, then package the mod zip.
 
 The mbedTLS source tarball (`native/APCpp/mbedtls-3.6.4.tar.bz2`) is gitignored;
 `build_release.py` downloads and verifies it automatically when missing (CI and
@@ -29,9 +30,11 @@ Useful flags:
 
 - `--skip-submodules` - CI already checked out submodules (`actions/checkout`).
 - `--skip-native` - reuse an already-built `CyberpunkAP.dll`.
+- `--skip-wolvenkit` - skip WolvenKit CLI build/sync (uses overlay as-is).
+- `--require-wolvenkit-cli` - fail fast if WolvenKit CLI command is missing.
 - `--skip-requirements` - Archipelago deps already installed.
 - `--skip-poptracker` - skip the generated PopTracker pack.
-- `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.6.0`) matches
+- `--require-tag-version <tag>` - fail unless the tag (e.g. `v0.7.0`) matches
   `world_version`; used for tag-triggered CI.
 
 On Windows, the script intentionally does **not** hardcode a Visual Studio
@@ -42,37 +45,120 @@ variables before running:
 - `CMAKE_GENERATOR` (example: `Visual Studio 18 2026`)
 - optional `CMAKE_GENERATOR_PLATFORM` (example: `x64`)
 
-Windows release builds also pass `-DUSE_OPEN_SSL=ON -DUSE_MBED_TLS=OFF` to
-native CMake configure so IXWebSocket uses OpenSSL instead of defaulting to
-mbedTLS.
+Windows release builds pass `-DUSE_OPEN_SSL=OFF -DUSE_MBED_TLS=ON` to native
+CMake configure so release artifacts do not depend on external OpenSSL runtime
+DLLs.
+
+### WolvenKit in release builds
+
+The release pipeline uses `tools/build_wolvenkit_project.py` to run:
+
+```cmd
+wolvenkit.cli import -p cyberpunk_archipelago-wolvenkitproj\source\raw -o cyberpunk_archipelago-wolvenkitproj\source\archive -k
+wolvenkit.cli pack -p source/archive -o packed/archive/pc/mod
+```
+
+The script auto-detects either `wolvenkit.cli` or `cp77tools` (the default
+command exposed by `dotnet tool install -g wolvenkit.cli`).
+
+Then it validates `cyberpunk_archipelago-wolvenkitproj/packed/` and syncs:
+
+- `packed/archive/` -> `Cyberpunk2077/archive/`
+- `packed/r6/tweaks/` -> `Cyberpunk2077/r6/tweaks/`
+
+so `package_cyberpunk_mod_zip.py` includes ArchiveXL + TweakXL payloads.
+
+For v0.7+ release builds, WolvenKit fallback is intentionally disabled in
+`build_release.py` and GitHub Actions. A failing WolvenKit import/pack now
+fails the release, so broken menu/icon/localization payloads are caught before
+publishing.
+
+The WolvenKit sync script also validates the packed archive's internal depot
+paths and fails if entries are prefixed with `source\archive\` or
+`.projectFiles\`.
+
+Quick check command:
+
+```cmd
+cp77tools archive cyberpunk_archipelago-wolvenkitproj\packed\archive\pc\mod\cyberpunk_archipelago-wolvenkitproj.archive --list
+```
+
+Required entries (exact internal paths):
+
+- `base\gameplay\gui\fullscreen\main_menu\menu_background.xbm`
+- `archipelago\ap-icons.inkatlas`
+- `localization\en-us\ap-strings.json`
+
+If the list shows `source\archive\...`, the build artifact is invalid even if
+the archive file exists and is ~6 MB.
+
+### ArchiveXL + TweakXL troubleshooting (v0.7)
+
+If testers report missing vendor icons or raw fallback LocKey text, use logs in:
+
+- `red4ext/plugins/TweakXL/TweakXL-*.log`
+- `red4ext/plugins/ArchiveXL/ArchiveXL-*.log`
+
+Expected healthy state:
+
+- No `atlasResourcePath refers to a non-existent resource` for vendor check items.
+- No `Resource "localization\en-us\ap-strings.json" failed to load`.
+
+Current asset intent:
+
+- Vendor check YAMLs use `atlasResourcePath: archipelago\ap-icons.inkatlas`.
+- `source/archive/localization/en-us/ap-strings.json` must remain present as the
+  fallback localization source for `LocKey#VendorCheck_Fallback_*`.
+
+Menu logo verification:
+
+1. Temporarily disable known menu-overriding mods (for example PreemMenu).
+2. Launch and confirm custom logo appears.
+3. Re-enable the other menu mods.
+
+This avoids false negatives where another mod loads later and overrides
+`menu_background.xbm`.
+
+Local prerequisites:
+
+- .NET 8 SDK
+- `dotnet tool install -g wolvenkit.cli` (8.17.0+ for `build`; CI installs latest)
+
+Notes:
+
+- WolvenKit CLI remains Windows-only in practice for this project workflow.
+- Linux/macOS developers should use `--skip-wolvenkit` and rely on committed
+  `cyberpunk_archipelago-wolvenkitproj/packed/` artifacts.
+- Optional future setup: provide `CP2077_GAME_EXE` to preconfigure CLI game path
+  in environments that need full headless WolvenKit builds.
 
 ### Versioning (RC then stable)
 
 The single source of truth is `world_version` in
-`worlds/cyberpunk2077/archipelago.json`. It feeds both the apworld manifest and
-the mod zip filename, so all three stay one-to-one.
+`worlds/cyberpunk2077/archipelago.json`. It feeds the apworld manifest, the
+PopTracker pack version, and the mod zip filename, so all three stay one-to-one.
 
 Archipelago parses `world_version` with `Utils.tuplize_version`: it must be
-**exactly three dot-separated non-negative integers** (e.g. `0.6.0`). Semver
+**exactly three dot-separated non-negative integers** (e.g. `0.7.0`). Semver
 prerelease strings such as `0.6-rc1` or two-part `0.6` will crash world import.
 
 | Git tag | `world_version` | Mod zip |
 |---------|-----------------|---------|
-| `v0.6.0` | `0.6.0` | `CyberpunkArchipelagoMod_(0.6.0).zip` |
-| `v0.6.1` | `0.6.1` | `CyberpunkArchipelagoMod_(0.6.1).zip` |
+| `v0.7.0` | `0.7.0` | `CyberpunkArchipelagoMod_(0.7.0).zip` |
+| `v0.7.1` | `0.7.1` | `CyberpunkArchipelagoMod_(0.7.1).zip` |
 
 Release checklist:
 
-1. Set `world_version` to the upcoming value (e.g. `0.6.0`), commit.
-2. Tag `v0.6.0` and run the pipeline (or push the tag if CI is tag-triggered).
-3. For the next line: bump `world_version` (e.g. to `0.6.1`), commit, tag `v0.6.1`, release again.
+1. Set `world_version` to the upcoming value (e.g. `0.7.0`), commit.
+2. Tag `v0.7.0` and run the pipeline (or push the tag if CI is tag-triggered).
+3. For the next line: bump `world_version` (e.g. to `0.7.1`), commit, tag `v0.7.1`, release again.
 
 ### GitHub Actions
 
 Workflow: [`.github/workflows/release-artifacts.yml`](../.github/workflows/release-artifacts.yml).
 
 - **Manual run:** GitHub → *Actions* → *Release artifacts* → *Run workflow*. Pick the Archipelago fork/ref (defaults: `ArchipelagoMW/Archipelago` @ `main`). Downloads appear under the run as artifact **`cyberpunk-archipelago-release`** (`cyberpunk2077.apworld` + `cyberpunk2077_poptracker_(…).zip` + `CyberpunkArchipelagoMod_(…).zip`).
-- **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.6.0` requires `world_version` `0.6.0`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
+- **Tag push:** Pushing a tag matching `v*` runs the same build and asserts the tag matches `world_version` in `archipelago.json` (e.g. tag `v0.7.0` requires `world_version` `0.7.0`). Tag builds use Archipelago `ArchipelagoMW/Archipelago` @ `main`; use *Run workflow* to pin another ref.
 
 ## `build_poptracker_pack.py`
 
@@ -99,10 +185,12 @@ PopTracker IDs stay aligned with the apworld and RedScript ID resolver.
 ## `package_cyberpunk_mod_zip.py`
 
 Packages only the game-install overlay from `Cyberpunk2077/` (whitelisted to
-`r6/`, `bin/`, `red4ext/`) into `CyberpunkArchipelagoMod_(<version>).zip`. The
+`r6/`, `bin/`, `red4ext/`, `archive/`) into
+`CyberpunkArchipelagoMod_(<version>).zip`. The
 zip extracts directly into the Cyberpunk 2077 root. It fails fast if
-`red4ext/plugins/CyberpunkAP/CyberpunkAP.dll` is missing, so build the native
-plugin first.
+`red4ext/plugins/CyberpunkAP/CyberpunkAP.dll` is missing, or if required
+WolvenKit payload files (`archive/pc/mod/*.archive` and vendor tweak YAMLs) are
+missing, so run the release pipeline (or the WolvenKit sync script) first.
 
 ```cmd
 python tools\package_cyberpunk_mod_zip.py

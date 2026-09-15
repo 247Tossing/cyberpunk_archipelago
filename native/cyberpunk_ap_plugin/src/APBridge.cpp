@@ -1,5 +1,73 @@
 #include "APBridge.hpp"
 
+#include <chrono>
+#include <cstdio>
+
+namespace
+{
+// Must comfortably exceed APCpp's wss:// -> ws:// fallback window (a few retries on wss:// before
+// falling back to plaintext), so a transient SSL/websocket hiccup doesn't get shut down here before
+// the fallback has a chance to succeed.
+constexpr auto kConnectAttemptTimeout = std::chrono::seconds(30);
+constexpr char kConnectTimeoutMessage[] = "Connection timed out. Verify host, port, and slot.";
+
+std::string NormalizeSlotDataRawString(std::string rawValue)
+{
+    while (!rawValue.empty() && (rawValue.back() == '\n' || rawValue.back() == '\r'))
+    {
+        rawValue.pop_back();
+    }
+
+    if (rawValue.size() >= 2 && rawValue.front() == '"' && rawValue.back() == '"')
+    {
+        rawValue = rawValue.substr(1, rawValue.size() - 2);
+        std::string unescaped;
+        unescaped.reserve(rawValue.size());
+        bool escaping = false;
+        for (char current : rawValue)
+        {
+            if (escaping)
+            {
+                switch (current)
+                {
+                case 'n':
+                    unescaped.push_back('\n');
+                    break;
+                case 'r':
+                    unescaped.push_back('\r');
+                    break;
+                case 't':
+                    unescaped.push_back('\t');
+                    break;
+                case '\\':
+                    unescaped.push_back('\\');
+                    break;
+                case '"':
+                    unescaped.push_back('"');
+                    break;
+                default:
+                    unescaped.push_back(current);
+                    break;
+                }
+                escaping = false;
+                continue;
+            }
+
+            if (current == '\\')
+            {
+                escaping = true;
+                continue;
+            }
+
+            unescaped.push_back(current);
+        }
+        rawValue = unescaped;
+    }
+
+    return rawValue;
+}
+} // namespace
+
 namespace CyberpunkArchipelago
 {
 APBridge& APBridge::Get()
@@ -30,12 +98,27 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_SetLocationCheckedCallback(&APBridge::OnLocationChecked);
     AP_SetDeathLinkSupported(true);
     AP_SetDeathLinkRecvCallback(&APBridge::OnDeathLinkReceived);
+    AP_RegisterSlotDataIntCallback("death_link", &APBridge::OnSlotDataDeathLink);
     AP_RegisterSlotDataIntCallback("restrict_by_major_district", &APBridge::OnSlotDataRestrictByMajorDistrict);
+    AP_RegisterSlotDataIntCallback("restrict_by_sub_district", &APBridge::OnSlotDataRestrictBySubDistrict);
+    AP_RegisterSlotDataIntCallback("district_token_gated_major_mask", &APBridge::OnSlotDataDistrictTokenGatedMajorMask);
+    AP_RegisterSlotDataIntCallback("weapon_restriction_type", &APBridge::OnSlotDataWeaponRestrictionType);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_pistol", &APBridge::OnSlotDataWeaponRestrictPistol);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_melee", &APBridge::OnSlotDataWeaponRestrictMelee);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_rifle", &APBridge::OnSlotDataWeaponRestrictRifle);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_sniper", &APBridge::OnSlotDataWeaponRestrictSniper);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_lmg", &APBridge::OnSlotDataWeaponRestrictLmg);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_shotgun", &APBridge::OnSlotDataWeaponRestrictShotgun);
+    AP_RegisterSlotDataIntCallback("weapon_restrict_smg", &APBridge::OnSlotDataWeaponRestrictSmg);
+    AP_RegisterSlotDataIntCallback("vendor_sanity", &APBridge::OnSlotDataVendorSanity);
+    AP_RegisterSlotDataRawCallback("vendor_sanity_stock", &APBridge::OnSlotDataVendorSanityStock);
 
     // AP_Init() is void and has no synchronous failure path; AP_IsInit() only
     // returns true after AP_Start() is called, so we track init state ourselves.
     m_initialized = true;
     m_started = false;
+    m_connectAttemptActive = false;
+    m_localConnectionError.clear();
     return true;
 }
 
@@ -55,12 +138,46 @@ bool APBridge::Connect()
         m_started = true;
     }
 
+    m_connectAttemptActive = true;
+    m_connectAttemptStart = std::chrono::steady_clock::now();
+    m_localConnectionError.clear();
+
     return true;
+}
+
+void APBridge::ProcessConnectionAttempt()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (!m_connectAttemptActive)
+    {
+        return;
+    }
+
+    const auto status = AP_GetConnectionStatus();
+    if (status == AP_ConnectionStatus::Authenticated || status == AP_ConnectionStatus::ConnectionRefused)
+    {
+        m_connectAttemptActive = false;
+        return;
+    }
+
+    const auto elapsed = std::chrono::steady_clock::now() - m_connectAttemptStart;
+    if (elapsed < kConnectAttemptTimeout)
+    {
+        return;
+    }
+
+    m_localConnectionError = kConnectTimeoutMessage;
+    ShutdownLocked(false);
 }
 
 void APBridge::Shutdown()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+    ShutdownLocked(true);
+}
+
+void APBridge::ShutdownLocked(bool clearConnectionError)
+{
     if (AP_IsInit())
     {
         AP_Shutdown();
@@ -68,10 +185,33 @@ void APBridge::Shutdown()
 
     m_initialized = false;
     m_started = false;
+    m_connectAttemptActive = false;
+    if (clearConnectionError)
+    {
+        m_localConnectionError.clear();
+    }
     m_deathLinkPending = false;
+    m_deathLinkEnabled = false;
     m_restrictByMajorDistrict = false;
-    std::queue<int64_t> empty;
-    m_receivedItemIds.swap(empty);
+    m_restrictBySubDistrict = false;
+    m_districtTokenGatedMajorMask = 0;
+    m_weaponRestrictionType = 0;
+    m_weaponRestrictPistol = false;
+    m_weaponRestrictMelee = false;
+    m_weaponRestrictRifle = false;
+    m_weaponRestrictSniper = false;
+    m_weaponRestrictLmg = false;
+    m_weaponRestrictShotgun = false;
+    m_weaponRestrictSmg = false;
+    m_vendorSanityEnabled = false;
+    m_vendorSanityStockLine.clear();
+    std::queue<ReceivedItemEntry> empty;
+    m_receivedItems.swap(empty);
+    m_lastPolledNetworkIndex = -1;
+    m_lastPolledShouldNotify = false;
+    m_lastPolledNotifySender.clear();
+    m_lastPolledNotifyDisplayName.clear();
+    m_lastPolledChatMessageJson.clear();
 }
 
 bool APBridge::IsReady() const
@@ -103,7 +243,24 @@ int32_t APBridge::GetConnectionStatus() const
 std::string APBridge::GetLastConnectionError() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+    if (!m_localConnectionError.empty())
+    {
+        return m_localConnectionError;
+    }
     if (!m_initialized) return "";
+    if (m_connectAttemptActive)
+    {
+        // APCpp's raw last-connection-error is updated on every websocket Error/Close event,
+        // including transient ones during the wss:// -> ws:// retry/fallback sequence (IXWebSocket
+        // reports these with an errno/WSA value of 0, which strerror renders as "Success" - hence
+        // the confusing "Connect error: Success" message). Surfacing that here while an attempt is
+        // still active makes RedScript/CET treat a mid-retry hiccup as a final failure. Genuinely
+        // terminal outcomes don't need this: a refusal flips AP_GetConnectionStatus() to
+        // ConnectionRefused, which ProcessConnectionAttempt() already resolves by clearing
+        // m_connectAttemptActive before this is queried again; a bridge-level timeout sets
+        // m_localConnectionError directly, which is returned above.
+        return "";
+    }
     const char* error = AP_GetLastConnectionError();
     if (error)
     {
@@ -130,10 +287,24 @@ bool APBridge::SendDeathLink(const std::string& cause)
     std::lock_guard<std::mutex> lock(m_mutex);
     if (!IsReadyLocked())
     {
+        std::fprintf(stderr, "CyberpunkAP: SendDeathLink rejected — bridge not ready\n");
         return false;
     }
 
+    std::fprintf(stderr, "CyberpunkAP: SendDeathLink invoking APCpp (cause=\"%s\")\n", cause.c_str());
     AP_DeathLinkSend(cause);
+    return true;
+}
+
+bool APBridge::SendSay(const std::string& text)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (!IsReadyLocked())
+    {
+        return false;
+    }
+
+    AP_Say(text);
     return true;
 }
 
@@ -152,14 +323,77 @@ bool APBridge::StoryComplete()
 bool APBridge::PollReceivedItemId(int64_t& outItemId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    if (m_receivedItemIds.empty())
+    m_lastPolledNetworkIndex = -1;
+    m_lastPolledShouldNotify = false;
+    m_lastPolledNotifySender.clear();
+    m_lastPolledNotifyDisplayName.clear();
+
+    if (m_receivedItems.empty())
     {
         return false;
     }
 
-    outItemId = m_receivedItemIds.front();
-    m_receivedItemIds.pop();
+    const ReceivedItemEntry entry = m_receivedItems.front();
+    m_receivedItems.pop();
+    outItemId = entry.itemId;
+    m_lastPolledNetworkIndex = entry.networkIndex;
+    m_lastPolledShouldNotify = entry.shouldNotify;
+
+    m_lastPolledNotifySender = entry.senderName;
+    m_lastPolledNotifyDisplayName = entry.itemDisplayName;
     return true;
+}
+
+bool APBridge::PollChatMessage()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_lastPolledChatMessageJson.clear();
+    if (!IsReadyLocked())
+    {
+        return false;
+    }
+
+    if (!AP_PollChatMessage())
+    {
+        return false;
+    }
+
+    const char* json = AP_GetPolledChatMessageJson();
+    if (json)
+    {
+        m_lastPolledChatMessageJson = json;
+    }
+    return !m_lastPolledChatMessageJson.empty();
+}
+
+std::string APBridge::GetPolledChatMessageJson() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledChatMessageJson;
+}
+
+int32_t APBridge::GetPolledItemNetworkIndex() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNetworkIndex;
+}
+
+bool APBridge::GetPolledItemShouldNotify() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledShouldNotify;
+}
+
+std::string APBridge::GetPolledItemNotifySender() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNotifySender;
+}
+
+std::string APBridge::GetPolledItemNotifyDisplayName() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_lastPolledNotifyDisplayName;
 }
 
 bool APBridge::IsDeathLinkPending() const
@@ -178,22 +412,105 @@ void APBridge::ClearDeathLink()
     }
 }
 
+bool APBridge::GetDeathLinkEnabled() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_deathLinkEnabled;
+}
+
 bool APBridge::GetRestrictByMajorDistrict() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_restrictByMajorDistrict;
 }
 
+bool APBridge::GetRestrictBySubDistrict() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_restrictBySubDistrict;
+}
+
+int32_t APBridge::GetDistrictTokenGatedMajorMask() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_districtTokenGatedMajorMask;
+}
+
+int32_t APBridge::GetWeaponRestrictionType() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictionType;
+}
+
+bool APBridge::GetWeaponRestrictPistol() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictPistol;
+}
+
+bool APBridge::GetWeaponRestrictMelee() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictMelee;
+}
+
+bool APBridge::GetWeaponRestrictRifle() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictRifle;
+}
+
+bool APBridge::GetWeaponRestrictSniper() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictSniper;
+}
+
+bool APBridge::GetWeaponRestrictLmg() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictLmg;
+}
+
+bool APBridge::GetWeaponRestrictShotgun() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictShotgun;
+}
+
+bool APBridge::GetWeaponRestrictSmg() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_weaponRestrictSmg;
+}
+
+bool APBridge::GetVendorSanityEnabled() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_vendorSanityEnabled;
+}
+
+std::string APBridge::GetVendorSanityStockLine() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_vendorSanityStockLine;
+}
+
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
-    std::queue<int64_t> empty;
-    APBridge::Get().m_receivedItemIds.swap(empty);
+    std::queue<ReceivedItemEntry> empty;
+    APBridge::Get().m_receivedItems.swap(empty);
+    APBridge::Get().m_lastPolledNetworkIndex = -1;
+    APBridge::Get().m_lastPolledShouldNotify = false;
+    APBridge::Get().m_lastPolledNotifySender.clear();
+    APBridge::Get().m_lastPolledNotifyDisplayName.clear();
+    APBridge::Get().m_lastPolledChatMessageJson.clear();
 }
 
-void APBridge::OnItemReceived(int64_t itemId, bool)
+void APBridge::OnItemReceived(int64_t itemId, std::string senderName, std::string itemDisplayName, bool notify, int32_t networkIndex)
 {
-    APBridge::Get().PushItem(itemId);
+    APBridge::Get().PushItem(itemId, senderName, itemDisplayName, notify, networkIndex);
 }
 
 void APBridge::OnLocationChecked(int64_t)
@@ -202,7 +519,14 @@ void APBridge::OnLocationChecked(int64_t)
 
 void APBridge::OnDeathLinkReceived()
 {
+    std::fprintf(stderr, "CyberpunkAP: inbound DeathLink received — marked pending\n");
     APBridge::Get().MarkDeathLinkPending();
+}
+
+void APBridge::OnSlotDataDeathLink(int value)
+{
+    std::fprintf(stderr, "CyberpunkAP: slot_data death_link=%d\n", value);
+    APBridge::Get().SetDeathLinkEnabled(value != 0);
 }
 
 void APBridge::OnSlotDataRestrictByMajorDistrict(int value)
@@ -210,10 +534,70 @@ void APBridge::OnSlotDataRestrictByMajorDistrict(int value)
     APBridge::Get().SetRestrictByMajorDistrict(value != 0);
 }
 
-void APBridge::PushItem(int64_t itemId)
+void APBridge::OnSlotDataRestrictBySubDistrict(int value)
+{
+    APBridge::Get().SetRestrictBySubDistrict(value != 0);
+}
+
+void APBridge::OnSlotDataDistrictTokenGatedMajorMask(int value)
+{
+    APBridge::Get().SetDistrictTokenGatedMajorMask(value);
+}
+
+void APBridge::OnSlotDataWeaponRestrictionType(int value)
+{
+    APBridge::Get().SetWeaponRestrictionType(value);
+}
+
+void APBridge::OnSlotDataWeaponRestrictPistol(int value)
+{
+    APBridge::Get().SetWeaponRestrictPistol(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictMelee(int value)
+{
+    APBridge::Get().SetWeaponRestrictMelee(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictRifle(int value)
+{
+    APBridge::Get().SetWeaponRestrictRifle(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictSniper(int value)
+{
+    APBridge::Get().SetWeaponRestrictSniper(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictLmg(int value)
+{
+    APBridge::Get().SetWeaponRestrictLmg(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictShotgun(int value)
+{
+    APBridge::Get().SetWeaponRestrictShotgun(value != 0);
+}
+
+void APBridge::OnSlotDataWeaponRestrictSmg(int value)
+{
+    APBridge::Get().SetWeaponRestrictSmg(value != 0);
+}
+
+void APBridge::OnSlotDataVendorSanity(int value)
+{
+    APBridge::Get().SetVendorSanityEnabled(value != 0);
+}
+
+void APBridge::OnSlotDataVendorSanityStock(std::string value)
+{
+    APBridge::Get().SetVendorSanityStockLine(value);
+}
+
+void APBridge::PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify, int32_t networkIndex)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_receivedItemIds.push(itemId);
+    m_receivedItems.push({itemId, senderName, itemDisplayName, shouldNotify, networkIndex});
 }
 
 void APBridge::MarkDeathLinkPending()
@@ -226,5 +610,83 @@ void APBridge::SetRestrictByMajorDistrict(bool value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_restrictByMajorDistrict = value;
+}
+
+void APBridge::SetDeathLinkEnabled(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_deathLinkEnabled = value;
+}
+
+void APBridge::SetRestrictBySubDistrict(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_restrictBySubDistrict = value;
+}
+
+void APBridge::SetDistrictTokenGatedMajorMask(int32_t value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_districtTokenGatedMajorMask = value;
+}
+
+void APBridge::SetWeaponRestrictionType(int32_t value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictionType = value;
+}
+
+void APBridge::SetWeaponRestrictPistol(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictPistol = value;
+}
+
+void APBridge::SetWeaponRestrictMelee(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictMelee = value;
+}
+
+void APBridge::SetWeaponRestrictRifle(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictRifle = value;
+}
+
+void APBridge::SetWeaponRestrictSniper(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictSniper = value;
+}
+
+void APBridge::SetWeaponRestrictLmg(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictLmg = value;
+}
+
+void APBridge::SetWeaponRestrictShotgun(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictShotgun = value;
+}
+
+void APBridge::SetWeaponRestrictSmg(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_weaponRestrictSmg = value;
+}
+
+void APBridge::SetVendorSanityEnabled(bool value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_vendorSanityEnabled = value;
+}
+
+void APBridge::SetVendorSanityStockLine(const std::string& value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_vendorSanityStockLine = NormalizeSlotDataRawString(value);
 }
 } // namespace CyberpunkArchipelago

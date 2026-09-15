@@ -1,0 +1,47 @@
+# Runs the community Archipelago fuzzer (Eijebong/Archipelago-fuzzer, via
+# Eijebong/ap-actions) against the cyberpunk2077 apworld. Generation is known
+# to be fragile (see README), so this runs as part of the release workflow
+# rather than on every PR, per official guidance in docs/tests.md upstream:
+# "Consider generating/validating 'random' games as part of your APWorld
+# release workflow rather than having that be part of continuous integration."
+#
+# On failure, the action uploads the generated fuzz_output/ as a build
+# artifact so failures can be triaged and turned into targeted test_*.py
+# reproducers under worlds/cyberpunk2077/test/.
+
+name: Fuzz apworld
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      ap_version:
+        description: "Archipelago version tag to fuzz against (or 'latest')."
+        default: "0.6.6"
+        required: true
+      runs:
+        description: "Number of fuzzer generations to run."
+        default: "100"
+        required: true
+      meta:
+        description: "Optional path (relative to the Archipelago checkout) to a fuzzer meta/constraints YAML file."
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: Eijebong/ap-actions/fuzz@main
+        with:
+          apworld-path: worlds/cyberpunk2077
+          ap-version: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ap_version || '0.6.6' }}
+          python-version: "3.12"
+          runs: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.runs || '500' }}
+          yamls-per-run: 1
+          meta: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.meta || '' }}

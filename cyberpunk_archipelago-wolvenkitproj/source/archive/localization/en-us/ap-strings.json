@@ -1,0 +1,19 @@
+﻿{
+  "$type": "localizationPersistenceOnScreenEntries",
+  "entries": [
+    {
+      "$type": "localizationPersistenceOnScreenEntry",
+      "femaleVariant": "Archipelago Check",
+      "maleVariant": "Archipelago Check",
+      "primaryKey": 0,
+      "secondaryKey": "VendorCheck_Fallback_1_Name"
+    },
+    {
+      "$type": "localizationPersistenceOnScreenEntry",
+      "femaleVariant": "An Archipelago check that will send an Item to another player",
+      "maleVariant": "An Archipelago check that will send an Item to another player",
+      "primaryKey": 0,
+      "secondaryKey": "VendorCheck_Fallback_1_Desc"
+    }
+  ]
+}

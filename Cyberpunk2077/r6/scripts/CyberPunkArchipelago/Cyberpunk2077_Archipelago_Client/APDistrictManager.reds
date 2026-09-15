@@ -24,12 +24,17 @@ public class APDistrictManager extends ScriptableSystem {
             return true;
         }
 
+        if StrCmp(districtId, "unknown") == 0 {
+            return true;
+        }
+
+        if !APGameState.IsDistrictTokenGated(districtId) {
+            return true;
+        }
+
         if !IsDefined(this.questHandler) {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return false;
-        }
-        if StrCmp(districtId, "unknown") == 0 {
-            return true;
         }
         return this.questHandler.HasQuestKey(districtId);
     }
@@ -40,8 +45,15 @@ public class APDistrictManager extends ScriptableSystem {
             APLogger.LogDebug("APDistrictManager: Quest handler not initialized");
             return;
         }
-        this.questHandler.SetQuestKey(districtId);
-        APLogger.LogInfo(s"District unlocked: \(districtId)");
+
+        // Only report success when the quest fact write actually succeeded - previously this logged
+        // "District unlocked" unconditionally, which was misleading when SetQuestKey failed (e.g. the
+        // quest system wasn't available yet), leaving the district silently still locked.
+        if this.questHandler.SetQuestKey(districtId) {
+            APLogger.LogInfo(s"District unlocked: \(districtId)");
+        } else {
+            APLogger.LogError(s"APDistrictManager: Failed to unlock district \(districtId) - quest system not available");
+        }
     }
 
     // Handle district restriction (called when player enters locked district)
@@ -61,6 +73,18 @@ public class APDistrictManager extends ScriptableSystem {
             return;
         }
 
+        // Don't teleport while a post-spawn/connect item resync is still draining - the quest facts
+        // HasQuestKey reads below may not yet reflect district tokens the player already owns (see
+        // APGameState.itemResyncPending / TCPClient.ArmItemResyncPending). This is what caused the
+        // softlock: after a save reload, SyncData ran with an empty/incomplete item list, and
+        // entering a district before the AP item backlog finished replaying got the player kicked
+        // out of a district they actually owned the token for.
+        let resyncGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if IsDefined(resyncGameState) && resyncGameState.IsItemResyncPending() {
+            APLogger.LogInfo("APDistrictManager: Deferring district enforcement - item resync still in progress");
+            return;
+        }
+
         // Get the major district enum from the game's district string
         let district: APDistrict = this.districtEnforcer.GetMajorDistrict(districtString);
         let districtId: String = this.districtEnforcer.ParseEnumToDistrictID(district);
@@ -72,6 +96,15 @@ public class APDistrictManager extends ScriptableSystem {
 
         APLogger.LogInfo(s"District locked. Requires Access Token");
         APLogger.LogDebug(s"Locked district: \(districtId)");
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if IsDefined(gameState) {
+            let phoneSystem: ref<APPhoneSystem> = gameState.GetPhoneSystem();
+            if IsDefined(phoneSystem) {
+                let player: ref<GameObject> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject();
+                let districtDisplayName: String = this.districtEnforcer.ParseEnumToDistrictDisplayName(district);
+                phoneSystem.SendDistrictRestrictionNotification(player, districtDisplayName);
+            }
+        }
         // District is locked - teleport player to nearest safe point
         this.TeleportToSafeZone();
     }

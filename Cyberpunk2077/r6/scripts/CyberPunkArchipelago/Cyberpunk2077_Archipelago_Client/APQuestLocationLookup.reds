@@ -37,12 +37,67 @@ public class APQuestLocationLookup {
             return "pl_split_quest_3";
         }
 
-        // Songbird path: Killing Moon uses Active/Succeeded handlers in OnJournalUpdate.
+        // Songbird path: Killing Moon uses Active/Succeeded handlers in HandleJournalStateChange (APGameSystem).
         if StrCmp(questId, "q306_devils_bargain") == 0 {
             return "";
         }
 
+        // Act 3 pre-Nocturne branches — intermediate quests, not tracked separately.
+        if StrCmp(questId, "q113_rescuing_hanako") == 0
+            || StrCmp(questId, "q113_corpo") == 0 {
+            return "";
+        }
+
+        // Act 3 ending-path quests — epilogues (q201_heir aliases) cover "Ending Reached".
+        if StrCmp(questId, "q114_01_nomad_initiation") == 0
+            || StrCmp(questId, "q114_02_maglev_line_assault") == 0
+            || StrCmp(questId, "q114_03_attack_on_arasaka_tower") == 0
+            || StrCmp(questId, "q115_afterlife") == 0
+            || StrCmp(questId, "q115_rogues_last_flight") == 0
+            || StrCmp(questId, "q116_cyberspace") == 0
+            || StrCmp(questId, "09_solo") == 0 {
+            return "";
+        }
+
         return questId;
+    }
+
+    // Extract a quest id from a journal path-like string.
+    // Supports both slash styles because journal paths can be serialized either way.
+    public static func ExtractQuestIdFromPath(pathValue: String) -> String {
+        if StrLen(pathValue) == 0 {
+            return "";
+        }
+
+        let questId: String = StrAfterLast(pathValue, "/");
+        if StrLen(questId) > 0 {
+            return questId;
+        }
+
+        return StrAfterLast(pathValue, "\\");
+    }
+
+    // Guards against sending unknown/non-world checks.
+    public static func IsKnownLocationId(locationId: String) -> Bool {
+        return APArchipelagoIdMappings.ResolveLocationAddress(locationId) >= 0l;
+    }
+
+    // Unified completion handler used by all quest completion hooks.
+    public static func HandleSucceededQuest(questSystem: ref<QuestsSystem>, tcpService: ref<TCPClient>, questId: String) -> Void {
+        if StrLen(questId) == 0 {
+            return;
+        }
+
+        let locationId: String = APQuestLocationLookup.ResolveLocationId(questId);
+        if StrLen(locationId) == 0 {
+            return;
+        }
+
+        if !APQuestLocationLookup.IsKnownLocationId(locationId) {
+            return;
+        }
+
+        APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
     }
 
     // Send a location check once (idempotent via ap_<locationId> quest facts).
@@ -58,5 +113,15 @@ public class APQuestLocationLookup {
 
         questSystem.SetFact(factName, 1);
         tcpService.SendCheck(locationId);
+
+        // Notify the AP server of goal completion so remaining slot checks can release.
+        if StrCmp(locationId, "q201_heir") == 0 {
+            let storyCompleteFact: CName = StringToName("ap_story_complete_sent");
+            if questSystem.GetFact(storyCompleteFact) < 1 {
+                if AP_StoryComplete() {
+                    questSystem.SetFact(storyCompleteFact, 1);
+                }
+            }
+        }
     }
 }

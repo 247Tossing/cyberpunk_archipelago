@@ -2,8 +2,10 @@ module Archipelago
 
 public class APWeaponRestrictionEnforcer extends ScriptableService {
 
-    private func OnAttach() -> Void {
-        APLogger.LogInfo("APWeaponRestrictionEnforcer attached and ready");
+    // ScriptableService's lifecycle callback is OnLoad, not OnAttach (that's for ScriptableSystem) -
+    // see APGameState.OnLoad for details on why this matters.
+    private func OnLoad() -> Void {
+        APLogger.LogInfo("APWeaponRestrictionEnforcer loaded and ready");
     }
 
     // This function is called by the game's equipment system when checking if a weapon can be equipped
@@ -73,17 +75,25 @@ public class APWeaponRestrictionEnforcer extends ScriptableService {
 public final func EquipItem(itemId: ItemID, slot: Int32) -> Void {
     APLogger.LogDebug(s"Incoming Item equip attempt");
     let weaponEnforcer = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APWeaponRestrictionEnforcer") as APWeaponRestrictionEnforcer;
-    if IsDefined(weaponEnforcer) {
-        let incomingItem = itemId.GetTDBID();
-        let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(incomingItem);
-        let itemType = itemRecord.ItemType().Type();
-        APLogger.LogDebug(s"Item Type is: \(itemType)");
-        if weaponEnforcer.CanEquipWeapon(itemType) {
-                APLogger.LogDebug("Weapon equip allowed");
-                wrappedMethod(itemId, slot); // Proceed with the equip action
-            } else {
-                APLogger.LogDebug("Weapon equip blocked by Archipelago restrictions");
-                return; // Block the equip action
-        }
+    if !IsDefined(weaponEnforcer) {
+        wrappedMethod(itemId, slot);
+        return;
+    }
+
+    let incomingItem = itemId.GetTDBID();
+    let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(incomingItem);
+    if !IsDefined(itemRecord) {
+        wrappedMethod(itemId, slot);
+        return;
+    }
+
+    let itemType = itemRecord.ItemType().Type();
+    APLogger.LogDebug(s"Item Type is: \(itemType)");
+    if weaponEnforcer.CanEquipWeapon(itemType) {
+        APLogger.LogDebug("Weapon equip allowed");
+        wrappedMethod(itemId, slot); // Proceed with the equip action
+    } else {
+        APLogger.LogDebug("Weapon equip blocked by Archipelago restrictions");
+        return; // Block the equip action
     }
 }

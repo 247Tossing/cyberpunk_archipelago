@@ -17,6 +17,13 @@ public class APGameSystem extends ScriptableSystem {
         APLogger.LogInfo("Cyberpunk 2077 Archipelago System Ready");
     }
 
+    public func OnDetach() -> Void {
+        let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(this.GetGameInstance());
+        if IsDefined(journalManager) {
+            journalManager.UnregisterScriptCallback(this, n"HandleJournalStateChange");
+        }
+    }
+
     public func SendSyncChecks() -> Void {
         let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
         if !IsDefined(tcpClient){
@@ -54,8 +61,20 @@ public class APGameSystem extends ScriptableSystem {
 
     public func SyncData() -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("APGameSystem: Cannot sync data - game state not available");
+            return;
+        }
+
+        // Handlers are cached in OnAttach; ScriptableSystems (and this cache) are recreated on every
+        // save load, so guard against SyncData running before OnAttach has resolved them.
+        if !IsDefined(this.inventoryHandler) || !IsDefined(this.questHandler) {
+            APLogger.LogDebug("APGameSystem: Cannot sync data - inventory/quest handler not available");
+            return;
+        }
+
         let gameStateItems: ref<APItemList> = APGameState.GetItems();
-        APLogger.LogInfo("Starting Item Sync");
+        APLogger.LogInfo(s"Starting Item Sync - \(ArraySize(gameStateItems.Items)) tracked item(s)");
 
         for item in gameStateItems.Items { 
             // Try to get the item from the FactsDB
@@ -88,6 +107,10 @@ public class APGameSystem extends ScriptableSystem {
                     // District unlock tokens (binary - just unlock)
                     this.HandleDistrictUnlock(item.itemID);
                 }
+                else if APItemParser.IsWeaponAuthorization(item.itemID) {
+                    // Weapon passes are quest-key style unlocks
+                    this.HandleWeaponUnlock(item.itemID);
+                }
                 else {
                     // Regular inventory items
                     this.inventoryHandler.GiveInventoryItem(item.itemID, difference);
@@ -98,7 +121,49 @@ public class APGameSystem extends ScriptableSystem {
 
         // Always ensure Watson is unlocked as starting district
         this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
+        this.ApplyDistrictRestrictionConfig();
         APLogger.LogInfo("Item Sync Complete");
+    }
+
+    public func ApplyDistrictRestrictionConfig() -> Void {
+        let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("APGameSystem: Cannot apply district config - game state not available");
+            return;
+        }
+
+        if !APGameState.districtRestrictionConfigInitialized || !APGameState.restrictByMajorDistrict {
+            return;
+        }
+
+        if !IsDefined(this.questHandler) {
+            APLogger.LogDebug("APGameSystem: Cannot apply district config - quest handler not available");
+            return;
+        }
+
+        this.questHandler.SetQuestKey(APConstants.GetWatsonAccessToken());
+
+        if !APGameState.IsDistrictTokenGated(APConstants.GetWestbrookAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetWestbrookAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetCityCenterAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetCityCenterAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetHeywoodAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetHeywoodAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetSantoDomingoAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetSantoDomingoAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetPacificaAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetPacificaAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetBadlandsAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetBadlandsAccessToken());
+        }
+        if !APGameState.IsDistrictTokenGated(APConstants.GetDogtownAccessToken()) {
+            this.questHandler.SetQuestKey(APConstants.GetDogtownAccessToken());
+        }
     }
 
     public func HandleDistrictRestriction(district: String) -> Void {
@@ -133,6 +198,88 @@ public class APGameSystem extends ScriptableSystem {
         this.SendTarotFound(value);
     }
 
+    public cb func HandleJournalStateChange(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
+        if !Equals(className, n"gameJournalQuest") {
+            return true;
+        }
+
+        let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(this.GetGameInstance());
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(this.GetGameInstance()) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if !IsDefined(journalManager) || !IsDefined(questSystem) || !IsDefined(tcpService) {
+            return true;
+        }
+
+        let entry: wref<JournalEntry> = journalManager.GetEntry(hash);
+        let quest: wref<JournalQuest> = entry as JournalQuest;
+        if !IsDefined(quest) {
+            return true;
+        }
+
+        let questId: String = ToString(quest.id);
+        let state: gameJournalEntryState = journalManager.GetEntryState(entry);
+
+        // Phantom Liberty path split: Songbird path — Killing Moon started -> Split Quest 1.
+        if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Active) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_1");
+            return true;
+        }
+
+        // Phantom Liberty path split: Songbird path — Killing Moon completed -> Split Quest 2 + 3.
+        if StrCmp(questId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Succeeded) {
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_2");
+            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_3");
+            return true;
+        }
+
+        // Aldecaldos camp relocates to Jackson Plains once "Queen of the Highway" completes,
+        // making Stall 1 (pre-move camp ripperdoc) permanently unreachable. Release any
+        // unchecked Stall 1 vendor checks so vendor-sanity runs never get stuck on them.
+        if StrCmp(questId, APConstants.GetQueenOfTheHighwayQuestId()) == 0 && Equals(state, gameJournalEntryState.Succeeded) {
+            APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
+            APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks(this.GetGameInstance());
+            return true;
+        }
+
+        if Equals(state, gameJournalEntryState.Succeeded) {
+            APLogger.LogDebug(s"HandleJournalStateChange completion: questId=\(questId)");
+            APQuestLocationLookup.HandleSucceededQuest(questSystem, tcpService, questId);
+        }
+
+        return true;
+    }
+
+    // Aldecaldos camp relocates to Jackson Plains once "Queen of the Highway" completes,
+    // making Stall 1 (pre-move camp ripperdoc) permanently unreachable. Idempotent and
+    // safe to call from both the quest-completion hook and on spawn (e.g. after loading a
+    // save where the quest was already finished before the player reconnected) — only
+    // sends checks that are part of this run's vendor sanity stock and haven't already
+    // been sent, and no-ops entirely until the camp has actually moved.
+    public static func ReleaseJacksonPlainsRipperdocStall1Checks(game: GameInstance) -> Void {
+        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(game) as QuestsSystem;
+        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetTCPClientName()) as TCPClient;
+        let gameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(APConstants.GetAPGameStateName()) as APGameState;
+        if !IsDefined(questSystem) || !IsDefined(tcpService) || !IsDefined(gameState) {
+            return;
+        }
+        if !gameState.vendorSanityEnabled {
+            return;
+        }
+
+        let campMovedFact: CName = StringToName(s"ap_\(APConstants.GetQueenOfTheHighwayQuestId())");
+        if questSystem.GetFact(campMovedFact) < 1 {
+            // Camp hasn't moved yet — Stall 1 is still reachable normally.
+            return;
+        }
+
+        let locationIds: array<String> = APConstants.GetJacksonPlainsRipperdocStall1LocationIds();
+        for locationId in locationIds {
+            if gameState.IsVendorCheckInRun(locationId) {
+                APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
+            }
+        }
+    }
+
     //Progressive Items
     public func HandleProgressiveItem(item: String) -> Void {
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
@@ -143,22 +290,34 @@ public class APGameSystem extends ScriptableSystem {
         let progressionLevel: Int32 = this.inventoryHandler.GetItemFactCount(item) + 1;
         let resolvedItem: String = APItemProgression.GetProgressiveItem(item, progressionLevel);
         this.AddInventoryItem(resolvedItem);
-        APGameState.items.AddItem(resolvedItem, 1);
+        if IsDefined(APGameState) {
+            APGameState.GetItems().AddItem(resolvedItem, 1);
+        }
         this.inventoryHandler.IncrementItemFact(item, 1);
     }
 
     //Deathlink    
-    public func HandleDeathLink() -> Void {
+    public func HandleDeathLink() -> Bool {
         let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(this.GetGameInstance()).GetLocalPlayerMainGameObject() as PlayerPuppet;
         let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-        if IsDefined(player) {
-            if IsDefined(APGameState) {
-                if !APGameState.diedFromDeathLink {
-                    APGameState.DiedFromDeathLink();
-                    StatusEffectHelper.ApplyStatusEffect(player, t"BaseStatusEffect.ForceKill");
-                }
-            }
+        if !IsDefined(player) {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — player puppet not available");
+            return false;
         }
+        if !IsDefined(APGameState) {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — APGameState not available");
+            return false;
+        }
+
+        if APGameState.diedFromDeathLink {
+            APLogger.LogDebug("DeathLink: HandleDeathLink — already marked diedFromDeathLink, skipping ForceKill");
+            return true;
+        }
+
+        APLogger.LogInfo("DeathLink: HandleDeathLink — applying ForceKill");
+        APGameState.DiedFromDeathLink();
+        StatusEffectHelper.ApplyStatusEffect(player, t"BaseStatusEffect.ForceKill");
+        return true;
     }
 
     // For when the player receives a quest item from the Archipelago server.
@@ -225,10 +384,24 @@ public class APGameSystem extends ScriptableSystem {
         }
     }
 
-    private func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+    // Re-applies an already-seen network item (i.e. one the server is resending on reconnect that
+    // was already applied during a prior connection). This must never re-trigger one-shot effects
+    // like traps, but progression state (quest keys, district tokens, weapon passes) is safe - and
+    // necessary - to reconcile here, since it recovers grants that never made it into a quest fact
+    // the first time (e.g. the item arrived before the world/quest system was ready).
+    public func HandleItemSync(item: String, gameState: ref<APGameState>) -> Void {
+        if !IsDefined(gameState) {
+            return;
+        }
+
         if !APItemParser.IsValidAPItem(item) {
             return;
         }
+
+        APLogger.LogDebug(s"APGameSystem: Item received from AP server (sync): \(item)");
+
+        // GetItems() lazily creates the list if needed, so this is never null.
+        let items: ref<APItemList> = gameState.GetItems();
 
         // Increment NetworkItem counter for each item processed (matches Python's len(received_items))
         gameState.totalNetworkItemsReceived += 1;
@@ -236,27 +409,34 @@ public class APGameSystem extends ScriptableSystem {
         // Always add to persistent storage first so items can be re-synced on save load
         if APItemParser.IsQuestKey(item) {
             // Quest keys are tracked even though they're binary (0 or 1)
-            gameState.items.AddItem(item, 1);
+            items.AddItem(item, 1);
             this.AddQuestKey(item);
+        }
+        else if APItemParser.IsTrap(item) {
+            // Re-sync should not re-trigger traps.
+            APLogger.LogDebug(s"APGameSystem: Skipping trap replay during sync: \(item)");
         }
         else if APItemParser.IsEddies(item) {
             let amount: Int32 = APItemParser.ParseEddiesAmount(item);
-            gameState.items.AddItem(APConstants.GetMoneyItemId(), amount);
+            items.AddItem(APConstants.GetMoneyItemId(), amount);
         }
         else if APItemParser.IsInventoryItem(item) {
             let itemId: String = APItemParser.ParseInventoryItemId(item);
-            gameState.items.AddItem(itemId, 1);
+            items.AddItem(itemId, 1);
         }
         else if APItemParser.IsProgressiveItem(item) {
             // Track progressive items so they can be re-synced on save load
-            gameState.items.AddItem(item, 1);
+            items.AddItem(item, 1);
         }
         else if APItemParser.IsDistrictToken(item) {
-            // Track district tokens so they can be re-synced on save load
-            gameState.items.AddItem(item, 1);
+            // Track district tokens so they can be re-synced on save load, and retry the unlock in
+            // case the quest fact never got written the first time this item was received.
+            items.AddItem(item, 1);
+            this.HandleDistrictUnlock(item);
         }
         else if APItemParser.IsWeaponAuthorization(item) {
-            gameState.items.AddItem(item, 1);
+            items.AddItem(item, 1);
+            this.HandleWeaponUnlock(item);
         }
         // Note: Skill points and traps not added as they're not fully implemented
     }
@@ -268,14 +448,19 @@ public class APGameSystem extends ScriptableSystem {
             return;
         }
 
-        // Increment NetworkItem counter for real-time items from queue worker
+        APLogger.LogDebug(s"APGameSystem: Item received from AP server: \(item)");
+
+        // GetItems() lazily creates the list if needed, so items is never null once gameState is defined.
+        let items: ref<APItemList>;
         if IsDefined(APGameState) {
+            items = APGameState.GetItems();
+            // Increment NetworkItem counter for real-time items from queue worker
             APGameState.totalNetworkItemsReceived += 1;
         }
 
         if APItemParser.IsQuestKey(item) {
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(item, 1);
+            if IsDefined(items) {
+                items.AddItem(item, 1);
             }
             this.AddQuestKey(item);
         }
@@ -283,7 +468,6 @@ public class APGameSystem extends ScriptableSystem {
             // Not implemented
         }
         else if APItemParser.IsTrap(item) {
-            APLogger.LogDebug(s"APGameSystem: HandleItemReceived called - trap: \(item)");
             let APTrapSystem: ref<APTrapSystem> = GameInstance.GetScriptableSystemsContainer(GetGameInstance()).Get(n"Archipelago.APTrapSystem") as APTrapSystem;
             if IsDefined(APTrapSystem) {
                 APTrapSystem.DoTrap(item);
@@ -291,33 +475,33 @@ public class APGameSystem extends ScriptableSystem {
         }
         else if APItemParser.IsEddies(item) {
             let amount: Int32 = APItemParser.ParseEddiesAmount(item);
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(APConstants.GetMoneyItemId(), amount);
+            if IsDefined(items) {
+                items.AddItem(APConstants.GetMoneyItemId(), amount);
             }
             this.AddEddies(amount);
         }
         else if APItemParser.IsInventoryItem(item) {
             let itemId: String = APItemParser.ParseInventoryItemId(item);
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(itemId, 1);
+            if IsDefined(items) {
+                items.AddItem(itemId, 1);
             }
             this.AddInventoryItem(itemId);
         }
         else if APItemParser.IsProgressiveItem(item) {
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(item, 1);
+            if IsDefined(items) {
+                items.AddItem(item, 1);
             }
             this.HandleProgressiveItem(item);
         }
         else if APItemParser.IsDistrictToken(item) {
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(item, 1);
+            if IsDefined(items) {
+                items.AddItem(item, 1);
             }
             this.HandleDistrictUnlock(item);
         }
         else if APItemParser.IsWeaponAuthorization(item) {
-            if IsDefined(APGameState.items) {
-                APGameState.items.AddItem(item, 1);
+            if IsDefined(items) {
+                items.AddItem(item, 1);
             }
             this.HandleWeaponUnlock(item);
         }
@@ -363,13 +547,26 @@ public final func Update(evt: ref<DistrictEnteredEvent>) -> Void {
 protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpawn>) -> Bool {
     let result = wrappedMethod(evt);
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-    let APGameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
+    // Local must not be named APGameSystem — that shadows the type and breaks static calls
+    // (INVALID_STATIC_USE on ReleaseJacksonPlainsRipperdocStall1Checks).
+    let gameSystem: ref<APGameSystem> = GetGameInstance().GetScriptableSystemsContainer().Get(n"Archipelago.APGameSystem") as APGameSystem;
     //APLogger.LogInfo( s"Character Visible");
     if IsDefined(APGameState) {
         //APLogger.LogInfo( "AP Game State Defined");
         APGameState.HandlePlayerRespawn();
-        APGameSystem.SyncData();
-        APGameSystem.SendSyncChecks();
+
+        // Defer district enforcement until the post-spawn item backlog (if connected) has been
+        // fully drained by TCPClient.Pump - see APGameState.itemResyncPending. Must happen before
+        // SyncData so any DistrictEnteredEvent firing immediately after spawn is already covered.
+        let tcpClient: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
+        if IsDefined(tcpClient) {
+            tcpClient.OnPlayerSpawned();
+        }
+
+        gameSystem.SyncData();
+        APNGPlusBridge.TryReleasePrologueChecksOnSpawn(GetGameInstance());
+        APGameSystem.ReleaseJacksonPlainsRipperdocStall1Checks(GetGameInstance());
+        gameSystem.SendSyncChecks();
 
         // Register the Archipelago phone contact on every spawn
         APLogger.LogDebug("OnSpawn: Attempting to register phone contact");
@@ -382,7 +579,15 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
     }
 
     let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
-    questSystem.RegisterListener(n"mq033_grafitti_counter", APGameSystem, n"HandleTarotCollected");
+    if IsDefined(questSystem) {
+        questSystem.RegisterListener(n"mq033_grafitti_counter", gameSystem, n"HandleTarotCollected");
+    }
+
+    let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
+    if IsDefined(journalManager) && IsDefined(gameSystem) {
+        journalManager.UnregisterScriptCallback(gameSystem, n"HandleJournalStateChange");
+        journalManager.RegisterScriptCallback(gameSystem, n"HandleJournalStateChange", gameJournalListenerType.State);
+    }
     
     return result;
 }
@@ -390,74 +595,33 @@ protected cb func OnMakePlayerVisibleAfterSpawn(evt: ref<EndGracePeriodAfterSpaw
 // For sending DeathLinks
 @wrapMethod(MenuScenario_Idle)
 protected cb func OnShowDeathMenu() -> Bool {
-    //if deathlink is disabled, just return
+    APLogger.LogDebug("DeathLink: OnShowDeathMenu hook fired");
     let APGameState: ref<APGameState> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APGameState") as APGameState;
-    if IsDefined(APGameState) && !APGameState.enableDeathLink {
+    if !IsDefined(APGameState) {
+        APLogger.LogInfo("DeathLink: OnShowDeathMenu — APGameState undefined, cannot evaluate enableDeathLink");
+        return wrappedMethod();
+    }
+
+    if !APGameState.enableDeathLink {
+        APLogger.LogInfo(
+            s"DeathLink: outbound blocked — enableDeathLink=false (native slot_data=\(AP_GetDeathLinkEnabled()))"
+        );
         return wrappedMethod();
     }
 
     let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-    if IsDefined(APGameState) && APGameState.diedFromDeathLink {
-        APLogger.LogInfo( "Death caused by Deathlink"); // This makes sure the game doesn't break if it gets multiple deathlink requests back to back before the player respawns.
+    if APGameState.diedFromDeathLink {
+        APLogger.LogInfo("DeathLink: outbound skipped — death was caused by inbound DeathLink");
         return wrappedMethod();
     }
 
-    if IsDefined(tcpService) {
-        //APLogger.LogInfo( "Sending DeathLink");
-        tcpService.SendDeathLink();
+    if !IsDefined(tcpService) {
+        APLogger.LogInfo("DeathLink: outbound blocked — TCPClient undefined");
+        return wrappedMethod();
     }
 
+    APLogger.LogInfo("DeathLink: OnShowDeathMenu — attempting outbound send");
+    tcpService.SendDeathLink();
     return wrappedMethod();
 }
-
-//For sending quest completion updates to the Archipelago server.
-@wrapMethod(JournalNotificationQueue)
-protected cb func OnJournalUpdate(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
-    let result = wrappedMethod(hash, className, notifyOption, changeType);
-
-    let player: ref<PlayerPuppet> = this.GetPlayerControlledObject() as PlayerPuppet;
-    if !IsDefined(player) { return result; }
-    
-    let journalMgr: ref<JournalManager> = GameInstance.GetJournalManager(player.GetGame());
-    let entry: wref<JournalEntry> = journalMgr.GetEntry(hash); // Get the specific journal entry that just triggered the UI update
-    let questEntry: wref<JournalQuest> = entry as JournalQuest; //Cast it to a quest to get access to what we actually want
-    
-    if IsDefined(questEntry) {
-        let state: gameJournalEntryState = journalMgr.GetEntryState(questEntry);
-        let questStringId: String = questEntry.GetId();
-        let questSystem: ref<QuestsSystem> = GameInstance.GetQuestsSystem(GetGameInstance()) as QuestsSystem;
-        let tcpService: ref<TCPClient> = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.TCPClient") as TCPClient;
-
-        if !IsDefined(tcpService) {
-            return result;
-        }
-
-        // Phantom Liberty path split: Songbird path — Killing Moon started -> Split Quest 1.
-        if StrCmp(questStringId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Active) {
-            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_1");
-            return result;
-        }
-
-        // Phantom Liberty path split: Songbird path — Killing Moon completed -> Split Quest 2 + 3.
-        if StrCmp(questStringId, "q306_devils_bargain") == 0 && Equals(state, gameJournalEntryState.Succeeded) {
-            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_2");
-            APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, "pl_split_quest_3");
-            return result;
-        }
-
-        if Equals(state, gameJournalEntryState.Succeeded) {
-            // Resolve to a stable location ID using explicit quest lookup aliases.
-            let locationId: String = APQuestLocationLookup.ResolveLocationId(questStringId);
-            //APLogger.LogInfo( "Quest Completed: " + questStringId);
-
-            // Send to the Archipelago server when this quest maps to a tracked location.
-            if StrLen(locationId) > 0 {
-                APQuestLocationLookup.SendLocationCheck(questSystem, tcpService, locationId);
-            }
-        }
-    }
-    
-    return result;
-}
-
 

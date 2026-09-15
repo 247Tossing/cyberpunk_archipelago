@@ -9,6 +9,10 @@ a multiworld seed.
 """
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Dict, Set, Tuple
+
+if TYPE_CHECKING:
+    from . import Cyberpunk2077World
 from Options import (
     Toggle,           # On/Off option (like a checkbox)
     DefaultOnToggle,  # Toggle that defaults to On
@@ -48,73 +52,135 @@ class WeaponRestrictionType(Choice):
     option_requireMultiworldItem = 2
 
 class RestrictPistols(Toggle):
+    """Restrict pistols according to Weapon Restriction Type."""
     display_name = "Restrict Pistols"
     default = 0
 
 class RestrictMelee(Toggle):
+    """Restrict melee weapons according to Weapon Restriction Type."""
     display_name = "Restrict Melee"
     default = 0
 
 class RestrictShotgun(Toggle):
+    """Restrict shotguns according to Weapon Restriction Type."""
     display_name = "Restrict Shotgun"
     default = 0
 
 class RestrictSniper(Toggle):
+    """Restrict sniper rifles according to Weapon Restriction Type."""
     display_name = "Restrict Sniper Rifles"
     default = 0
 
 class RestrictRifle(Toggle):
+    """Restrict rifles according to Weapon Restriction Type."""
     display_name = "Restrict Rifle"
     default = 0
 
 class RestrictLMG(Toggle):
+    """Restrict LMGs according to Weapon Restriction Type."""
     display_name = "Restrict LMG"
     default = 0
 
 class RestrictSMG(Toggle):
+    """Restrict SMGs according to Weapon Restriction Type."""
     display_name = "Restrict SMG"
     default = 0
 
 class IncludeGigs(Toggle):
+    """Include gig checks in the location pool."""
     display_name = "Include Gigs"
     default = 1
 
 class IncludeTarot(Toggle):
+    """Include tarot card checks in the location pool."""
     display_name = "Include Tarot"
     default = 1
 
 class IncludeCyberPsychoSighting(Toggle):
+    """Include cyberpsycho sighting checks in the location pool."""
     display_name = "Include Cyber Psycho Sighting"
     default = 1
 
-class IncludeSideQuests(Toggle):
-    display_name = "Include Side Quests"
-    default = 1
-
-class IncludeAllEndings(Toggle):
-    """By default, this will only require you to reach Nocturne Op55N1 and the default ending
-    Enabling this option will include any possible ending in the generated multiworld and the requisite items to do so
+class CompletionGoal(Choice):
     """
-    display_name = "Include All Endings"
+    Choose what counts as completing the world:
+    - Complete Any Ending: reach Ending Reached (default behavior).
+    - Complete Any Ending W/ All Side Quests: reach Ending Reached and have
+      logical access to every included SIDE_QUEST / DLC_SIDE location.
+    - Complete Only Phantom Liberty Questline: complete PL's main questline.
+      This mode implies Phantom Liberty DLC for world generation and disables
+      district token restrictions to keep the pool aligned to PL checks.
+    """
+    display_name = "Completion Goal"
+    option_complete_any_ending = 0
+    option_complete_any_ending_w_all_side_quests = 1
+    option_complete_only_phantom_liberty_questline = 2
     default = 0
 
-class IncludeContracts(Toggle):
-    display_name = "Include Contracts"
-    default = 1
-
 class IncludeNCPDHustles(Toggle):
+    """Temporarily disabled: client detection is unreliable. Set via YAML to test."""
     display_name = "Include NCPD Hustles"
-    default = 1
+    default = 0
+    visibility = Visibility.none  # Temporary
 
 class IncludeMinorQuests(Toggle):
+    """Include minor quest checks in the location pool."""
     display_name = "Include Minor Quests"
     default = 1
 
-class RestrictByMajorDistrict(Toggle):
-    """Restrict access to districts
-    When enabled, players will only be able to access major districts by aquiring access tokens from the multiworld.
+class DistrictRestrictionType(Choice):
     """
-    display_name = "Restrict by Major District"
+    Choose the major-district restriction behavior:
+    - None: District tokens are not placed and the client will not enforce district locks.
+    - Require District Token: Selected districts require their access token.
+
+    Defaults to None: gating every major district behind its own always-required
+    Access Token can leave too few always-reachable locations to place all of
+    those tokens, causing generation failures. Opt in (and consider disabling
+    a few districts below) once you've verified generation succeeds for your
+    other settings.
+    """
+    display_name = "District Restriction Type"
+    option_none = 0
+    option_require_district_token = 1
+    default = 0
+
+class RestrictWestbrook(Toggle):
+    """Gate Westbrook behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict Westbrook"
+    default = 1
+
+class RestrictCityCenter(Toggle):
+    """Gate City Center behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict City Center"
+    default = 1
+
+class RestrictHeywood(Toggle):
+    """Gate Heywood behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict Heywood"
+    default = 1
+
+class RestrictSantoDomingo(Toggle):
+    """Gate Santo Domingo behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict Santo Domingo"
+    default = 1
+
+class RestrictPacifica(Toggle):
+    """Gate Pacifica behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict Pacifica"
+    default = 1
+
+class RestrictBadlands(Toggle):
+    """Gate Badlands behind its Access Token when District Restriction Type is Require District Token."""
+    display_name = "Restrict Badlands"
+    default = 1
+
+class RestrictDogtown(Toggle):
+    """
+    Gate Dogtown behind its Access Token when District Restriction Type is
+    Require District Token and Phantom Liberty is enabled.
+    """
+    display_name = "Restrict Dogtown"
     default = 1
 
 class RestrictBySubDistrict(Toggle):
@@ -126,33 +192,97 @@ class RestrictBySubDistrict(Toggle):
     default = 0
     visibility = Visibility.none # Temporary
 
+
+class DistrictTokensFromOtherWorlds(DefaultOnToggle):
+    """
+    When district restrictions are active and this is enabled in a multiworld,
+    active district and subdistrict access tokens are added to non_local_items
+    and cannot be placed on your own checks.
+
+    No effect when district restriction type is None, in solo seeds, or when
+    the PL-only completion goal disables district restrictions.
+    """
+    display_name = "District Tokens from Other Worlds"
+
+
+class WeaponPassesFromOtherWorlds(DefaultOnToggle):
+    """
+    When weapon pass mode is active and this is enabled in a multiworld,
+    active weapon passes are added to non_local_items and cannot be placed
+    on your own checks.
+
+    No effect when weapon restriction type is not Require Multiworld Item,
+    or in solo seeds.
+    """
+    display_name = "Weapon Passes from Other Worlds"
+
+
 class QuickHacksAsItems(Toggle):
     """Put progressive quickhack items into the multiworld"""
     display_name = "Quick Hacks as Items"
     default = 1
 
-
 class EnableTraps(Toggle):
+    """Include trap items in the item pool."""
     display_name = "Enable Traps"
     default = 1
 
 class TrapItemsPerTrap(Range):
+    """How many trap items to add to the pool for each trap type, when Enable Traps is on."""
     display_name = "Trap Items per Trap"
     range_start = 1
     range_end = 5
     default = 3
 
 class IncludePhantomLibertyDLC(Toggle):
+    """Include Phantom Liberty DLC content (Dogtown and its questline) in generation."""
     display_name = "Include Phantom Liberty DLC"
     default = 0
 
 class EnableDeathLink(Toggle):
+    """When you die, everyone who enabled death link dies. Of course, the reverse is true too."""
     display_name = "Death Link"
+    default = 0
+
+class DeathLinkAmnesty(Range):
+    """Deaths forgiven before sending a DeathLink. 0 means every death sends."""
+    display_name = "Death Link Amnesty"
+    range_start = 0
+    range_end = 20
     default = 0
 
 class OopsAllTraps(Toggle):
     """Replaces all Useful and Filler items with traps"""
     display_name = "Oops! All Traps!"
+    default = 0
+
+class VendorSanity(Toggle):
+    """Turn vendor stock slots into checks. Individual vendor categories are toggled below."""
+    display_name = "Vendor Sanity"
+    default = 0
+
+class VendorRipperdocs(DefaultOnToggle):
+    """Include ripperdoc vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Ripperdocs"
+
+class VendorGunsmiths(Toggle):
+    """Include weapon vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Weapon Vendors"
+    default = 0
+
+class VendorClothing(Toggle):
+    """Include clothing vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Clothing Vendors"
+    default = 0
+
+class VendorMelee(Toggle):
+    """Include melee weapon vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Melee Vendors"
+    default = 0
+
+class VendorNetrunners(Toggle):
+    """Include netrunner vendor checks when Vendor Sanity is enabled."""
+    display_name = "Include Netrunners"
     default = 0
 
 
@@ -163,7 +293,6 @@ class OopsAllTraps(Toggle):
 # - Randomize enemy difficulty
 # - Include crafting materials
 # - Enable/disable specific content packs
-
 
 # ===== OPTIONS DATACLASS =====
 # This combines all options into a single configuration object
@@ -191,19 +320,33 @@ class Cyberpunk2077Options(PerGameCommonOptions):
     weapon_restrict_lmg: RestrictLMG
     weapon_restrict_shotgun: RestrictShotgun
     weapon_restrict_smg: RestrictSMG
-    restrict_by_major_district: RestrictByMajorDistrict
+    weapon_passes_from_other_worlds: WeaponPassesFromOtherWorlds
+    completion_goal: CompletionGoal
+    district_restriction_type: DistrictRestrictionType
+    district_restrict_westbrook: RestrictWestbrook
+    district_restrict_city_center: RestrictCityCenter
+    district_restrict_heywood: RestrictHeywood
+    district_restrict_santo_domingo: RestrictSantoDomingo
+    district_restrict_pacifica: RestrictPacifica
+    district_restrict_badlands: RestrictBadlands
+    district_restrict_dogtown: RestrictDogtown
     restrict_by_sub_district: RestrictBySubDistrict
+    district_tokens_from_other_worlds: DistrictTokensFromOtherWorlds
     include_phantom_liberty_dlc: IncludePhantomLibertyDLC
     death_link: EnableDeathLink
+    death_link_amnesty: DeathLinkAmnesty
     include_gigs: IncludeGigs
     include_tarot: IncludeTarot
     include_cyber_psycho_sighting: IncludeCyberPsychoSighting
-    include_side_quests: IncludeSideQuests
-    include_contracts: IncludeContracts
     quick_hacks_as_items: QuickHacksAsItems
     include_ncpd_hustles: IncludeNCPDHustles
     include_minor_quests: IncludeMinorQuests
-    include_all_endings: IncludeAllEndings
+    vendor_sanity: VendorSanity
+    vendor_ripperdocs: VendorRipperdocs
+    vendor_gunsmiths: VendorGunsmiths
+    vendor_clothing: VendorClothing
+    vendor_melee: VendorMelee
+    vendor_netrunners: VendorNetrunners
     enable_traps: EnableTraps
     trap_amount: TrapItemsPerTrap
     oops_all_traps: OopsAllTraps
@@ -219,12 +362,10 @@ class Cyberpunk2077Options(PerGameCommonOptions):
 
 cyberpunk_option_groups = [
     OptionGroup("Quest Options", [
-        IncludeAllEndings,
+        CompletionGoal,
         IncludeGigs,
         IncludeTarot,
         IncludeCyberPsychoSighting,
-        IncludeSideQuests,
-        IncludeContracts,
         IncludeNCPDHustles,
         IncludeMinorQuests,
     ]),
@@ -236,11 +377,20 @@ cyberpunk_option_groups = [
         TrapItemsPerTrap,
     ]),
     OptionGroup("District Restriction Options", [
-        RestrictByMajorDistrict,
+        DistrictRestrictionType,
+        DistrictTokensFromOtherWorlds,
+        RestrictWestbrook,
+        RestrictCityCenter,
+        RestrictHeywood,
+        RestrictSantoDomingo,
+        RestrictPacifica,
+        RestrictBadlands,
+        RestrictDogtown,
         RestrictBySubDistrict,
     ]),
     OptionGroup("Weapon Restriction Options", [
         WeaponRestrictionType,
+        WeaponPassesFromOtherWorlds,
         RestrictSniper,
         RestrictLMG,
         RestrictMelee,
@@ -252,11 +402,150 @@ cyberpunk_option_groups = [
     OptionGroup("Item Options", [
         QuickHacksAsItems,
     ]),
+    OptionGroup("Vendor Sanity Options", [
+        VendorSanity,
+        VendorRipperdocs,
+        VendorGunsmiths,
+        VendorClothing,
+        VendorMelee,
+        VendorNetrunners,
+    ]),
     OptionGroup("Extra Challenge", [
         EnableDeathLink,
+        DeathLinkAmnesty,
         OopsAllTraps
     ], start_collapsed=True),
 ]
+
+
+def is_goal_phantom_liberty_only(options: Cyberpunk2077Options) -> bool:
+    """Return True when Completion Goal is PL-questline-only mode."""
+    return int(options.completion_goal.value) == CompletionGoal.option_complete_only_phantom_liberty_questline
+
+
+def is_goal_all_side_quests(options: Cyberpunk2077Options) -> bool:
+    """Return True when Completion Goal requires clearing all side quests."""
+    return int(options.completion_goal.value) == CompletionGoal.option_complete_any_ending_w_all_side_quests
+
+
+def has_effective_phantom_liberty_dlc(options: Cyberpunk2077Options) -> bool:
+    """
+    Return True when DLC content should be treated as enabled for generation.
+
+    PL-only completion mode requires Dogtown/PL quest nodes even if the explicit
+    include_phantom_liberty_dlc toggle is off.
+    """
+    return bool(options.include_phantom_liberty_dlc.value) or is_goal_phantom_liberty_only(options)
+
+
+MAJOR_DISTRICT_OPTION_MAP: Dict[str, str] = {
+    "Westbrook": "district_restrict_westbrook",
+    "City Center": "district_restrict_city_center",
+    "Heywood": "district_restrict_heywood",
+    "Santo Domingo": "district_restrict_santo_domingo",
+    "Pacifica": "district_restrict_pacifica",
+    "Badlands": "district_restrict_badlands",
+    "Dogtown": "district_restrict_dogtown",
+}
+
+MAJOR_DISTRICT_SLOT_MASK: Dict[str, int] = {
+    "Westbrook": 1 << 0,
+    "City Center": 1 << 1,
+    "Heywood": 1 << 2,
+    "Santo Domingo": 1 << 3,
+    "Pacifica": 1 << 4,
+    "Badlands": 1 << 5,
+    "Dogtown": 1 << 6,
+}
+
+
+def is_major_district_token_gated(options: Cyberpunk2077Options, region_name: str) -> bool:
+    """Return True when the named major district should require its access token."""
+    if int(options.district_restriction_type.value) != DistrictRestrictionType.option_require_district_token:
+        return False
+    if region_name == "Dogtown" and not has_effective_phantom_liberty_dlc(options):
+        return False
+
+    option_attr = MAJOR_DISTRICT_OPTION_MAP.get(region_name)
+    return bool(option_attr and getattr(options, option_attr).value)
+
+
+def get_gated_major_districts(options: Cyberpunk2077Options) -> Tuple[str, ...]:
+    """Return the major districts selected for token gating, in stable slot-data order."""
+    return tuple(
+        district
+        for district in MAJOR_DISTRICT_OPTION_MAP
+        if is_major_district_token_gated(options, district)
+    )
+
+
+def district_restriction_active(options: Cyberpunk2077Options) -> bool:
+    """Return True when any major district token gate is active."""
+    return bool(get_gated_major_districts(options))
+
+
+def get_gated_major_district_mask(options: Cyberpunk2077Options) -> int:
+    """Encode gated major districts for the RedScript client slot-data contract."""
+    mask = 0
+    for district in get_gated_major_districts(options):
+        mask |= MAJOR_DISTRICT_SLOT_MASK[district]
+    return mask
+
+
+def get_active_district_token_names(world: "Cyberpunk2077World") -> Set[str]:
+    """Return district/subdistrict token names that enter the item pool for this world."""
+    from .items import ItemCategory, item_table
+
+    names: Set[str] = set()
+    for item_name, item_data in item_table.items():
+        if item_data.code is None:
+            continue
+
+        if item_data.category == ItemCategory.SUBDISTRICT_TOKEN:
+            parent_region = world.SUBDISTRICT_TOKEN_PARENT_MAP.get(item_name)
+            if (
+                not world.options.restrict_by_sub_district
+                or not parent_region
+                or not is_major_district_token_gated(world.options, parent_region)
+            ):
+                continue
+            names.add(item_name)
+            continue
+
+        if item_data.category == ItemCategory.DISTRICT_TOKEN:
+            region_name = world.DISTRICT_TOKEN_REGION_MAP.get(item_name)
+            if not region_name or not is_major_district_token_gated(world.options, region_name):
+                continue
+            names.add(item_name)
+
+    return names
+
+
+def get_active_weapon_pass_names(world: "Cyberpunk2077World") -> Set[str]:
+    """Return weapon pass names that enter the item pool for this world."""
+    from .items import ItemCategory, item_table
+
+    if int(world.options.weapon_restriction_type.value) != WeaponRestrictionType.option_requireMultiworldItem:
+        return set()
+
+    names: Set[str] = set()
+    for item_name, item_data in item_table.items():
+        if item_data.category != ItemCategory.WEAPON_PASS:
+            continue
+        option_attr = world.WEAPON_PASS_OPTION_MAP.get(item_name)
+        if not option_attr or not getattr(world.options, option_attr).value:
+            continue
+        names.add(item_name)
+
+    return names
+
+
+def apply_token_locality_options(world: "Cyberpunk2077World") -> None:
+    """Populate non_local_items for active access tokens and weapon passes."""
+    if world.options.district_tokens_from_other_worlds:
+        world.options.non_local_items.value |= get_active_district_token_names(world)
+    if world.options.weapon_passes_from_other_worlds:
+        world.options.non_local_items.value |= get_active_weapon_pass_names(world)
 
 
 # ===== USAGE EXAMPLES =====
