@@ -17,7 +17,7 @@ class TestVendorSanityRules(Cyberpunk2077TestBase):
     def test_ripperdoc_vendor_edges_are_active(self) -> None:
         edges = get_active_location_prerequisites(self.world)
         self.assertEqual(edges["Victor's Shop 1"], "Prologue - The Ripperdoc")
-        self.assertEqual(edges["Downtown Ripperdoc 1"], "Prologue - The Ripperdoc")
+        self.assertEqual(edges["Downtown Ripperdoc (Darius Clarke) 1"], "Prologue - The Ripperdoc")
 
     def test_other_vendor_subtypes_are_filtered_out(self) -> None:
         edges = get_active_location_prerequisites(self.world)
