@@ -20,7 +20,8 @@
 local apConfig = {
     ip = "127.0.0.1",
     port = 38281,
-    slotName = "Player1"
+    slotName = "Player1",
+    password = ""
 }
 
 -- UI state
@@ -51,7 +52,7 @@ registerForEvent("onDraw", function()
     if not isOverlayOpen then return end
 
     -- Create the Window
-    ImGui.SetNextWindowSize(450, 300, ImGuiCond.FirstUseEver)
+    ImGui.SetNextWindowSize(450, 330, ImGuiCond.FirstUseEver)
     ImGui.Begin("Archipelago Client")
 
     ImGui.Text("Cyberpunk 2077 Archipelago Bridge")
@@ -153,6 +154,7 @@ registerForEvent("onDraw", function()
     apConfig.ip = ImGui.InputText("Server IP", apConfig.ip, 100)
     apConfig.port = ImGui.InputInt("Port", apConfig.port)
     apConfig.slotName = ImGui.InputText("Slot Name", apConfig.slotName, 100)
+    apConfig.password = ImGui.InputText("Password", apConfig.password, 100, ImGuiInputTextFlags.Password)
 
     ImGui.Spacing()
     ImGui.Separator()
@@ -171,7 +173,7 @@ registerForEvent("onDraw", function()
                 else
                     apConfig.slotName = slotName
                     local success, err = pcall(function()
-                        apService:ConnectFromCET(apConfig.ip, tonumber(apConfig.port), apConfig.slotName)
+                        apService:ConnectFromCET(apConfig.ip, tonumber(apConfig.port), apConfig.slotName, apConfig.password or "")
                     end)
 
                     if success then

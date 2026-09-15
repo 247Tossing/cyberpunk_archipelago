@@ -48,7 +48,7 @@ You ***MUST*** restart the launcher before it will show up.
 ## This assumes that you already have an AP world hosted somewhere
 1. Start up Cyberpunk 2077
 2. If you havent already, set a keybind for the CET overlay, if you have, skip this step. If need to reset it. Refer to the Cyber Engine Tweaks documentation on how to fix that.
-3. From the CET overlay, fill out the fields with your ```Archipelago Server IP/URL```, ```Archipelago Server Port```, and ```Save Slot Name```
+3. From the CET overlay, fill out the fields with your ```Archipelago Server IP/URL```, ```Archipelago Server Port```, ```Save Slot Name```, and optionally ```Password``` if your slot is password-protected
 4. Profit. Have Fun.
 
 ## Linux Users (like me!)
