@@ -6,8 +6,19 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, TypeAlias
 from BaseClasses import CollectionState
 from worlds.generic.Rules import add_rule, set_rule
-from .locations import location_table, LocationCategory, JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS
-from .options import CompletionGoal, get_gated_major_districts, has_effective_phantom_liberty_dlc
+from .locations import (
+    GIG_FIXER_TIERS,
+    JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS,
+    LocationCategory,
+    fixer_tier_item_name,
+    location_table,
+)
+from .options import (
+    CompletionGoal,
+    get_gated_major_districts,
+    has_effective_phantom_liberty_dlc,
+    is_goal_fixers_only,
+)
 
 if TYPE_CHECKING:
     from . import Cyberpunk2077World
@@ -72,11 +83,17 @@ def _collect_location_prerequisites() -> dict[str, Prerequisite]:
     return edges
 
 
+# The Fixers-Only pool holds no story checks, so none of the LocationData chains
+# apply: gigs have no prerequisite of their own, and the vendor checks get their
+# own goal-aware gate in _get_vendor_location_prerequisites.
+FIXERS_ONLY_PREREQUISITES: dict[str, Prerequisite] = {}
+
 # Stable exported prerequisite catalog for tests and debugging.
 LOCATION_PREREQUISITES: dict[str, dict[str, Prerequisite]] = {
     "base": {**_collect_location_prerequisites(), **BASE_LOCATION_PREREQUISITES},
     "all_side_quests": SIDE_QUEST_GOAL_PREREQUISITES,
     "phantom_liberty_only": {**_collect_location_prerequisites(), **PHANTOM_LIBERTY_ONLY_PREREQUISITES},
+    "fixers_only": FIXERS_ONLY_PREREQUISITES,
 }
 
 # Internal ``location_table`` keys ``VendorCheck_*`` (sorted for stable slot_data order).
@@ -100,6 +117,7 @@ def set_rules(world: "Cyberpunk2077World") -> None:
     _apply_location_prerequisites(world, player, _get_goal_location_prerequisites(world))
 
     _apply_vendor_rules(world, player)
+    _apply_fixer_tier_rules(world, player)
     _apply_multi_region_rules(world, player)
     _set_victory_rule(world, player)
 
@@ -114,6 +132,8 @@ def _get_goal_location_prerequisites(world: "Cyberpunk2077World") -> dict[str, P
     goal = _completion_goal(world)
     if goal == CompletionGoal.option_complete_only_phantom_liberty_questline:
         return dict(LOCATION_PREREQUISITES["phantom_liberty_only"])
+    if goal == CompletionGoal.option_complete_all_fixer_gigs:
+        return dict(LOCATION_PREREQUISITES["fixers_only"])
 
     return dict(LOCATION_PREREQUISITES["base"])
 
@@ -157,9 +177,63 @@ def _apply_location_prerequisites(
         )
 
 
+def _iter_included_gigs(world: "Cyberpunk2077World", player: int):
+    """Yield (internal_key, display_name, fixer, tier) for each gig in this seed."""
+    included_names = {loc.name for loc in world.multiworld.get_locations(player)}
+    for internal_key, (fixer, tier) in GIG_FIXER_TIERS.items():
+        display_name = location_table[internal_key].display_name
+        if display_name in included_names:
+            yield internal_key, display_name, fixer, tier
+
+
+def get_active_fixer_tier_items(world: "Cyberpunk2077World") -> set[str]:
+    """Return the fixer tier item names that gate at least one gig in this seed."""
+    return {
+        fixer_tier_item_name(fixer, tier)
+        for _, _, fixer, tier in _iter_included_gigs(world, world.player)
+        if tier > 1
+    }
+
+
+def get_gig_goal_manifest(world: "Cyberpunk2077World") -> tuple[str, ...]:
+    """Return the internal quest IDs of every gig the client must clear to win."""
+    return tuple(sorted(key for key, _, _, _ in _iter_included_gigs(world, world.player)))
+
+
+def _apply_fixer_tier_rules(world: "Cyberpunk2077World", player: int) -> None:
+    """
+    Gate each gig behind its fixer's tier unlock item.
+
+    Only the Fixers-Only goal places tier items, so other goals leave gig
+    availability to vanilla street cred and get no extra rule here. Tier 1 gigs
+    are open as soon as the prologue is done and need no item.
+    """
+    if not is_goal_fixers_only(world.options):
+        return
+
+    for _, display_name, fixer, tier in _iter_included_gigs(world, player):
+        if tier <= 1:
+            continue
+        tier_item = fixer_tier_item_name(fixer, tier)
+        add_rule(
+            world.multiworld.get_location(display_name, player),
+            lambda state, item=tier_item: state.has(item, player),
+        )
+
+
 def _set_victory_rule(world: "Cyberpunk2077World", player: int) -> None:
     victory_location = world.multiworld.get_location("Victory", player)
     goal = _completion_goal(world)
+
+    if goal == CompletionGoal.option_complete_all_fixer_gigs:
+        gig_locations = tuple(name for _, name, _, _ in _iter_included_gigs(world, player))
+        set_rule(
+            victory_location,
+            lambda state, required=gig_locations: all(
+                state.can_reach_location(name, player) for name in required
+            ),
+        )
+        return
 
     if goal == CompletionGoal.option_complete_any_ending_w_all_side_quests:
         side_quest_locations = tuple(_get_required_side_quest_locations(world, player))
@@ -193,6 +267,13 @@ def _get_vendor_location_prerequisites(world: "Cyberpunk2077World") -> dict[str,
         "melee": world.options.vendor_melee,
         "netrunner": world.options.vendor_netrunners,
     }
+    # Vendors normally open up once V can shop, which the Ripperdoc prologue check
+    # stands in for. Fixers-Only drops every story check from the pool, so the
+    # prologue gate collapses onto the lifepath check that survives there.
+    vendors_unlocked_by = (
+        "Lifepath Chosen" if is_goal_fixers_only(world.options) else "Prologue - The Ripperdoc"
+    )
+
     edges: dict[str, Prerequisite] = {}
     for internal_key in VENDOR_CHECK_INTERNAL_KEYS:
         loc_data = location_table[internal_key]
@@ -204,9 +285,9 @@ def _get_vendor_location_prerequisites(world: "Cyberpunk2077World") -> dict[str,
         # in the pool when side quests are enabled (see regions.py), so this edge is inert
         # otherwise.
         if internal_key in JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS:
-            edges[loc_data.display_name] = ("Prologue - The Ripperdoc", "Queen of the Highway")
+            edges[loc_data.display_name] = (vendors_unlocked_by, "Queen of the Highway")
             continue
-        edges[loc_data.display_name] = "Prologue - The Ripperdoc"
+        edges[loc_data.display_name] = vendors_unlocked_by
     return edges
 
 

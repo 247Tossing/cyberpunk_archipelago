@@ -25,10 +25,11 @@ from .options import (
     get_gated_major_district_mask,
     has_effective_phantom_liberty_dlc,
     is_major_district_token_gated,
+    is_goal_fixers_only,
     is_goal_phantom_liberty_only,
 )
 from .regions import create_regions
-from .rules import set_rules, VENDOR_CHECK_INTERNAL_KEYS
+from .rules import get_active_fixer_tier_items, get_gig_goal_manifest, set_rules, VENDOR_CHECK_INTERNAL_KEYS
 
 
 def _vendor_stock_parts_from_check_name(location_name: str) -> tuple[str, int] | None:
@@ -222,6 +223,10 @@ class Cyberpunk2077World(World):
             self.options.district_restriction_type.value = DistrictRestrictionType.option_none
             self.options.restrict_by_sub_district.value = 0
 
+        # Fixers-Only has nothing to check without gigs, so the toggle is implied.
+        if is_goal_fixers_only(self.options):
+            self.options.include_gigs.value = 1
+
         apply_token_locality_options(self)
         """
         Create all regions (game areas) and locations (item checks).
@@ -262,7 +267,11 @@ class Cyberpunk2077World(World):
         item_pool: List[Item] = []
 
         pl_only_goal = is_goal_phantom_liberty_only(self.options)
+        fixers_only_goal = is_goal_fixers_only(self.options)
         effective_dlc_enabled = has_effective_phantom_liberty_dlc(self.options)
+        # Fixer tiers only gate anything in Fixers-Only mode, and then only for
+        # fixers whose higher-tier gigs actually made it into the pool.
+        active_fixer_tier_items = get_active_fixer_tier_items(self) if fixers_only_goal else set()
 
         # Add all defined items from item_table
         for item_name, item_data in item_table.items():
@@ -292,8 +301,16 @@ class Cyberpunk2077World(World):
                 if not region_name or not is_major_district_token_gated(self.options, region_name):
                     continue
 
-            # Skip quickhack items if quick hacks as items is disabled
-            if item_data.category == ItemCategory.QUICKHACK and not self.options.quick_hacks_as_items:
+            # Skip quickhack items if quick hacks as items is disabled.
+            # Fixers-Only also skips them: the progressive quickhack ladder alone
+            # is more items than that goal has checks to hold them.
+            if item_data.category == ItemCategory.QUICKHACK and (
+                fixers_only_goal or not self.options.quick_hacks_as_items
+            ):
+                continue
+
+            # Fixer tier unlocks are meaningless outside the Fixers-Only goal.
+            if item_data.category == ItemCategory.FIXER_TIER and item_name not in active_fixer_tier_items:
                 continue
 
             # Skip trap items when traps are disabled.
@@ -451,8 +468,10 @@ class Cyberpunk2077World(World):
         # Return any data the client needs to know about this player's world
         # This data is accessible to the game bridge via self.slot_data
         slot_data: Dict[str, Any] = {
-            "world_version": 2,  # Version of your world implementation
+            "world_version": 3,  # Version of your world implementation
             # Configuration options sent to RedScript client via slot_data
+            "completion_goal": int(self.options.completion_goal.value),
+            "gig_goal_manifest": "",
             "death_link": bool(self.options.death_link.value),
             "death_link_amnesty": int(self.options.death_link_amnesty.value),
             # Weapon restriction settings
@@ -475,6 +494,10 @@ class Cyberpunk2077World(World):
             # TODO: Add skill_points_as_items option when implemented
             # "skill_points_as_items": bool(self.options.skill_points_as_items.value),
         }
+        # Fixers-Only sends the exact gig list that counts toward the goal so the
+        # client knows when to report completion without guessing from the pool.
+        if is_goal_fixers_only(self.options):
+            slot_data["gig_goal_manifest"] = ",".join(get_gig_goal_manifest(self))
         if bool(self.options.vendor_sanity.value):
             stock_records: List[str] = []
             for internal_key in VENDOR_CHECK_INTERNAL_KEYS:

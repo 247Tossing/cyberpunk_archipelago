@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 from BaseClasses import Item, ItemClassification
 
+from .locations import FIXER_MAX_TIER, fixer_tier_game_id, fixer_tier_item_name
+
 # Base ID for Cyberpunk 2077 location/item IDs
 # Must match the base_id in __init__.py
 BASE_ID = 2077000
@@ -83,6 +85,7 @@ class ItemCategory:
     MISC = "misc"                        # Uncategorized/miscellaneous items
     TRAP = "trap"
     WEAPON_PASS = "weapon_pass"
+    FIXER_TIER = "fixer_tier"            # Fixer gig tier unlocks (Fixers-Only goal)
 
 
 # ===== ITEM CLASSIFICATION TYPES =====
@@ -146,6 +149,27 @@ class ItemCategory:
 # WARNING: Codes are assigned by insertion order. Appending new entries at the
 # end of a section is safe. Inserting in the middle or reordering will shift all
 # subsequent codes and invalidate any previously generated seeds/games.
+
+
+def _build_fixer_tier_items() -> Dict[str, ItemData]:
+    """
+    Build the fixer gig tier unlock items used by the Fixers-Only goal.
+
+    Every fixer's tier 1 gigs are available as soon as the prologue is done, so
+    only tiers 2 and up become items. These are derived from the gig tier table
+    in locations.py so the two cannot drift apart; iteration order follows
+    ``FIXER_MAX_TIER``, which keeps the auto-assigned codes stable.
+    """
+    return {
+        fixer_tier_item_name(fixer, tier): ItemData(
+            name=fixer_tier_game_id(fixer, tier),
+            classification=ItemClassification.progression,
+            category=ItemCategory.FIXER_TIER,
+        )
+        for fixer, max_tier in FIXER_MAX_TIER.items()
+        for tier in range(2, max_tier + 1)
+    }
+
 
 item_table: Dict[str, ItemData] = {
 
@@ -600,6 +624,11 @@ item_table: Dict[str, ItemData] = {
         category = ItemCategory.TRAP,
         quantity= 5
     ),
+
+    # ===== FIXER GIG TIER UNLOCKS =====
+    # Only placed in the pool for the Fixers-Only completion goal; see
+    # GIG_FIXER_TIERS in locations.py for which gigs each tier releases.
+    **_build_fixer_tier_items(),
 
     # ===== EVENT ITEMS =====
     # Event items don't have codes (code=None) and are used for internal logic

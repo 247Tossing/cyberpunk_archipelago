@@ -221,6 +221,28 @@ public class APPhoneSystem extends IScriptable {
         );
     }
 
+    // One-off HUD alert when a Fixers-Only run reaches story content that does not
+    // count. This is deliberately notification-only: the message would read wrong
+    // in the item thread, which is formatted around "<sender> sent you <item>".
+    public func SendStoryBlockedNotification(player: ref<GameObject>) -> Void {
+        if !IsDefined(player) {
+            APLogger.LogDebug("APPhoneSystem: Player is null, skipping story blocked HUD notification");
+            return;
+        }
+
+        let phoneSystem: ref<PhoneExtensionSystem> = PhoneExtensionSystem.GetInstance(player);
+        if !IsDefined(phoneSystem) {
+            APLogger.LogDebug("APPhoneSystem: PhoneExtensionSystem is null, skipping story blocked HUD notification");
+            return;
+        }
+
+        phoneSystem.NotifyNewMessageCustom(
+            APConstants.GetArchipelagoContactHash(),
+            "Archipelago",
+            "Only fixer gigs count in this run - story jobs pay nothing here."
+        );
+    }
+
     public func SendDistrictRestrictionNotification(player: ref<GameObject>, districtDisplayName: String) -> Void {
         if !IsDefined(this.districtContact) {
             APLogger.LogDebug("APPhoneSystem: District contact not initialized");

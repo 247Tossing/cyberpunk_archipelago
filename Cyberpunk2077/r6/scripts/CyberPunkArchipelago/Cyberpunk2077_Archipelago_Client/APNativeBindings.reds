@@ -34,6 +34,8 @@ public static native func AP_GetWeaponRestrictShotgun() -> Bool
 public static native func AP_GetWeaponRestrictSmg() -> Bool
 public static native func AP_GetVendorSanityEnabled() -> Bool
 public static native func AP_GetVendorSanityStockLine() -> String
+public static native func AP_GetCompletionGoal() -> Int32
+public static native func AP_GetGigGoalManifest() -> String
 public static native func AP_GetDeathLinkEnabled() -> Bool
 
 // Thin wrappers around the generated APArchipelagoIdMappings class.

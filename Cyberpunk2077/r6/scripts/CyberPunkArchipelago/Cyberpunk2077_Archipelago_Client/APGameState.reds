@@ -16,6 +16,15 @@ public class APGameState extends ScriptableService {
     public let vendorSanityItems: array<ref<APVendorItem>>;
     public let vendorSanityConfigInitialized: Bool;
 
+    // Completion goal settings (synced from APWorld options via slot_data).
+    // completionGoal values match APConstants.GetCompletionGoal*; gigGoalIds is
+    // only populated for the Fixers-Only goal and lists the internal quest IDs
+    // of every gig this seed requires.
+    public let completionGoal: Int32;
+    public let gigGoalManifestLine: String;
+    public let gigGoalIds: array<String>;
+    public let goalConfigInitialized: Bool;
+
     // Weapon restriction settings (synced from APWorld options via slot_data)
     // weaponRestrictionType: 0 = none, 1 = cannotEquip (hard ban), 2 = requireMultiworldItem (pass-gated)
     public let weaponRestrictionType: Int32;
@@ -129,6 +138,40 @@ public class APGameState extends ScriptableService {
             this.LogVendorSanitySlotDataDebug();
         }
         return changed;
+    }
+
+    public func SetGoalConfig(goal: Int32, gigManifestLine: String) -> Bool {
+        let changed: Bool = !this.goalConfigInitialized
+            || this.completionGoal < goal
+            || this.completionGoal > goal
+            || StrCmp(this.gigGoalManifestLine, gigManifestLine) != 0;
+
+        this.completionGoal = goal;
+        this.gigGoalManifestLine = gigManifestLine;
+        this.gigGoalIds = this.ParseGigManifest(gigManifestLine);
+        this.goalConfigInitialized = true;
+        return changed;
+    }
+
+    public func IsFixersOnlyGoal() -> Bool {
+        return this.goalConfigInitialized
+            && this.completionGoal == APConstants.GetCompletionGoalAllFixerGigs();
+    }
+
+    // Splits the comma-separated gig_goal_manifest slot_data line into quest IDs.
+    private func ParseGigManifest(manifestLine: String) -> array<String> {
+        let gigIds: array<String>;
+        if StrLen(manifestLine) == 0 {
+            return gigIds;
+        }
+
+        let parts: array<String> = StrSplit(manifestLine, ",");
+        for part in parts {
+            if StrLen(part) > 0 {
+                ArrayPush(gigIds, part);
+            }
+        }
+        return gigIds;
     }
 
     public func SetWeaponRestrictionConfig(
