@@ -21,6 +21,7 @@ from .options import (
     DistrictRestrictionType,
     apply_token_locality_options,
     cyberpunk_option_groups,
+    get_active_district_token_names,
     district_restriction_active,
     get_gated_major_district_mask,
     has_effective_phantom_liberty_dlc,
@@ -223,6 +224,12 @@ class Cyberpunk2077World(World):
             self.options.restrict_by_sub_district.value = 0
 
         apply_token_locality_options(self)
+        # Place active district tokens during the early fill. In a multiworld they
+        # are non-local, so the strict priority retry cannot put them on this
+        # player's own priority checks. Sphere-1 locations (including the other
+        # world's) can take them before that retry runs.
+        for token_name in get_active_district_token_names(self):
+            self.multiworld.early_items[self.player][token_name] = 1
         """
         Create all regions (game areas) and locations (item checks).
 
