@@ -112,6 +112,8 @@ bool APBridge::Initialize(const std::string& serverAddress,
     AP_RegisterSlotDataIntCallback("weapon_restrict_smg", &APBridge::OnSlotDataWeaponRestrictSmg);
     AP_RegisterSlotDataIntCallback("vendor_sanity", &APBridge::OnSlotDataVendorSanity);
     AP_RegisterSlotDataRawCallback("vendor_sanity_stock", &APBridge::OnSlotDataVendorSanityStock);
+    AP_RegisterSlotDataIntCallback("completion_goal", &APBridge::OnSlotDataCompletionGoal);
+    AP_RegisterSlotDataRawCallback("gig_goal_manifest", &APBridge::OnSlotDataGigGoalManifest);
 
     // AP_Init() is void and has no synchronous failure path; AP_IsInit() only
     // returns true after AP_Start() is called, so we track init state ourselves.
@@ -205,6 +207,8 @@ void APBridge::ShutdownLocked(bool clearConnectionError)
     m_weaponRestrictSmg = false;
     m_vendorSanityEnabled = false;
     m_vendorSanityStockLine.clear();
+    m_completionGoal = 0;
+    m_gigGoalManifest.clear();
     std::queue<ReceivedItemEntry> empty;
     m_receivedItems.swap(empty);
     m_lastPolledNetworkIndex = -1;
@@ -496,6 +500,18 @@ std::string APBridge::GetVendorSanityStockLine() const
     return m_vendorSanityStockLine;
 }
 
+int32_t APBridge::GetCompletionGoal() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_completionGoal;
+}
+
+std::string APBridge::GetGigGoalManifest() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_gigGoalManifest;
+}
+
 void APBridge::OnItemClear()
 {
     std::lock_guard<std::mutex> lock(APBridge::Get().m_mutex);
@@ -594,6 +610,16 @@ void APBridge::OnSlotDataVendorSanityStock(std::string value)
     APBridge::Get().SetVendorSanityStockLine(value);
 }
 
+void APBridge::OnSlotDataCompletionGoal(int value)
+{
+    APBridge::Get().SetCompletionGoal(value);
+}
+
+void APBridge::OnSlotDataGigGoalManifest(std::string value)
+{
+    APBridge::Get().SetGigGoalManifest(value);
+}
+
 void APBridge::PushItem(int64_t itemId, const std::string& senderName, const std::string& itemDisplayName, bool shouldNotify, int32_t networkIndex)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -688,5 +714,17 @@ void APBridge::SetVendorSanityStockLine(const std::string& value)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_vendorSanityStockLine = NormalizeSlotDataRawString(value);
+}
+
+void APBridge::SetCompletionGoal(int32_t value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_completionGoal = value;
+}
+
+void APBridge::SetGigGoalManifest(const std::string& value)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_gigGoalManifest = NormalizeSlotDataRawString(value);
 }
 } // namespace CyberpunkArchipelago

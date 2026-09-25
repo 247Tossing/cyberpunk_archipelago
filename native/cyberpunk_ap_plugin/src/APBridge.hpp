@@ -57,6 +57,8 @@ public:
     bool GetWeaponRestrictSmg() const;
     bool GetVendorSanityEnabled() const;
     std::string GetVendorSanityStockLine() const;
+    int32_t GetCompletionGoal() const;
+    std::string GetGigGoalManifest() const;
 
 private:
     APBridge() = default;
@@ -81,6 +83,8 @@ private:
     static void OnSlotDataWeaponRestrictSmg(int value);
     static void OnSlotDataVendorSanity(int value);
     static void OnSlotDataVendorSanityStock(std::string value);
+    static void OnSlotDataCompletionGoal(int value);
+    static void OnSlotDataGigGoalManifest(std::string value);
 
     bool IsReadyLocked() const; // caller must hold m_mutex
 
@@ -109,6 +113,8 @@ private:
     void SetWeaponRestrictSmg(bool value);
     void SetVendorSanityEnabled(bool value);
     void SetVendorSanityStockLine(const std::string& value);
+    void SetCompletionGoal(int32_t value);
+    void SetGigGoalManifest(const std::string& value);
     void ShutdownLocked(bool clearConnectionError); // caller must hold m_mutex
 
     mutable std::mutex m_mutex;
@@ -132,6 +138,8 @@ private:
     bool m_weaponRestrictSmg{false};
     bool m_vendorSanityEnabled{false};
     std::string m_vendorSanityStockLine;
+    int32_t m_completionGoal{0};
+    std::string m_gigGoalManifest;
     std::queue<ReceivedItemEntry> m_receivedItems;
     int32_t m_lastPolledNetworkIndex{-1};
     bool m_lastPolledShouldNotify{false};
