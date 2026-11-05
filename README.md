@@ -32,13 +32,13 @@ You'll need these mods for the archipelago mod to work:
 
 | Mod | Version | GitHub | Nexus |
 |-----|---------|--------|-------|
-| RedScript | 0.5.31+ | [Link](https://github.com/jac3km4/redscript) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/1511) |
-| TweakXL | — | [Link](https://github.com/psiberx/cp2077-tweak-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4197) |
-| ArchiveXL | — | [Link](https://github.com/psiberx/cp2077-archive-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4198) |
-| Cyber Engine Tweaks | — | [Link](https://github.com/maximegmd/CyberEngineTweaks) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/107) |
-| Codeware | — | [Link](https://github.com/psiberx/cp2077-codeware) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/7780) |
-| Red4Ext | — | [Link](https://github.com/wopss/RED4ext) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/2380) |
-| Phone Extension | — | N/A | [Link](https://www.nexusmods.com/cyberpunk2077/mods/24949) |
+| RedScript | 0.5.32 | [Link](https://github.com/jac3km4/redscript) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/1511) |
+| TweakXL | 1.12.0 | [Link](https://github.com/psiberx/cp2077-tweak-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4197) |
+| ArchiveXL | 1.28.0 | [Link](https://github.com/psiberx/cp2077-archive-xl) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/4198) |
+| Cyber Engine Tweaks | 1.38.0 | [Link](https://github.com/maximegmd/CyberEngineTweaks) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/107) |
+| Codeware | 1.21.0 | [Link](https://github.com/psiberx/cp2077-codeware) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/7780) |
+| Red4Ext | 1.31.0 | [Link](https://github.com/wopss/RED4ext) | [Link](https://www.nexusmods.com/cyberpunk2077/mods/2380) |
+| Phone Extension | 0.9 | N/A | [Link](https://www.nexusmods.com/cyberpunk2077/mods/24949) |
 
 ### Optional Recommended Mods
 
@@ -52,7 +52,7 @@ These mods are **not** required but have been tested for compatibility and enhan
 ### Mod Installation Steps
 
 1. Download the `.apworld` and `CyberpunkArchipelagoMod` zip from [the latest GitHub release](https://github.com/247Tossing/cyberpunk_archipelago/releases/latest)
-2. Extract `CyberpunkArchipelagoMod.zip` to your Cyberpunk 2077 root folder (should contain `r6`, `bin`, and `Red4EXT` folders)
+2. Extract `CyberpunkArchipelagoMod.zip` to your Cyberpunk 2077 2.5 root folder (should contain `r6`, `bin`, and `Red4EXT` folders)
 3. Open the Archipelago Launcher and drag the `cyberpunk2077.apworld` file onto it
 4. **You MUST restart the launcher** before it will show up
 
