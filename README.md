@@ -47,7 +47,6 @@ These mods are **not** required but have been tested for compatibility and enhan
 | Mod | Links | Notes |
 |-----|-------|-------|
 | New Game Plus - Native | [GitHub](https://github.com/alphanin9/CyberpunkNewGamePlus) · [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/15043) | When installed, this AP mod can auto-release skip flags |
-| Randomizer2077 | [Nexus](https://www.nexusmods.com/cyberpunk2077/mods/19884) | **If you use Vendor Sanity**, you **MUST** disable Randomize Vendors in mod options or this **WILL** cause softlocks. It is also reccomended to disable Loot Randomization |
 
 ### Mod Installation Steps
 
