@@ -71,19 +71,20 @@ public class APWeaponRestrictionEnforcer extends ScriptableService {
     }
 }
 
+// Patch 2.5 added the optional forceEquip parameter to InventoryDataManagerV2.EquipItem.
 @wrapMethod(InventoryDataManagerV2)
-public final func EquipItem(itemId: ItemID, slot: Int32) -> Void {
+public final func EquipItem(itemId: ItemID, slot: Int32, opt forceEquip: Bool) -> Void {
     APLogger.LogDebug(s"Incoming Item equip attempt");
     let weaponEnforcer = GameInstance.GetScriptableServiceContainer().GetService(n"Archipelago.APWeaponRestrictionEnforcer") as APWeaponRestrictionEnforcer;
     if !IsDefined(weaponEnforcer) {
-        wrappedMethod(itemId, slot);
+        wrappedMethod(itemId, slot, forceEquip);
         return;
     }
 
     let incomingItem = itemId.GetTDBID();
     let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(incomingItem);
     if !IsDefined(itemRecord) {
-        wrappedMethod(itemId, slot);
+        wrappedMethod(itemId, slot, forceEquip);
         return;
     }
 
@@ -91,7 +92,7 @@ public final func EquipItem(itemId: ItemID, slot: Int32) -> Void {
     APLogger.LogDebug(s"Item Type is: \(itemType)");
     if weaponEnforcer.CanEquipWeapon(itemType) {
         APLogger.LogDebug("Weapon equip allowed");
-        wrappedMethod(itemId, slot); // Proceed with the equip action
+        wrappedMethod(itemId, slot, forceEquip); // Proceed with the equip action
     } else {
         APLogger.LogDebug("Weapon equip blocked by Archipelago restrictions");
         return; // Block the equip action
