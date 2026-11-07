@@ -12,7 +12,15 @@ The World class handles:
 """
 
 from typing import Dict, List, Set, Any
-from BaseClasses import Region, Item, ItemClassification, Tutorial, MultiWorld
+from BaseClasses import (
+    CollectionState,
+    Item,
+    ItemClassification,
+    LocationProgressType,
+    MultiWorld,
+    Region,
+    Tutorial,
+)
 from worlds.AutoWorld import World, WebWorld
 from .items import Cyberpunk2077Item, item_table, item_name_to_id, item_name_groups, ItemCategory
 from .locations import Cyberpunk2077Location, location_table, location_name_to_id, location_name_groups, location_internal_id_to_display_name
@@ -21,7 +29,6 @@ from .options import (
     DistrictRestrictionType,
     apply_token_locality_options,
     cyberpunk_option_groups,
-    get_active_district_token_names,
     district_restriction_active,
     get_gated_major_district_mask,
     has_effective_phantom_liberty_dlc,
@@ -224,12 +231,6 @@ class Cyberpunk2077World(World):
             self.options.restrict_by_sub_district.value = 0
 
         apply_token_locality_options(self)
-        # Place active district tokens during the early fill. In a multiworld they
-        # are non-local, so the strict priority retry cannot put them on this
-        # player's own priority checks. Sphere-1 locations (including the other
-        # world's) can take them before that retry runs.
-        for token_name in get_active_district_token_names(self):
-            self.multiworld.early_items[self.player][token_name] = 1
         """
         Create all regions (game areas) and locations (item checks).
 
@@ -426,6 +427,208 @@ class Cyberpunk2077World(World):
             self.player
         )
 
+
+    def generate_basic(self) -> None:
+        """Keep player priority locations, and release built-in priority behind locks.
+
+        District access tokens are the only progression items. Archipelago's priority
+        retry must place any remaining progression onto leftover PRIORITY checks, and
+        it raises FillError when it cannot. A built-in PRIORITY check behind a district
+        gate cannot hold the token that opens that gate, and a non-local token cannot
+        sit on this player's own checks, so those built-in priorities deadlock a
+        two-player seed.
+
+        Checks the player named in priority_locations stay PRIORITY even when they are
+        not reachable yet. Built-in PRIORITY checks that an empty inventory cannot
+        reach become ordinary checks, so the normal progression fill can place tokens
+        there after the gate is actually open. Marking every token as an early item
+        is not used: that fill only sees sphere-1 locations and puts every token there.
+        """
+        explicit_priority = {
+            str(name) for name in self.options.priority_locations.value
+        }
+        for name in explicit_priority:
+            try:
+                location = self.multiworld.get_location(name, self.player)
+            except KeyError:
+                continue
+            if location.progress_type != LocationProgressType.EXCLUDED:
+                location.progress_type = LocationProgressType.PRIORITY
+
+        state = CollectionState(self.multiworld)
+        for location in self.multiworld.get_locations(self.player):
+            if location.progress_type != LocationProgressType.PRIORITY:
+                continue
+            if location.name in explicit_priority:
+                continue
+            if not location.can_reach(state):
+                location.progress_type = LocationProgressType.DEFAULT
+
+    def pre_fill(self) -> None:
+        """Place gate tokens that explicit priority checks need, without sphere-1 dumping.
+
+        Built-in priorities behind a lock were released in generate_basic. A priority check
+        the player named is still PRIORITY, but the core priority retry cannot see it until
+        its district token is already in the world. Place only tokens that unlock one of
+        those checks onto a check that is already reachable, then let the normal fill put
+        the remaining tokens where logic allows. If a named check stays unreachable after
+        every access token has been tried, generation stops with the check's name instead
+        of leaving the priority flag in place and filling it with junk.
+        """
+        cyberpunk_players = [
+            player
+            for player in self.multiworld.player_ids
+            if self.multiworld.worlds[player].game == self.game
+        ]
+        if not cyberpunk_players or self.player != min(cyberpunk_players):
+            return
+        if getattr(self.multiworld, "_cp2077_priority_gate_fill_done", False):
+            return
+        self.multiworld._cp2077_priority_gate_fill_done = True
+
+        explicit = self._explicit_priority_locations(cyberpunk_players)
+        if not explicit:
+            return
+
+        from Fill import FillError
+
+        for _ in range(len(explicit) + len(self.multiworld.itempool) + 1):
+            state = self.multiworld.state
+            locked = [location for location in explicit if not location.can_reach(state)]
+            if not locked:
+                unsustainable = [
+                    location for location in explicit
+                    if not any(
+                        item.advancement and location.can_fill(state, item)
+                        for item in self.multiworld.itempool
+                    )
+                ]
+                if unsustainable:
+                    names = "\n".join(
+                        f"- {self.multiworld.get_player_name(location.player)}: {location.name}"
+                        for location in unsustainable
+                    )
+                    raise FillError(
+                        "Cyberpunk 2077 cannot put a progression item on these priority_locations. "
+                        "Reaching them already requires every district access token that could legally "
+                        "be placed there, so the checks can only roll filler. Remove them from "
+                        "priority_locations, or turn off a district restriction on the path to them.\n"
+                        f"{names}",
+                        multiworld=self.multiworld,
+                    )
+                return
+
+            placed = False
+            for item in list(self.multiworld.itempool):
+                if not item.name.endswith(" Access Token") or not item.advancement:
+                    continue
+                if not self._token_unlocks_priority(state, item, locked):
+                    continue
+                spot = self._open_spot_for_token(state, item, explicit)
+                if spot is None:
+                    continue
+                self.multiworld.itempool.remove(item)
+                self.multiworld.push_item(spot, item, True)
+                placed = True
+                break
+
+            if not placed:
+                names = "\n".join(
+                    f"- {self.multiworld.get_player_name(location.player)}: {location.name}"
+                    for location in locked
+                )
+                raise FillError(
+                    "Cyberpunk 2077 could not reach these priority_locations by placing a "
+                    "district access token on a check that is already reachable. Priority "
+                    "fill would otherwise have no legal progression item for them. Remove "
+                    "the checks from priority_locations, or turn off the district restriction "
+                    f"that locks them.\n{names}",
+                    multiworld=self.multiworld,
+                )
+
+        raise FillError(
+            "Cyberpunk 2077 stopped while unlocking priority_locations. The district token "
+            "placement did not finish.",
+            multiworld=self.multiworld,
+        )
+
+    def _explicit_priority_locations(self, players: list[int]) -> list:
+        locations = []
+        for player in players:
+            world = self.multiworld.worlds[player]
+            for name in world.options.priority_locations.value:
+                try:
+                    location = self.multiworld.get_location(str(name), player)
+                except KeyError:
+                    continue
+                if location.progress_type == LocationProgressType.PRIORITY:
+                    locations.append(location)
+        return locations
+
+    def _open_spot_for_token(self, state: CollectionState, item: Item, explicit: list):
+        reserved = {(location.player, location.name) for location in explicit}
+        open_spots = []
+        reserved_spots = []
+        for location in self.multiworld.get_unfilled_locations():
+            if not location.can_fill(state, item):
+                continue
+            if (location.player, location.name) in reserved:
+                reserved_spots.append(location)
+            else:
+                open_spots.append(location)
+        spots = open_spots or reserved_spots
+        if not spots:
+            return None
+        return self.multiworld.random.choice(spots)
+
+    def _token_unlocks_priority(self, state: CollectionState, item: Item, locked: list) -> bool:
+        """True when collecting this token removes a prerequisite blocker for a priority check."""
+        trial = state.copy()
+        trial.collect(item, True)
+        for location in locked:
+            if self._priority_chain_progress(trial, location) < self._priority_chain_progress(state, location):
+                return True
+        return False
+
+    def _priority_chain_progress(self, state: CollectionState, location) -> tuple[int, int]:
+        """Fewer blocked checks is better. An opened region on a still-blocked check is partial progress.
+
+        Some main-quest checks sit in two districts at once, so neither token alone removes the
+        check from the blocker list. Opening one of those regions still has to count.
+        """
+        blocked = self._unreachable_priority_chain(state, location)
+        opened_regions = sum(1 for current in blocked if current.parent_region.can_reach(state))
+        return (len(blocked), -opened_regions)
+
+    def _unreachable_priority_chain(self, state: CollectionState, location) -> list:
+        from .rules import get_active_location_prerequisites
+
+        edges = get_active_location_prerequisites(self.multiworld.worlds[location.player])
+        pending = [location.name]
+        seen: set[str] = set()
+        blocked = []
+        while pending:
+            name = pending.pop()
+            if name in seen:
+                continue
+            seen.add(name)
+            try:
+                current = self.multiworld.get_location(name, location.player)
+            except KeyError:
+                continue
+            if current.can_reach(state):
+                continue
+            blocked.append(current)
+            required = edges.get(name)
+            if required is None:
+                continue
+            if hasattr(required, "names"):
+                pending.extend(required.names)
+            elif isinstance(required, tuple):
+                pending.extend(required)
+            else:
+                pending.append(required)
+        return blocked
 
     def set_rules(self) -> None:
         """
