@@ -66,15 +66,14 @@ class Cyberpunk2077Web(WebWorld):
     # Option groups organize player-facing options on the WebHost
     option_groups = cyberpunk_option_groups
 
-    # TODO: Create setup guide markdown file in docs/setup_en.md when ready
-    # tutorials = [Tutorial(
-    #     "Multiworld Setup Guide",
-    #     "A guide to setting up the Archipelago Cyberpunk 2077 client on your computer.",
-    #     "English",
-    #     "setup_en.md",
-    #     "setup/en",
-    #     ["YourNameHere"]
-    # )]
+    tutorials = [Tutorial(
+        "Multiworld Setup Guide",
+        "A guide to setting up the Archipelago Cyberpunk 2077 client on your computer.",
+        "English",
+        "setup_en.md",
+        "setup/en",
+        ["247Tossing"],
+    )]
 
 
 class Cyberpunk2077World(World):
