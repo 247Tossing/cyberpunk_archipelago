@@ -86,9 +86,11 @@ Note: `wbr_jpn_ripperdoc_01` (Fingers M.D.) is documented as having a scripted l
 | `pac_wwd_melee_01` | `PacWwdMelee` | West Wind Estate Melee Vendor |
 | `std_arr_melee_01` | `StdArrMelee` | Arroyo Melee Vendor |
 | `wat_lch_melee_01` | `WatLchMelee01` | Little China Melee Vendor (Coach Fred) |
-| `wat_lch_melee_02` | `WatLchMelee02` | Little China Melee Vendor (2) |
+| `wat_lch_melee_02` | `WatLchMelee02` | Little China Melee Vendor (2) — unused/unreachable |
 | `wbr_jpn_melee_01` | `WbrJpnMelee` | Japantown Melee Vendor (Spector Cheng) |
 | `bls_ina_se5_melee_01` | `BlsInaSe5Melee` | Rocky Ridge Melee Vendor |
+
+`wat_lch_melee_02` is unused/unreachable. The TweakDB record exists, but no NPC is placed in the world (cut content). Coach Fred (`wat_lch_melee_01`) is the only Little China melee vendor. APWorld 0.7.6 does not generate `VendorCheck_WatLchMelee02_1/_2/_3`. The stock entries in `vendor_checks_4_melee.yaml` are left in place so this stays compatible with game mod 0.7.4.
 
 ### Netrunners
 

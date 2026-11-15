@@ -159,7 +159,9 @@ def build_locations(
     seen_wire_ids: set[int] = set()
 
     for internal_name, location_data in locations_mod.location_table.items():
-        if location_data.code is None:
+        # Retired rows reserve a location ID but are not checks, so they must
+        # not appear in the tracker even if a future change stores that ID.
+        if location_data.code is None or getattr(location_data, "retired", False):
             continue
 
         wire_id = locations_mod.location_name_to_id.get(location_data.display_name)

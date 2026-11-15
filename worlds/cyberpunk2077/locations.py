@@ -83,16 +83,21 @@ class LocationData:
                  Use display_name strings only and only point to real checks.
                  ``str`` requires one parent check; ``tuple[str, ...]`` requires all
                  listed checks (AND); ``PrereqAny`` requires any one check (OR).
+        retired: When True, the row stays in ``location_table`` so its insertion
+                 index is still consumed, but it is never published as a check.
+                 ``code`` stays None. Do not delete a retired row: that renumbers
+                 every later location ID.
     """
     display_name: str
     regions: Tuple[str, ...]  # Districts this location touches; first entry is the default parent
-    code: Optional[int] = None  # Auto-assigned at module load; None for event locations
+    code: Optional[int] = None  # Auto-assigned at module load; None for event locations and retired rows
     category: str = "misc"  # Location category (use LocationCategory constants)
     dlc_only: bool = False  # True for Phantom Liberty DLC locations
     progress_type: LocationProgressType = LocationProgressType.DEFAULT  # Controls fill priority (DEFAULT, PRIORITY, EXCLUDED)
     placement_region: Optional[str] = None  # Override of which region this location is parented to in the Archipelago graph
     vendor_subtype: str = ""  # Vendor category for sub-option filtering: "ripperdoc", "gunsmith", "clothing", "melee", "netrunner"
     prerequisite: Optional["Prerequisite"] = None  # Optional dependency by display_name
+    retired: bool = False  # Reserve the insertion-order code slot without creating a check
 
     def __post_init__(self) -> None:
         # Allow callers to pass a list or single string for ergonomics; normalize to tuple
@@ -150,8 +155,11 @@ class LocationCategory:
 # location is BASE_ID + code (e.g., 2077000 + 0 = 2077000).
 
 # WARNING: Codes are assigned by insertion order. Appending new entries at the
-# end of a section is safe. Inserting in the middle or reordering will shift all
-# subsequent codes and invalidate any previously generated seeds/games.
+# end of a section is safe. Inserting in the middle, deleting a row, or
+# reordering will shift all subsequent codes and invalidate any previously
+# generated seeds/games. To drop a check without renumbering, leave the row in
+# place and set retired=True. _assign_location_codes() still consumes that
+# index and records it in retired_location_ids, but the row is not published.
 # Recent cleanup removed non-trackable data quests (mq033_tarot, mq043_cyberpsychos),
 # which intentionally renumbered all subsequent location IDs.
 # Organize locations by region/district for easier management
@@ -753,9 +761,13 @@ location_table: Dict[str, LocationData] = {
     "VendorCheck_WatLchMelee01_1": LocationData(display_name="Little China Melee Vendor (Coach Fred) 1", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
     "VendorCheck_WatLchMelee01_2": LocationData(display_name="Little China Melee Vendor (Coach Fred) 2", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
     "VendorCheck_WatLchMelee01_3": LocationData(display_name="Little China Melee Vendor (Coach Fred) 3", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
-    "VendorCheck_WatLchMelee02_1": LocationData(display_name="Little China Melee Vendor (2) 1", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
-    "VendorCheck_WatLchMelee02_2": LocationData(display_name="Little China Melee Vendor (2) 2", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
-    "VendorCheck_WatLchMelee02_3": LocationData(display_name="Little China Melee Vendor (2) 3", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
+    # Retired in 0.7.6. Vendors.wat_lch_melee_02 exists in TweakDB, but no NPC is
+    # placed in Watson (cut content). Coach Fred (wat_lch_melee_01) is the only
+    # Little China melee vendor, so these three checks can never be obtained.
+    # The rows stay here so their code slots stay reserved. Do not delete them.
+    "VendorCheck_WatLchMelee02_1": LocationData(display_name="Little China Melee Vendor (2) 1", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee", retired=True),
+    "VendorCheck_WatLchMelee02_2": LocationData(display_name="Little China Melee Vendor (2) 2", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee", retired=True),
+    "VendorCheck_WatLchMelee02_3": LocationData(display_name="Little China Melee Vendor (2) 3", regions=("Watson",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee", retired=True),
     "VendorCheck_WbrJpnMelee_1": LocationData(display_name="Japantown Melee Vendor (Spector Cheng) 1", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
     "VendorCheck_WbrJpnMelee_2": LocationData(display_name="Japantown Melee Vendor (Spector Cheng) 2", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.EXCLUDED, vendor_subtype="melee"),
     "VendorCheck_WbrJpnMelee_3": LocationData(display_name="Japantown Melee Vendor (Spector Cheng) 3", regions=("Westbrook",), category=LocationCategory.VENDOR, progress_type=LocationProgressType.PRIORITY, vendor_subtype="melee"),
@@ -810,24 +822,41 @@ JACKSON_PLAINS_RIPPERDOC_STALL_2_KEYS = (
 # Assigns sequential codes (0, 1, 2, ...) to every location in the table.
 # Must run BEFORE the derived mappings below that depend on data.code.
 
-def _assign_location_codes(table: Dict[str, LocationData]) -> None:
+def _assign_location_codes(table: Dict[str, LocationData]) -> Dict[str, int]:
     """
     Auto-assign sequential integer codes to all locations in the table.
 
-    Each location receives its zero-based insertion index as its code.
-    The full Archipelago ID is BASE_ID + code.
+    Each published location receives its zero-based insertion index as its
+    code. The full Archipelago ID is BASE_ID + code.
 
-    This replaces the old scheme of manually hardcoding code values, which
-    was error-prone (duplicate codes, gaps, collisions).
+    Retired rows still consume that index so every later ID stays put, but
+    their ``code`` stays None and they are omitted from location_name_to_id.
+    The returned map records the Archipelago ID each retired internal key
+    reserves. Those IDs must not be reused.
 
     Args:
         table: The location_table dict to mutate in-place.
+
+    Returns:
+        Mapping of retired internal keys to the reserved Archipelago IDs.
     """
+    reserved: Dict[str, int] = {}
     for index, (name, data) in enumerate(table.items()):
+        if data.retired:
+            data.code = None
+            reserved[name] = BASE_ID + index
+            continue
         data.code = index
+    return reserved
 
 
-_assign_location_codes(location_table)
+# Internal key -> reserved Archipelago ID. These slots are not checks.
+retired_location_ids: Dict[str, int] = _assign_location_codes(location_table)
+
+
+def _is_published_location(data: LocationData) -> bool:
+    """True when the row is a real check (not retired, and not an event)."""
+    return not data.retired and data.code is not None
 
 
 # ===== DERIVED MAPPINGS =====
@@ -842,7 +871,7 @@ _assign_location_codes(location_table)
 location_name_to_id: Dict[str, int] = {
     data.display_name: BASE_ID + data.code
     for name, data in location_table.items()
-    if data.code is not None  # Exclude event locations
+    if _is_published_location(data)  # Exclude events and retired rows
 }
 
 # Dictionary mapping internal game IDs to their display names
@@ -851,6 +880,7 @@ location_name_to_id: Dict[str, int] = {
 location_internal_id_to_display_name: Dict[str, str] = {
     name: data.display_name
     for name, data in location_table.items()
+    if not data.retired
 }
 
 """
@@ -893,7 +923,7 @@ location_internal_id_to_display_name["q307_tomorrow"] = "Ending Reached"  # Phan
 location_id_to_name: Dict[int, str] = {
     BASE_ID + data.code: data.display_name
     for name, data in location_table.items()
-    if data.code is not None  # Exclude event locations
+    if _is_published_location(data)  # Exclude events and retired rows
 }
 
 # Dictionary mapping Archipelago codes to display names
@@ -902,7 +932,7 @@ location_id_to_name: Dict[int, str] = {
 location_id_to_display_name: Dict[int, str] = {
     data.code: data.display_name
     for name, data in location_table.items()
-    if data.code is not None  # Exclude event locations
+    if _is_published_location(data)  # Exclude events and retired rows
 }
 
 
@@ -928,8 +958,8 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
     # cross-district quests as well.
     regions: Dict[str, List[str]] = {}
     for loc_name, loc_data in location_table.items():
-        if loc_data.code is None:
-            continue  # Skip event locations
+        if not _is_published_location(loc_data):
+            continue  # Skip events and retired rows
 
         for region_name in loc_data.regions:
             regions.setdefault(region_name, []).append(loc_data.display_name)
@@ -952,8 +982,8 @@ def _build_location_name_groups() -> Dict[str, List[str]]:
     misc = []
 
     for loc_name, loc_data in location_table.items():
-        if loc_data.code is None:
-            continue  # Skip event locations
+        if not _is_published_location(loc_data):
+            continue  # Skip events and retired rows
 
         # Group by category
         if loc_data.category == LocationCategory.MAIN_QUEST:
@@ -1063,7 +1093,7 @@ def get_locations_by_region(region_name: str) -> List[str]:
     return [
         name
         for name, data in location_table.items()
-        if region_name in data.regions
+        if region_name in data.regions and not data.retired
     ]
 
 
@@ -1080,7 +1110,7 @@ def get_event_locations() -> List[str]:
     return [
         name
         for name, data in location_table.items()
-        if data.code is None
+        if data.code is None and not data.retired
     ]
 
 
@@ -1097,7 +1127,7 @@ def get_regular_locations() -> List[str]:
     return [
         name
         for name, data in location_table.items()
-        if data.code is not None
+        if _is_published_location(data)
     ]
 
 
