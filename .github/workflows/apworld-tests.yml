@@ -1,7 +1,12 @@
-# Runs the cyberpunk2077 apworld's Archipelago unit tests (WorldTestBase-based
-# tests under worlds/cyberpunk2077/test/) against a pinned Archipelago release.
-# Uses Eijebong/ap-actions, the community-maintained CI wrapper for the
-# official Archipelago unit-test runner (see docs/tests.md upstream).
+# Runs the cyberpunk2077 apworld's Archipelago unit tests against a pinned
+# Archipelago release. Uses Eijebong/ap-actions for the checkout, install, and
+# world copy, then runs pytest here so mistune can be pinned.
+#
+# ap-tests@main installs WebHostLib/requirements.txt (`mistune>=3.1.3`), which
+# currently resolves to mistune 3.4. Archipelago 0.6.6's webhost markdown tests
+# pass an inline parser to mistune.Markdown(); 3.4 ignores it and those tests
+# fail. 3.1.3 is the floor that file declares and is the last line that still
+# honors the parser.
 
 name: APWorld tests
 
@@ -20,9 +25,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: Eijebong/ap-actions/ap-tests@main
+      - uses: actions/checkout@v4
+
+      - uses: Eijebong/ap-actions/setup-ap@main
+        with:
+          # Matches minimum_ap_version in worlds/cyberpunk2077/archipelago.json.
+          version: "0.6.6"
+          python-version: "3.12"
+
+      - uses: Eijebong/ap-actions/copy-apworld-source@main
+        id: copy
         with:
           apworld-path: worlds/cyberpunk2077
-          # Matches minimum_ap_version in worlds/cyberpunk2077/archipelago.json.
-          ap-version: "0.6.6"
-          python-version: "3.12"
+
+      - name: Install test dependencies
+        shell: bash
+        run: |
+          cd archipelago
+          uv pip install -r ci-requirements.txt
+          uv pip install 'mistune==3.1.3'
+          uv run python Launcher.py --update_settings
+
+      - name: Run tests
+        shell: bash
+        env:
+          AP_TEST_WORLDS: ${{ steps.copy.outputs.apworld-name }}
+        run: |
+          cd archipelago
+          if [[ ! -d "worlds/${AP_TEST_WORLDS}" ]]; then
+            echo "::error::Couldn't find world ${AP_TEST_WORLDS} in archipelago/worlds"
+            exit 1
+          fi
+          uv run pytest -n auto

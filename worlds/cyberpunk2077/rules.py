@@ -66,7 +66,7 @@ def _collect_location_prerequisites() -> dict[str, Prerequisite]:
     """Collect per-location prerequisite edges from LocationData rows."""
     edges: dict[str, Prerequisite] = {}
     for data in location_table.values():
-        if data.code is None or data.prerequisite is None:
+        if data.retired or data.code is None or data.prerequisite is None:
             continue
         edges[data.display_name] = data.prerequisite
     return edges
@@ -86,7 +86,7 @@ VENDOR_CHECK_INTERNAL_KEYS = tuple(
         (
             name
             for name, data in location_table.items()
-            if data.category == LocationCategory.VENDOR and data.code is not None
+            if data.category == LocationCategory.VENDOR and data.code is not None and not data.retired
         ),
         key=lambda name: (location_table[name].display_name, name),
     )

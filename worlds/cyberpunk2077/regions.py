@@ -352,6 +352,10 @@ def create_region(world: "Cyberpunk2077World", region_name: str) -> Region:
 
     # Add all locations that belong to this region
     for location_name, location_data in location_table.items():
+        # Retired rows keep an insertion-order code slot but are not checks.
+        # Skip them before the code=None branch, which creates event locations.
+        if location_data.retired:
+            continue
         if pl_only_goal:
             if (
                 location_name not in pl_only_fixed_checks and

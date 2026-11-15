@@ -91,7 +91,7 @@ Below is a list of options that add location checks and their counts:
 | Include Ripperdocs | 54 (requires Vendor Sanity) |
 | Include Weapon Vendors | 42 (requires Vendor Sanity) |
 | Include Clothing Vendors | 42 (requires Vendor Sanity) |
-| Include Melee Vendors | 21 (requires Vendor Sanity) |
+| Include Melee Vendors | 18 (requires Vendor Sanity) |
 | Include Netrunners | 21 (requires Vendor Sanity) |
 
 Some notes about the YAML Options:
