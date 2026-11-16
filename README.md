@@ -168,3 +168,5 @@ Depending on the nature of your issue, please include the following:
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the developer environment and contribution guide.
+
+See [AI Disclosure](AI_DISCLOSURE.md).
